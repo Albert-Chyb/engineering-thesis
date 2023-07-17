@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "engineering-thesis-fc3ca": {
+      "hosting": {
+        "engineering-thesis": [
+          "engineering-thesis-fc3ca"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "engineering-thesis-fc3ca"
+  }
+}
