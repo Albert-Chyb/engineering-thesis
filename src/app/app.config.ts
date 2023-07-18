@@ -19,50 +19,44 @@ import {
 import { provideRouter } from '@angular/router';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     importProvidersFrom([
-      provideFirebaseApp(() => initializeApp(environment.firebase)),
-      provideAuth(() => {
-        const auth = getAuth();
-
-        if (environment.useFirebaseEmulators) {
-          connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
-            disableWarnings: true,
-          });
-        }
-
-        return auth;
-      }),
-      provideFirestore(() => {
-        const firestore = getFirestore();
-
-        if (environment.useFirebaseEmulators) {
-          connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
-        }
-
-        return firestore;
-      }),
-      provideFunctions(() => {
-        const functions = getFunctions();
-
-        if (environment.useFirebaseEmulators) {
-          connectFunctionsEmulator(functions, '127.0.0.1', 5001);
-        }
-
-        return functions;
-      }),
-      provideStorage(() => {
-        const storage = getStorage();
-
-        if (environment.useFirebaseEmulators) {
-          connectStorageEmulator(storage, '127.0.0.1', 9199);
-        }
-
-        return storage;
-      }),
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideAuth(() => {
+            const auth = getAuth();
+            if (environment.useFirebaseEmulators) {
+                connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
+                    disableWarnings: true,
+                });
+            }
+            return auth;
+        }),
+        provideFirestore(() => {
+            const firestore = getFirestore();
+            if (environment.useFirebaseEmulators) {
+                connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
+            }
+            return firestore;
+        }),
+        provideFunctions(() => {
+            const functions = getFunctions();
+            if (environment.useFirebaseEmulators) {
+                connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+            }
+            return functions;
+        }),
+        provideStorage(() => {
+            const storage = getStorage();
+            if (environment.useFirebaseEmulators) {
+                connectStorageEmulator(storage, '127.0.0.1', 9199);
+            }
+            return storage;
+        }),
     ]),
-  ],
+    provideAnimations()
+],
 };
