@@ -22,7 +22,12 @@
     "lib": [
       "ES2022",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@authentication/services": ["src/app/authentication/services/share.ts"],
+      "@authentication/pages": ["src/app/authentication/pages/share.ts"],
+      "@authentication/types": ["src/app/authentication/types/share.ts"],
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
