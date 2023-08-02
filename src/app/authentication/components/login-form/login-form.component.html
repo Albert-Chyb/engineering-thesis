@@ -1,1 +1,74 @@
-<p>login works !</p>
+<mat-card>
+  <mat-card-header>
+    <h1 mat-card-title>Formularz logowania</h1>
+    <p mat-card-subtitle>
+      Ten formularz służy do uzyskania dostępu do istniejącego już konta.
+    </p>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="form" id="login-form" (ngSubmit)="handleLoginSubmit()">
+      <mat-form-field>
+        <input
+          formControlName="email"
+          type="email"
+          matInput
+          placeholder="np.: jan.kowalski@poczta.pl"
+          name="account-email"
+        />
+        <mat-label>Email</mat-label>
+
+        <mat-error *ngIf="email.hasError('required')"
+          >Email jest wymagany.</mat-error
+        >
+        <mat-error *ngIf="email.hasError('email')"
+          >Podaj prawidłowo sformatowany email.</mat-error
+        >
+      </mat-form-field>
+
+      <mat-form-field>
+        <input
+          formControlName="password"
+          type="password"
+          matInput
+          placeholder="Hasło do twojego konta"
+          name="account-password"
+          minlength="6"
+        />
+
+        <mat-label>Hasło</mat-label>
+
+        <mat-error *ngIf="password.hasError('required')"
+          >Hasło jest wymagane.</mat-error
+        >
+        <mat-error *ngIf="password.hasError('minlength')"
+          >Hasło musi mieć przynajmniej
+          {{ password.getError("minlength").requiredLength }} znaków.</mat-error
+        >
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button
+      form="login-form"
+      mat-button
+      color="accent"
+      [disabled]="form.invalid"
+    >
+      Zaloguj się
+    </button>
+  </mat-card-actions>
+
+  <mat-card-footer>
+    <p>
+      Nie masz jeszcze konta ?
+      <a routerLink="/signup" mat-button color="accent">Załóż je tutaj.</a>
+    </p>
+
+    <p>
+      Zapomniałeś hasła do konta ?
+      <a routerLink="" mat-button color="accent">Zresetuj je tutaj.</a>
+    </p>
+  </mat-card-footer>
+</mat-card>
