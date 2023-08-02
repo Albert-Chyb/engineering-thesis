@@ -1,1 +1,4 @@
-<app-login-form (login)="handleLogin($event)"></app-login-form>
+<app-login-form
+  (onFormValue)="handleLogin($event)"
+  [error]="viewModel.error()"
+></app-login-form>

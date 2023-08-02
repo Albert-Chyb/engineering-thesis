@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -11,7 +11,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
-import { SignUpFormValue } from '@authentication/types';
+import { BaseFrom } from 'src/app/common/BaseForm';
+
+type Form = {
+  displayName: FormControl<string | null>;
+  email: FormControl<string | null>;
+  password: FormControl<string | null>;
+};
 
 @Component({
   selector: 'app-signup-form',
@@ -28,25 +34,15 @@ import { SignUpFormValue } from '@authentication/types';
   templateUrl: './signup-form.component.html',
   styleUrls: ['./signup-form.component.css'],
 })
-export class SignupFormComponent {
-  form = new FormGroup({
-    displayName: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', Validators.required),
-  });
+export class SignupFormComponent extends BaseFrom<Form> {
+  constructor() {
+    const form = new FormGroup({
+      displayName: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', Validators.required),
+    });
 
-  @Output() signUp = new EventEmitter<SignUpFormValue>();
-
-  handleSignUpSubmit() {
-    if (this.form.valid) {
-      const { email, password, displayName } = this.form.value;
-
-      this.signUp.emit({
-        email: email as string,
-        password: password as string,
-        displayName: displayName as string,
-      });
-    }
+    super(form);
   }
 
   get email(): FormControl<string | null> {

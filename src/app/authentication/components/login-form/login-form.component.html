@@ -7,7 +7,11 @@
   </mat-card-header>
 
   <mat-card-content>
-    <form [formGroup]="form" id="login-form" (ngSubmit)="handleLoginSubmit()">
+    <div *ngIf="error">
+      {{ error }}
+    </div>
+
+    <form [formGroup]="form" id="login-form" (ngSubmit)="handleFormSubmit()">
       <mat-form-field>
         <input
           formControlName="email"

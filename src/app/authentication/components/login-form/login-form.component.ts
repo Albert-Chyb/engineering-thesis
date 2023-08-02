@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -11,7 +11,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
-import { LoginFormValue } from '../../types/LoginFormValue';
+import { BaseFrom } from 'src/app/common/BaseForm';
+
+type Form = {
+  email: FormControl<string | null>;
+  password: FormControl<string | null>;
+};
 
 @Component({
   selector: 'app-login-form',
@@ -28,21 +33,14 @@ import { LoginFormValue } from '../../types/LoginFormValue';
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.css'],
 })
-export class LoginFormComponent {
-  form = new FormGroup({
-    email: new FormControl('', [Validators.email, Validators.required]),
-    password: new FormControl('', [Validators.required]),
-  });
-
-  @Output() login = new EventEmitter<LoginFormValue>();
-
-  handleLoginSubmit() {
-    const { email, password } = this.form.value;
-
-    this.login.emit({
-      email: email as string,
-      password: password as string,
+export class LoginFormComponent extends BaseFrom<Form> {
+  constructor() {
+    const form = new FormGroup({
+      email: new FormControl('', [Validators.email, Validators.required]),
+      password: new FormControl('', [Validators.required]),
     });
+
+    super(form);
   }
 
   get email() {
