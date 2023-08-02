@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from '@authentication/pages';
 
 function redirectLoggedInToHome() {
-    return redirectLoggedInTo('');
+    return redirectLoggedInTo('/');
 }
 
 export const routes: Routes = [
