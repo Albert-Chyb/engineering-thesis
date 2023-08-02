@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { AuthService } from '@authentication/services';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +11,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {}
+export class AppComponent {
+  auth = inject(AuthService);
+  isLoggedIn = toSignal(this.auth.isLoggedIn$);
+}

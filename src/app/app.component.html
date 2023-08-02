@@ -1,3 +1,8 @@
 <main class="main-container">
-    <router-outlet></router-outlet>
+  <router-outlet></router-outlet>
+
+  <div>
+    <button (click)="auth.signOut()" *ngIf="isLoggedIn()">Wyloguj się</button>
+    <a routerLink="/signup" *ngIf="!isLoggedIn()">Załóż konto</a>
+  </div>
 </main>

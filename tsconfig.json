@@ -19,14 +19,14 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
+    "lib": ["ES2022", "dom"],
     "paths": {
       "@authentication/services": ["src/app/authentication/services/share.ts"],
       "@authentication/pages": ["src/app/authentication/pages/share.ts"],
       "@authentication/types": ["src/app/authentication/types/share.ts"],
+      "@authentication/components": [
+        "src/app/authentication/components/share.ts"
+      ]
     }
   },
   "angularCompilerOptions": {
