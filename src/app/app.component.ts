@@ -9,7 +9,7 @@ import { AuthService } from '@authentication/services';
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
   auth = inject(AuthService);

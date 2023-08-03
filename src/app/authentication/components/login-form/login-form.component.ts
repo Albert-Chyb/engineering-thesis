@@ -31,7 +31,7 @@ type Form = {
     RouterLink,
   ],
   templateUrl: './login-form.component.html',
-  styleUrls: ['./login-form.component.css'],
+  styleUrls: ['./login-form.component.scss'],
 })
 export class LoginFormComponent extends BaseFrom<Form> {
   constructor() {

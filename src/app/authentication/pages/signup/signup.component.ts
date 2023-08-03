@@ -13,7 +13,7 @@ import { toSignalWithErrors } from 'src/app/common/toSignalWithErrors';
   standalone: true,
   imports: [CommonModule, SignupFormComponent],
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css'],
+  styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent {
   auth = inject(AuthService);

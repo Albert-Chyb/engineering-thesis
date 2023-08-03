@@ -11,7 +11,7 @@ import { toSignalWithErrors } from 'src/app/common/toSignalWithErrors';
   standalone: true,
   imports: [CommonModule, LoginFormComponent],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   auth = inject(AuthService);
