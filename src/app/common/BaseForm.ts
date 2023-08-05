@@ -7,7 +7,9 @@ export class BaseFrom<T extends { [K in keyof T]: AbstractControl<any, any> }> {
   constructor(public readonly form: FormGroup<T>) {}
 
   @Output() onFormValue = new EventEmitter();
-  @Input() set errors(errorsObj: { [key: string]: ValidationErrors }) {
+  @Input() set errors(
+    errorsObj: { [key: string]: ValidationErrors } | null | undefined
+  ) {
     if (!errorsObj) {
       return;
     }

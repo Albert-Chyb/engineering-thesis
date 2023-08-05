@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { FirebaseError } from '@angular/fire/app';
+import { ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginFormComponent } from '@authentication/components';
 import { AuthService } from '@authentication/services';
@@ -27,6 +29,31 @@ export class LoginComponent {
       )
     )
   );
+
+  loginErrors = computed(() => {
+    const error = this.viewModel.error();
+
+    if (error instanceof FirebaseError) {
+      const translations: {
+        [key: string]: { [key: string]: ValidationErrors };
+      } = {
+        'auth/user-not-found': {
+          email: {
+            userNotFound: true,
+          },
+        },
+        'auth/wrong-password': {
+          password: {
+            wrongPassword: true,
+          },
+        },
+      };
+
+      return translations[error.code];
+    }
+
+    return null;
+  });
 
   handleLogin(formValue: LoginFormValue) {
     this._loginFormValue.next(formValue);

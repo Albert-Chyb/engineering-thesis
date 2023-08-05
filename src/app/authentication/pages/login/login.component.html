@@ -1,1 +1,4 @@
-<app-login-form (onFormValue)="handleLogin($event)"></app-login-form>
+<app-login-form
+  (onFormValue)="handleLogin($event)"
+  [errors]="loginErrors()"
+></app-login-form>

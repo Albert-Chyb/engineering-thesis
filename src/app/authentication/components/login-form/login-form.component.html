@@ -24,6 +24,10 @@
         <mat-error *ngIf="email.hasError('email')"
           >Podaj prawidłowo sformatowany email.</mat-error
         >
+
+        <mat-error *ngIf="email.hasError('userNotFound')"
+          >Użytkownik z tym adresem email nie istnieje</mat-error
+        >
       </mat-form-field>
 
       <mat-form-field>
@@ -44,6 +48,10 @@
         <mat-error *ngIf="password.hasError('minlength')"
           >Hasło musi mieć przynajmniej
           {{ password.getError("minlength").requiredLength }} znaków.</mat-error
+        >
+
+        <mat-error *ngIf="password.hasError('wrongPassword')"
+          >Hasło jest niepoprawne</mat-error
         >
       </mat-form-field>
     </form>
