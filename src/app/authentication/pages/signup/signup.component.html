@@ -1,1 +1,4 @@
-<app-signup-form (onFormValue)="handleSignUp($event)"></app-signup-form>
+<app-signup-form
+  (onFormValue)="handleSignUp($event)"
+  [errors]="formErrors()"
+></app-signup-form>

@@ -36,6 +36,9 @@
         <mat-error *ngIf="email.hasError('required')"
           >Email jest wymagany</mat-error
         >
+        <mat-error *ngIf="email.hasError('emailAlreadyInUse')"
+          >Istnieje już konto z tym adresem email</mat-error
+        >
       </mat-form-field>
 
       <mat-form-field>
@@ -79,6 +82,9 @@
     </p>
 
     <!-- TODO: Add a link to password recovery page. -->
-    <p>Zapomniałeś hasła ? <a routerLink="" mat-button color="accent">Zresetuj je tutaj.</a></p>
+    <p>
+      Zapomniałeś hasła ?
+      <a routerLink="" mat-button color="accent">Zresetuj je tutaj.</a>
+    </p>
   </mat-card-footer>
 </mat-card>

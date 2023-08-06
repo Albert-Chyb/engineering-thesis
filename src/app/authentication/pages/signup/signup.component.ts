@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { FirebaseError } from '@angular/fire/app';
 import { Router } from '@angular/router';
-import {
-  SignupFormComponent,
-} from '@authentication/components';
+import { SignupFormComponent } from '@authentication/components';
 import { AuthService } from '@authentication/services';
 import { SignUpFormValue } from '@authentication/types';
-import { Subject, from, map, switchMap } from 'rxjs';
-import { toSignalWithErrors } from 'src/app/common/toSignalWithErrors';
+import { catchError, of, switchMap, take } from 'rxjs';
+import { FormGroupErrorObject } from 'src/app/common/BaseForm';
 
 @Component({
   standalone: true,
@@ -18,22 +17,53 @@ import { toSignalWithErrors } from 'src/app/common/toSignalWithErrors';
 export class SignupComponent {
   auth = inject(AuthService);
   router = inject(Router);
+  signUpError = signal<any>(null);
+  formErrors = computed(() => {
+    const error = this.signUpError();
 
-  private readonly _loginFormValue$ = new Subject<SignUpFormValue>();
-  private readonly _loginTask$ = this._loginFormValue$.asObservable().pipe(
-    switchMap(({ email, password, displayName }) =>
-      this.auth
-        .createAccount(email, password)
-        .pipe(switchMap(() => this.auth.updateName(displayName)))
-    ),
-    switchMap((user) =>
-      from(this.router.navigateByUrl('/')).pipe(map(() => user))
-    )
-  );
+    if (error instanceof FirebaseError) {
+      return this.convertAuthErrorIntoFormError(error);
+    }
 
-  viewModel = toSignalWithErrors(this._loginTask$);
+    return null;
+  });
 
   handleSignUp(formValue: SignUpFormValue) {
-    this._loginFormValue$.next(formValue);
+    const { email, password, displayName } = formValue;
+
+    this.auth
+      .createAccount(email, password)
+      .pipe(
+        switchMap(() => this.auth.updateName(displayName)),
+        catchError((error) => {
+          this.signUpError.set(error);
+
+          return of(null);
+        }),
+        take(1)
+      )
+      .subscribe((user) => {
+        if (user) {
+          this.router.navigateByUrl('/');
+        }
+      });
+  }
+
+  private convertAuthErrorIntoFormError(
+    error: FirebaseError
+  ): FormGroupErrorObject | null {
+    if (!error.code.startsWith('auth/')) {
+      return null;
+    }
+
+    const translations: { [key: string]: FormGroupErrorObject } = {
+      'auth/email-already-in-use': {
+        email: {
+          emailAlreadyInUse: true,
+        },
+      },
+    };
+
+    return error.code in translations ? translations[error.code] : null;
   }
 }
