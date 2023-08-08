@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { BaseFrom } from 'src/app/common/BaseForm';
+import { LoginFormValue } from '../../types/LoginFormValue';
 
 type Form = {
   email: FormControl<string | null>;
@@ -33,7 +34,7 @@ type Form = {
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.scss'],
 })
-export class LoginFormComponent extends BaseFrom<Form> {
+export class LoginFormComponent extends BaseFrom<Form, LoginFormValue> {
   constructor() {
     const form = new FormGroup({
       email: new FormControl('', [Validators.email, Validators.required]),

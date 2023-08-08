@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
 import { BaseFrom } from 'src/app/common/BaseForm';
+import { PasswordRecoveryFormValue } from '../../types/PasswordRecoveryFormValue';
 
 interface Form {
   email: FormControl<string | null>;
@@ -32,7 +33,10 @@ interface Form {
   templateUrl: './password-recovery-form.component.html',
   styleUrls: ['./password-recovery-form.component.scss'],
 })
-export class PasswordRecoveryFormComponent extends BaseFrom<Form> {
+export class PasswordRecoveryFormComponent extends BaseFrom<
+  Form,
+  PasswordRecoveryFormValue
+> {
   constructor() {
     const form = new FormGroup<Form>({
       email: new FormControl(null, [Validators.required, Validators.email]),

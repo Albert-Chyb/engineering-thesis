@@ -5,10 +5,13 @@ import { setControlsErrors } from './setControlsErrors';
 export type FormGroupErrorObject = { [key: string]: ValidationErrors };
 
 @Directive({})
-export class BaseFrom<T extends { [K in keyof T]: AbstractControl<any, any> }> {
+export class BaseFrom<
+  T extends { [K in keyof T]: AbstractControl<any, any> },
+  EmitterValue
+> {
   constructor(public readonly form: FormGroup<T>) {}
 
-  @Output() onFormValue = new EventEmitter();
+  @Output() onFormValue = new EventEmitter<EmitterValue>();
   @Input() set errors(errorsObj: FormGroupErrorObject | null | undefined) {
     if (!errorsObj) {
       return;
@@ -18,6 +21,6 @@ export class BaseFrom<T extends { [K in keyof T]: AbstractControl<any, any> }> {
   }
 
   handleFormSubmit() {
-    this.onFormValue.emit(this.form.value);
+    this.onFormValue.emit(this.form.value as EmitterValue);
   }
 }

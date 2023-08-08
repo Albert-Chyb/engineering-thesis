@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { BaseFrom } from 'src/app/common/BaseForm';
+import { SignUpFormValue } from '../../types/SignUpFormValue';
 
 type Form = {
   displayName: FormControl<string | null>;
@@ -34,7 +35,7 @@ type Form = {
   templateUrl: './signup-form.component.html',
   styleUrls: ['./signup-form.component.scss'],
 })
-export class SignupFormComponent extends BaseFrom<Form> {
+export class SignupFormComponent extends BaseFrom<Form, SignUpFormValue> {
   constructor() {
     const form = new FormGroup({
       displayName: new FormControl('', Validators.required),
