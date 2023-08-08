@@ -3,9 +3,11 @@ import {
   Auth,
   EmailAuthProvider,
   User,
+  confirmPasswordReset,
   createUserWithEmailAndPassword,
   linkWithCredential,
   reauthenticateWithCredential,
+  sendPasswordResetEmail,
   signInAnonymously,
   signInWithEmailAndPassword,
   signOut,
@@ -35,6 +37,14 @@ export class AuthService {
   readonly uid$: Observable<string | null> = this.user$.pipe(
     map((user) => user?.uid ?? null)
   );
+
+  sendPasswordResetEmail(email: string): Observable<void> {
+    return from(sendPasswordResetEmail(this.auth, email));
+  }
+
+  resetPassword(oobCode: string, newPassword: string) {
+    return from(confirmPasswordReset(this.auth, oobCode, newPassword));
+  }
 
   createAccount(email: string, password: string): Observable<AppUser> {
     return from(
