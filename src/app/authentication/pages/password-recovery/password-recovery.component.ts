@@ -10,9 +10,8 @@ import {
   INITIAL_MODEL,
   toSignalWithErrors,
 } from 'src/app/common/toSignalWithErrors';
-import { PasswordRecoveryFormComponent } from '../../components/password-recovery-form/password-recovery-form.component';
+import { PasswordRecoveryFormComponent, PasswordRecoveryFormValue } from '../../components/password-recovery-form/password-recovery-form.component';
 import { AuthService } from '../../services/auth.service';
-import { PasswordRecoveryFormValue } from '../../types/PasswordRecoveryFormValue';
 
 @Component({
   selector: 'app-password-recovery',

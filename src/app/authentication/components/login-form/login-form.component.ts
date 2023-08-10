@@ -12,11 +12,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { BaseFrom } from 'src/app/common/BaseForm';
-import { LoginFormValue } from '../../types/LoginFormValue';
 
 type Form = {
   email: FormControl<string | null>;
   password: FormControl<string | null>;
+};
+
+/** Type of a value of a valid login form. */
+export type LoginFormValue = {
+  [Key in keyof Required<FormGroup<Form>['value']>]: NonNullable<
+    FormGroup<Form>['value'][Key]
+  >;
 };
 
 @Component({
@@ -36,7 +42,7 @@ type Form = {
 })
 export class LoginFormComponent extends BaseFrom<Form, LoginFormValue> {
   constructor() {
-    const form = new FormGroup({
+    const form = new FormGroup<Form>({
       email: new FormControl('', [Validators.email, Validators.required]),
       password: new FormControl('', [Validators.required]),
     });

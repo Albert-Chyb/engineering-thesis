@@ -9,14 +9,13 @@ import {
 } from '@angular/core';
 import { FirebaseError } from '@angular/fire/app';
 import { Router } from '@angular/router';
-import { LoginFormComponent } from '@authentication/components';
+import { LoginFormComponent, LoginFormValue } from '@authentication/components';
 import { AuthService } from '@authentication/services';
 import { FormGroupErrorObject } from 'src/app/common/BaseForm';
 import {
   INITIAL_MODEL,
   toSignalWithErrors,
 } from 'src/app/common/toSignalWithErrors';
-import { LoginFormValue } from '../../types/LoginFormValue';
 
 @Component({
   standalone: true,

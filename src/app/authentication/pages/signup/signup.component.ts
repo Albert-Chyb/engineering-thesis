@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FirebaseError } from '@angular/fire/app';
 import { Router } from '@angular/router';
-import { SignupFormComponent } from '@authentication/components';
+import { SignUpFormValue, SignupFormComponent } from '@authentication/components';
 import { AuthService } from '@authentication/services';
 import { map, switchMap } from 'rxjs';
 import { FormGroupErrorObject } from 'src/app/common/BaseForm';
@@ -17,7 +17,6 @@ import {
   INITIAL_MODEL,
   toSignalWithErrors,
 } from 'src/app/common/toSignalWithErrors';
-import { SignUpFormValue } from '../../types/SignUpFormValue';
 
 @Component({
   standalone: true,
