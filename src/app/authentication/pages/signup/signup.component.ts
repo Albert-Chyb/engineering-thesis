@@ -1,12 +1,23 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  Injector,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { FirebaseError } from '@angular/fire/app';
 import { Router } from '@angular/router';
 import { SignupFormComponent } from '@authentication/components';
 import { AuthService } from '@authentication/services';
-import { SignUpFormValue } from '@authentication/types';
-import { catchError, of, switchMap, take } from 'rxjs';
+import { map, switchMap } from 'rxjs';
 import { FormGroupErrorObject } from 'src/app/common/BaseForm';
+import {
+  INITIAL_MODEL,
+  toSignalWithErrors,
+} from 'src/app/common/toSignalWithErrors';
+import { SignUpFormValue } from '../../types/SignUpFormValue';
 
 @Component({
   standalone: true,
@@ -15,11 +26,39 @@ import { FormGroupErrorObject } from 'src/app/common/BaseForm';
   styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent {
-  auth = inject(AuthService);
-  router = inject(Router);
-  signUpError = signal<any>(null);
-  formErrors = computed(() => {
-    const error = this.signUpError();
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly injector = inject(Injector);
+
+  private readonly AFTER_SUCCESSFUL_MAIN_ACTION = '/';
+
+  readonly formValue = signal<SignUpFormValue | null>(null);
+
+  readonly viewModel = computed(() => {
+    const signUpFormValue = this.formValue();
+
+    if (!signUpFormValue) {
+      return INITIAL_MODEL;
+    }
+
+    const { displayName, email, password } = signUpFormValue;
+
+    return toSignalWithErrors(
+      this.auth
+        .createAccount(email, password)
+        .pipe(
+          switchMap((user) =>
+            this.auth.updateName(displayName).pipe(map(() => user))
+          )
+        ),
+      {
+        injector: this.injector,
+      }
+    );
+  });
+
+  readonly formErrors = computed(() => {
+    const error = this.viewModel().error();
 
     if (error instanceof FirebaseError) {
       return this.convertAuthErrorIntoFormError(error);
@@ -28,25 +67,15 @@ export class SignupComponent {
     return null;
   });
 
-  handleSignUp(formValue: SignUpFormValue) {
-    const { email, password, displayName } = formValue;
+  constructor() {
+    effect(() => {
+      const user = this.viewModel().data();
+      const error = this.viewModel().error();
 
-    this.auth
-      .createAccount(email, password)
-      .pipe(
-        switchMap(() => this.auth.updateName(displayName)),
-        catchError((error) => {
-          this.signUpError.set(error);
-
-          return of(null);
-        }),
-        take(1)
-      )
-      .subscribe((user) => {
-        if (user) {
-          this.router.navigateByUrl('/');
-        }
-      });
+      if (user && !error) {
+        this.router.navigateByUrl(this.AFTER_SUCCESSFUL_MAIN_ACTION);
+      }
+    });
   }
 
   private convertAuthErrorIntoFormError(
