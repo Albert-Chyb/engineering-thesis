@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "firebase emulators:exec --ui \"ng s -o\"",
+    "start": "firebase emulators:exec --project=\"demo-engineering-thesis-fc3ca\" --ui --config=\"firebase.json\" \"ng s -o\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "firebase emulators:exec --project=\"demo-engineering-thesis-fc3ca\" --ui --config=\"./firebase.spec.json\" \"ng test -c spec\""
   },
   "private": true,
   "dependencies": {

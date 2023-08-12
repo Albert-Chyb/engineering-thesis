@@ -9,5 +9,32 @@ export const environment = {
     authDomain: 'engineering-thesis-fc3ca.firebaseapp.com',
     messagingSenderId: '930613417880',
   },
-  useFirebaseEmulators: false
+  useFirebaseEmulators: false,
+  firebaseEmulatorsConfig: {
+    host: 'http://127.0.0.1',
+    auth: {
+      port: 9099,
+    },
+    functions: {
+      port: 5001,
+    },
+    firestore: {
+      port: 8080,
+    },
+    database: {
+      port: 9000,
+    },
+    hosting: {
+      port: 5002,
+    },
+    pubsub: {
+      port: 8085,
+    },
+    storage: {
+      port: 9199,
+    },
+    eventarc: {
+      port: 9299,
+    },
+  },
 };

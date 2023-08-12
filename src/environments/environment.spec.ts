@@ -13,28 +13,28 @@ export const environment = {
   firebaseEmulatorsConfig: {
     host: 'http://127.0.0.1',
     auth: {
-      port: 9099,
+      port: 9100,
     },
     functions: {
-      port: 5001,
+      port: 5005,
     },
     firestore: {
-      port: 8080,
+      port: 8081,
     },
     database: {
-      port: 9000,
+      port: 9001,
     },
     hosting: {
-      port: 5002,
+      port: 5003,
     },
     pubsub: {
-      port: 8085,
+      port: 8086,
     },
     storage: {
-      port: 9199,
+      port: 9198,
     },
     eventarc: {
-      port: 9299,
+      port: 9298,
     },
   },
 };
