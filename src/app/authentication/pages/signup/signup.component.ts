@@ -23,6 +23,8 @@ import {
   throwError,
 } from 'rxjs';
 import { FormGroupErrorObject } from 'src/app/common/BaseForm';
+import { ConversionMap } from 'src/app/common/ConversionMap';
+import { FirebaseErrorConversionInstruction } from 'src/app/common/FirebaseErrorToFormErrorConversion';
 import {
   INITIAL_MODEL,
   toSignalWithErrors,
@@ -39,8 +41,12 @@ export class SignupComponent {
   private readonly router = inject(Router);
   private readonly injector = inject(Injector);
 
-  /** Codes of a firebase error that should be set as form errors */
-  private readonly FORM_ERRORS_CODES = ['auth/email-already-in-use'];
+  private readonly errorConverter = new ConversionMap([
+    [
+      'auth/email-already-in-use',
+      new FirebaseErrorConversionInstruction('email'),
+    ],
+  ]);
 
   /** Where the user should be taken after successful main action */
   private readonly AFTER_SUCCESSFUL_MAIN_ACTION = '/';
@@ -86,42 +92,15 @@ export class SignupComponent {
 
   /** Error handler for catchError operator. */
   private handleError(error: unknown): Observable<never> {
-    if (error instanceof FirebaseError && this.isFormError(error)) {
-      this.formErrors.set(this.convertFirebaseErrorIntoFormError(error));
+    if (
+      error instanceof FirebaseError &&
+      this.errorConverter.hasInstruction(error.code)
+    ) {
+      this.formErrors.set(this.errorConverter.convert(error, error.code));
 
       return EMPTY;
     } else {
       return throwError(() => error);
     }
-  }
-
-  /**
-   * Checks if the error should be set as form error.
-   * @param error Error thrown by firebase
-   * @returns Wether the error should be displayed inside the form.
-   */
-  private isFormError(error: FirebaseError): boolean {
-    return this.FORM_ERRORS_CODES.includes(error.code);
-  }
-
-  private convertFirebaseErrorIntoFormError(
-    error: FirebaseError
-  ): FormGroupErrorObject {
-    let formError: FormGroupErrorObject;
-
-    switch (error.code) {
-      case 'auth/email-already-in-use':
-        formError = {
-          email: {
-            emailAlreadyInUse: true,
-          },
-        };
-        break;
-
-      default:
-        throw new Error('Cannot convert this error into a form error.');
-    }
-
-    return formError;
   }
 }

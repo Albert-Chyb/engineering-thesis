@@ -6,6 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { EMPTY, Observable, catchError, map, throwError } from 'rxjs';
 import { FormGroupErrorObject } from 'src/app/common/BaseForm';
+import { ConversionMap } from 'src/app/common/ConversionMap';
+import { FirebaseErrorConversionInstruction } from 'src/app/common/FirebaseErrorToFormErrorConversion';
 import {
   INITIAL_MODEL,
   toSignalWithErrors,
@@ -31,8 +33,10 @@ import { AuthService } from '../../services/auth.service';
 export class PasswordRecoveryComponent {
   private readonly auth = inject(AuthService);
   private readonly injector = inject(Injector);
-
-  private readonly FORM_ERRORS_CODES = ['auth/user-not-found'];
+  
+  private readonly errorConverter = new ConversionMap([
+    ['auth/user-not-found', new FirebaseErrorConversionInstruction('email')],
+  ]);
 
   readonly formValue = signal<PasswordRecoveryFormValue | null>(null);
   readonly formErrors = signal<FormGroupErrorObject | null>(null);
@@ -74,32 +78,15 @@ export class PasswordRecoveryComponent {
   }
 
   private handleError(error: unknown): Observable<never> {
-    if (error instanceof FirebaseError && this.isFormError(error)) {
-      this.formErrors.set(this.convertAuthErrorIntoFormError(error));
+    if (
+      error instanceof FirebaseError &&
+      this.errorConverter.hasInstruction(error.code)
+    ) {
+      this.formErrors.set(this.errorConverter.convert(error, error.code));
 
       return EMPTY;
     } else {
       return throwError(() => error);
-    }
-  }
-
-  private isFormError(error: FirebaseError): boolean {
-    return this.FORM_ERRORS_CODES.includes(error.code);
-  }
-
-  private convertAuthErrorIntoFormError(
-    error: FirebaseError
-  ): FormGroupErrorObject {
-    const { code } = error;
-
-    if (code === 'auth/user-not-found') {
-      return {
-        email: {
-          userNotFound: true,
-        },
-      };
-    } else {
-      throw new Error('Cannot convert this error into a form error.');
     }
   }
 }

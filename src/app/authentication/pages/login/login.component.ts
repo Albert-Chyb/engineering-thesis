@@ -13,6 +13,8 @@ import { LoginFormComponent, LoginFormValue } from '@authentication/components';
 import { AuthService } from '@authentication/services';
 import { EMPTY, Observable, catchError, throwError } from 'rxjs';
 import { FormGroupErrorObject } from 'src/app/common/BaseForm';
+import { ConversionMap } from 'src/app/common/ConversionMap';
+import { FirebaseErrorConversionInstruction } from 'src/app/common/FirebaseErrorToFormErrorConversion';
 import {
   INITIAL_MODEL,
   toSignalWithErrors,
@@ -29,10 +31,10 @@ export class LoginComponent {
   private readonly injector = inject(Injector);
   private readonly router = inject(Router);
 
-  private readonly FORM_ERROR_CODES = [
-    'auth/user-not-found',
-    'auth/wrong-password',
-  ];
+  private readonly errorConverter = new ConversionMap([
+    ['auth/user-not-found', new FirebaseErrorConversionInstruction('email')],
+    ['auth/wrong-password', new FirebaseErrorConversionInstruction('password')],
+  ]);
 
   /** Where this page should redirect the user after he successfully performed the main action on this page. */
   private readonly AFTER_SUCCESSFUL_MAIN_ACTION = '/';
@@ -72,45 +74,15 @@ export class LoginComponent {
   }
 
   private handleError(error: unknown): Observable<never> {
-    if (error instanceof FirebaseError && this.isFormError(error)) {
-      this.formErrors.set(this.convertAuthErrorIntoFormError(error));
+    if (
+      error instanceof FirebaseError &&
+      this.errorConverter.hasInstruction(error.code)
+    ) {
+      this.formErrors.set(this.errorConverter.convert(error, error.code));
 
       return EMPTY;
     } else {
       return throwError(() => error);
     }
-  }
-
-  private isFormError(error: FirebaseError) {
-    return this.FORM_ERROR_CODES.includes(error.code);
-  }
-
-  private convertAuthErrorIntoFormError(
-    error: FirebaseError
-  ): FormGroupErrorObject {
-    let formError: FormGroupErrorObject;
-
-    switch (error.code) {
-      case 'auth/user-not-found':
-        formError = {
-          email: {
-            userNotFound: true,
-          },
-        };
-        break;
-
-      case 'auth/wrong-password':
-        formError = {
-          password: {
-            wrongPassword: true,
-          },
-        };
-        break;
-
-      default:
-        throw new Error('Cannot convert this error into a form error.');
-    }
-
-    return formError;
   }
 }
