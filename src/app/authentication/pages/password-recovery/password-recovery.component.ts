@@ -44,9 +44,9 @@ export class PasswordRecoveryComponent extends AuthPage<
   private readonly auth: AuthService;
 
   readonly wasMainActionSuccessful = computed(() => {
-    const { data, error } = this.viewModel();
+    const viewModel = this.viewModel;
 
-    return data() && !error();
+    return viewModel?.data() && !viewModel?.error();
   });
 
   constructor() {
@@ -58,12 +58,14 @@ export class PasswordRecoveryComponent extends AuthPage<
   }
 
   resendEmail() {
-    const formValue = this.formValue();
+    const formValue = this.formComponentRef.form.value;
 
-    if (!formValue || formValue.email === '') {
+    if (this.formComponentRef.form.invalid) {
       throw new Error('Cannot resend the email without a previous attempt');
     }
 
-    return this.auth.sendPasswordResetEmail(formValue.email);
+    return this.auth.sendPasswordResetEmail(
+      (formValue as PasswordRecoveryFormValue).email
+    );
   }
 }

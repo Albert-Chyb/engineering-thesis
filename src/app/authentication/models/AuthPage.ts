@@ -2,24 +2,25 @@ import {
   AfterViewInit,
   Directive,
   Injector,
-  Signal,
   ViewChild,
-  computed,
   effect,
   inject,
-  signal,
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FirebaseError } from '@angular/fire/app';
 import { AbstractControl } from '@angular/forms';
-import { EMPTY, Observable, catchError, of, switchMap, throwError } from 'rxjs';
+import {
+  EMPTY,
+  Observable,
+  Subject,
+  catchError,
+  share,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { BaseFrom } from 'src/app/common/BaseForm';
 import { ConversionMap } from 'src/app/common/ConversionMap';
 import { FirebaseErrorConversionInstruction } from 'src/app/common/FirebaseErrorToFormErrorConversion';
-import {
-  INITIAL_MODEL,
-  toSignalWithErrors,
-} from 'src/app/common/toSignalWithErrors';
+import { toSignalWithErrors } from 'src/app/common/toSignalWithErrors';
 
 @Directive()
 export class AuthPage<
@@ -30,40 +31,22 @@ export class AuthPage<
 {
   protected readonly injector = inject(Injector);
 
-  private readonly form = signal<BaseFrom<TForm, TFormValue> | undefined>(
-    undefined
+  private readonly form$ = new Subject<BaseFrom<TForm, TFormValue>>();
+
+  private readonly formValue$: Observable<TFormValue> = this.form$.pipe(
+    switchMap((formRef) => formRef.onFormValue.asObservable())
   );
 
-  private readonly formValue$: Observable<TFormValue | undefined> =
-    toObservable(this.form).pipe(
-      switchMap(
-        (formRef) => formRef?.onFormValue.asObservable() ?? of(undefined)
-      )
-    );
-
-  public readonly formValue: Signal<TFormValue | undefined> = toSignal(
-    this.formValue$
-  );
-
-  public readonly viewModel: Signal<{
-    data: Signal<TTaskResult | undefined | null>;
-    error: Signal<unknown>;
-  }> = computed(() => {
-    const formValue = this.formValue?.();
-
-    if (!formValue) {
-      return INITIAL_MODEL;
-    }
-
-    return toSignalWithErrors(
+  readonly model$: Observable<TTaskResult> = this.formValue$.pipe(
+    switchMap((formValue) =>
       this.taskBuilder
         .build(formValue)
-        .pipe(catchError((error) => this.handleError(error))),
-      {
-        injector: this.injector,
-      }
-    );
-  });
+        .pipe(catchError((error) => this.handleError(error)))
+    ),
+    share()
+  );
+
+  readonly viewModel = toSignalWithErrors(this.model$);
 
   private readonly errorsConverter = new ConversionMap([
     ['auth/user-not-found', new FirebaseErrorConversionInstruction('email')],
@@ -75,11 +58,11 @@ export class AuthPage<
   ]);
 
   @ViewChild(BaseFrom)
-  private readonly formComponentRef!: BaseFrom<TForm, TFormValue>;
+  protected readonly formComponentRef!: BaseFrom<TForm, TFormValue>;
 
   constructor(private readonly taskBuilder: AuthTask<TFormValue, TTaskResult>) {
     effect(() => {
-      const { data, error } = this.viewModel();
+      const { data, error } = this.viewModel;
 
       if (data() && !error()) {
         this.taskBuilder.onSuccessfulTaskCompletion?.();
@@ -94,7 +77,7 @@ export class AuthPage<
       );
     }
 
-    this.form.set(this.formComponentRef);
+    this.form$.next(this.formComponentRef);
   }
 
   private handleError(error: unknown): Observable<never> {
