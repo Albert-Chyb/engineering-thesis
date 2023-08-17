@@ -1,4 +1,4 @@
-import { Signal, computed, signal } from '@angular/core';
+import { Signal, computed } from '@angular/core';
 import { ToSignalOptions, toSignal } from '@angular/core/rxjs-interop';
 import { Observable, catchError, map, of } from 'rxjs';
 
@@ -6,30 +6,25 @@ export function toSignalWithErrors<T>(
   observable$: Observable<T>,
   options?: ToSignalOptions<undefined> & { requireSync?: false }
 ): {
-  data: Signal<T | undefined | null>;
-  error: Signal<any>;
+  data: Signal<T | undefined>;
+  error: Signal<unknown>;
 } {
   const source = toSignal(
     observable$.pipe(
-      map((data) => ({ data, error: null })),
-      catchError((error) => of({ data: null, error }))
+      map((data) => ({ data, error: undefined })),
+      catchError((error) => of({ data: undefined, error }))
     ),
-    options
+    {
+      ...options,
+      initialValue: { data: undefined, error: undefined },
+    }
   );
 
-  const data = computed(() => source()?.data);
-  const error = computed(() => source()?.error);
-    
+  const data = computed(() => source().data);
+  const error = computed(() => source().error);
+
   return {
     data,
     error,
   };
 }
-
-/**
- * A helper object for the initial value of a signal.
- */
-export const INITIAL_MODEL = {
-  data: signal(null) as Signal<null>,
-  error: signal(null) as Signal<null>,
-};
