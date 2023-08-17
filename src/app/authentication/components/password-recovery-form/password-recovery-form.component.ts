@@ -13,15 +13,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
 import { BaseFrom } from 'src/app/common/BaseForm';
 
-interface Form {
+export type PasswordRecoveryForm = {
   email: FormControl<string | null>;
-}
+};
 
 /** Type of a value of a VALID password recovery form . */
 export type PasswordRecoveryFormValue = {
-  [Key in keyof Required<FormGroup<Form>['value']>]: NonNullable<
-    FormGroup<Form>['value'][Key]
-  >;
+  [Key in keyof Required<
+    FormGroup<PasswordRecoveryForm>['value']
+  >]: NonNullable<FormGroup<PasswordRecoveryForm>['value'][Key]>;
 };
 
 @Component({
@@ -38,13 +38,19 @@ export type PasswordRecoveryFormValue = {
   ],
   templateUrl: './password-recovery-form.component.html',
   styleUrls: ['./password-recovery-form.component.scss'],
+  providers: [
+    {
+      provide: BaseFrom,
+      useExisting: PasswordRecoveryFormComponent,
+    },
+  ],
 })
 export class PasswordRecoveryFormComponent extends BaseFrom<
-  Form,
+  PasswordRecoveryForm,
   PasswordRecoveryFormValue
 > {
   constructor() {
-    const form = new FormGroup<Form>({
+    const form = new FormGroup<PasswordRecoveryForm>({
       email: new FormControl(null, [Validators.required, Validators.email]),
     });
 

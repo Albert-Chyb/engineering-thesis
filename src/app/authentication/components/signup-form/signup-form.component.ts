@@ -13,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { BaseFrom } from 'src/app/common/BaseForm';
 
-type Form = {
+export type SignUpForm = {
   displayName: FormControl<string | null>;
   email: FormControl<string | null>;
   password: FormControl<string | null>;
@@ -21,8 +21,8 @@ type Form = {
 
 /** Type of a value of a VALID signup form. */
 export type SignUpFormValue = {
-  [Key in keyof Required<FormGroup<Form>['value']>]: NonNullable<
-    Required<FormGroup<Form>['value']>[Key]
+  [Key in keyof Required<FormGroup<SignUpForm>['value']>]: NonNullable<
+    Required<FormGroup<SignUpForm>['value']>[Key]
   >;
 };
 
@@ -40,10 +40,16 @@ export type SignUpFormValue = {
   ],
   templateUrl: './signup-form.component.html',
   styleUrls: ['./signup-form.component.scss'],
+  providers: [
+    {
+      provide: BaseFrom,
+      useExisting: SignupFormComponent,
+    },
+  ],
 })
-export class SignupFormComponent extends BaseFrom<Form, SignUpFormValue> {
+export class SignupFormComponent extends BaseFrom<SignUpForm, SignUpFormValue> {
   constructor() {
-    const form = new FormGroup<Form>({
+    const form = new FormGroup<SignUpForm>({
       displayName: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', Validators.required),
