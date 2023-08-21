@@ -9,20 +9,8 @@ import {
   PasswordRecoveryFormComponent,
   PasswordRecoveryFormValue,
 } from '../../components/password-recovery-form/password-recovery-form.component';
-import { AuthPage, AuthTask } from '../../models/AuthPage';
+import { AuthPage } from '../../models/AuthPage';
 import { AuthService } from '../../services/auth.service';
-
-class PasswordRecoveryTaskBuilder
-  implements AuthTask<PasswordRecoveryFormValue, boolean>
-{
-  constructor(private readonly auth: AuthService) {}
-
-  build(formValue: PasswordRecoveryFormValue): Observable<boolean> {
-    const { email } = formValue;
-
-    return this.auth.sendPasswordResetEmail(email).pipe(map(() => true));
-  }
-}
 
 @Component({
   selector: 'app-password-recovery',
@@ -41,21 +29,13 @@ export class PasswordRecoveryComponent extends AuthPage<
   PasswordRecoveryFormValue,
   boolean
 > {
-  private readonly auth: AuthService;
+  private readonly auth = inject(AuthService);
 
   readonly wasMainActionSuccessful = computed(() => {
     const viewModel = this.viewModel;
 
     return viewModel?.data() && !viewModel?.error();
   });
-
-  constructor() {
-    const auth = inject(AuthService);
-
-    super(new PasswordRecoveryTaskBuilder(auth));
-
-    this.auth = auth;
-  }
 
   resendEmail() {
     const formValue = this.formComponentRef.form.value;
@@ -67,5 +47,13 @@ export class PasswordRecoveryComponent extends AuthPage<
     return this.auth.sendPasswordResetEmail(
       (formValue as PasswordRecoveryFormValue).email
     );
+  }
+
+  override buildTask(
+    formValue: PasswordRecoveryFormValue
+  ): Observable<boolean> {
+    const { email } = formValue;
+
+    return this.auth.sendPasswordResetEmail(email).pipe(map(() => true));
   }
 }

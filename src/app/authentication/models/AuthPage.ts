@@ -23,7 +23,7 @@ import { FirebaseErrorConversionInstruction } from 'src/app/common/FirebaseError
 import { toSignalWithErrors } from 'src/app/common/toSignalWithErrors';
 
 @Directive()
-export class AuthPage<
+export abstract class AuthPage<
   TForm extends Record<string, AbstractControl<any>>,
   TFormValue,
   TTaskResult
@@ -39,9 +39,9 @@ export class AuthPage<
 
   readonly model$: Observable<TTaskResult> = this.formValue$.pipe(
     switchMap((formValue) =>
-      this.taskBuilder
-        .build(formValue)
-        .pipe(catchError((error) => this.handleError(error)))
+      this.buildTask(formValue).pipe(
+        catchError((error) => this.handleError(error))
+      )
     ),
     share()
   );
@@ -60,12 +60,12 @@ export class AuthPage<
   @ViewChild(BaseFrom)
   protected readonly formComponentRef!: BaseFrom<TForm, TFormValue>;
 
-  constructor(private readonly taskBuilder: AuthTask<TFormValue, TTaskResult>) {
+  constructor() {
     effect(() => {
       const { data, error } = this.viewModel;
 
       if (data() && !error()) {
-        this.taskBuilder.onSuccessfulTaskCompletion?.();
+        this.onSuccessfulTaskCompletion?.();
       }
     });
   }
@@ -95,10 +95,14 @@ export class AuthPage<
       return throwError(() => error);
     }
   }
+
+  abstract buildTask(formValue: TFormValue): Observable<TTaskResult>;
 }
 
-export interface AuthTask<TFormValue, TTaskResult> {
-  build(formValue: TFormValue): Observable<TTaskResult>;
-
+export interface AuthPage<
+  TForm extends Record<string, AbstractControl<any>>,
+  TFormValue,
+  TTaskResult
+> {
   onSuccessfulTaskCompletion?(): void;
 }
