@@ -3,7 +3,7 @@ import { Component, computed, inject } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { Observable, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import {
   PasswordRecoveryForm,
   PasswordRecoveryFormComponent,
@@ -37,16 +37,14 @@ export class PasswordRecoveryComponent extends AuthPage<
     return viewModel?.data() && !viewModel?.error();
   });
 
-  resendEmail() {
-    const formValue = this.formComponentRef.form.value;
+  email: string = '';
 
-    if (this.formComponentRef.form.invalid) {
-      throw new Error('Cannot resend the email without a previous attempt');
+  resendEmail() {
+    if (!this.email) {
+      throw new Error('Cannot resend an email without a previous attempt.');
     }
 
-    return this.auth.sendPasswordResetEmail(
-      (formValue as PasswordRecoveryFormValue).email
-    );
+    return this.auth.sendPasswordResetEmail(this.email);
   }
 
   override buildTask(
@@ -54,6 +52,9 @@ export class PasswordRecoveryComponent extends AuthPage<
   ): Observable<boolean> {
     const { email } = formValue;
 
-    return this.auth.sendPasswordResetEmail(email).pipe(map(() => true));
+    return this.auth.sendPasswordResetEmail(email).pipe(
+      map(() => true),
+      tap(() => (this.email = email))
+    );
   }
 }
