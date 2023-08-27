@@ -41,7 +41,7 @@ export abstract class FormActionBasedPage<
   /**
    * Emits the data returned from the task.
    */
-  readonly model$: Observable<TTaskResult> = this.formValue$.pipe(
+  readonly data$: Observable<TTaskResult> = this.formValue$.pipe(
     switchMap((formValue) =>
       this.buildTask(formValue).pipe(
         catchError((error) => this.handleError(error))
@@ -53,7 +53,7 @@ export abstract class FormActionBasedPage<
   /**
    * Contains the data returned from the task or the error.
    */
-  readonly viewModel = toSignalWithErrors(this.model$);
+  readonly viewModel = toSignalWithErrors(this.data$);
 
   /**
    * Reference to the form component.
