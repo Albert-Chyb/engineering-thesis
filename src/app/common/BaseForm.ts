@@ -4,15 +4,14 @@ import { setControlsErrors } from './setControlsErrors';
 
 export type FormGroupErrorObject = { [key: string]: ValidationErrors };
 
-
 @Directive({})
 export class BaseFrom<
-  T extends { [K in keyof T]: AbstractControl<any, any> },
-  EmitterValue
+  TForm extends { [K in keyof TForm]: AbstractControl<any, any> },
+  TFormValue
 > {
-  constructor(public readonly form: FormGroup<T>) {}
+  constructor(public readonly form: FormGroup<TForm>) {}
 
-  @Output() onFormValue = new EventEmitter<EmitterValue>();
+  @Output() onFormValue = new EventEmitter<TFormValue>();
   @Input() set errors(errorsObj: FormGroupErrorObject | null | undefined) {
     if (!errorsObj) {
       return;
@@ -22,6 +21,6 @@ export class BaseFrom<
   }
 
   handleFormSubmit() {
-    this.onFormValue.emit(this.form.value as EmitterValue);
+    this.onFormValue.emit(this.form.value as TFormValue);
   }
 }
