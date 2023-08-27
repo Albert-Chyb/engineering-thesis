@@ -22,6 +22,7 @@ export abstract class AuthPage<
       'auth/email-already-in-use',
       new FirebaseErrorConversionInstruction('email'),
     ],
+    ['auth/user-disabled', new FirebaseErrorConversionInstruction('email')],
   ]);
 
   override handleError(error: unknown): Observable<never> {
