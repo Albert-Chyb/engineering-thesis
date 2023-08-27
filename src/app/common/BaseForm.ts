@@ -7,7 +7,7 @@ export type FormGroupErrorObject = { [key: string]: ValidationErrors };
 @Directive({})
 export class BaseFrom<
   TForm extends { [K in keyof TForm]: AbstractControl<any, any> },
-  TFormValue
+  TFormValue extends { [K in keyof TForm]: TForm[K]['value'] }
 > {
   constructor(public readonly form: FormGroup<TForm>) {}
 

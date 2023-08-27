@@ -18,7 +18,7 @@ import { toSignalWithErrors } from './toSignalWithErrors';
 @Directive()
 export abstract class FormActionBasedPage<
   TForm extends Record<string, AbstractControl<any>>,
-  TFormValue,
+  TFormValue extends { [K in keyof TForm]: TForm[K]["value"]; },
   TTaskResult
 > {
   /**

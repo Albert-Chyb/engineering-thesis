@@ -9,7 +9,7 @@ import { FormActionBasedPage } from 'src/app/common/FormBasedPage';
 @Directive()
 export abstract class AuthPage<
     TForm extends Record<string, AbstractControl<any>>,
-    TFormValue,
+    TFormValue extends { [K in keyof TForm]: TForm[K]["value"]; },
     TTaskResult
   >
   extends FormActionBasedPage<TForm, TFormValue, TTaskResult>
