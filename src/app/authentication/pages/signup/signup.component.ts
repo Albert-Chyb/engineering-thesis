@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import {
   SignUpForm,
@@ -38,7 +39,11 @@ export class SignupComponent extends AuthPage<
       );
   }
 
-  override onSuccessfulTaskCompletion(): void {
-    this.router.navigateByUrl('/');
+  constructor() {
+    super();
+
+    this.data$.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.router.navigateByUrl('/');
+    });
   }
 }

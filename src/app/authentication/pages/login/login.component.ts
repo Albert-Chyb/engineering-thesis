@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import {
   LoginForm,
@@ -26,13 +27,17 @@ export class LoginComponent extends AuthPage<
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
+  constructor() {
+    super();
+
+    this.data$.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.router.navigate(['/']);
+    });
+  }
+
   override buildTask(formValue: LoginFormValue): Observable<AppUser> {
     const { email, password } = formValue;
 
     return this.auth.signIn(email, password);
-  }
-
-  override onSuccessfulTaskCompletion(): void {
-    this.router.navigateByUrl('/');
   }
 }

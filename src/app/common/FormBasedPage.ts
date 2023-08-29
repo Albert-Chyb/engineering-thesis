@@ -1,4 +1,4 @@
-import { Directive, Injector, ViewChild, effect, inject } from '@angular/core';
+import { Directive, Injector, ViewChild, inject } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import {
   Observable,
@@ -9,7 +9,6 @@ import {
   throwError,
 } from 'rxjs';
 import { BaseFrom, FormGroupErrorObject } from './BaseForm';
-import { toSignalWithErrors } from './toSignalWithErrors';
 
 /**
  * Base class for pages that perform an action based on a form submission.
@@ -18,7 +17,7 @@ import { toSignalWithErrors } from './toSignalWithErrors';
 @Directive()
 export abstract class FormActionBasedPage<
   TForm extends Record<string, AbstractControl<any>>,
-  TFormValue extends { [K in keyof TForm]: TForm[K]["value"]; },
+  TFormValue extends { [K in keyof TForm]: TForm[K]['value'] },
   TTaskResult
 > {
   /**
@@ -51,25 +50,10 @@ export abstract class FormActionBasedPage<
   );
 
   /**
-   * Contains the data returned from the task or the error.
-   */
-  readonly viewModel = toSignalWithErrors(this.data$);
-
-  /**
    * Reference to the form component.
    */
   @ViewChild(BaseFrom)
   protected readonly formComponentRef!: BaseFrom<TForm, TFormValue>;
-
-  constructor() {
-    effect(() => {
-      const { data, error } = this.viewModel;
-
-      if (data() && !error()) {
-        this.onSuccessfulTaskCompletion?.();
-      }
-    });
-  }
 
   ngAfterViewInit(): void {
     if (!this.formComponentRef) {
@@ -104,12 +88,4 @@ export abstract class FormActionBasedPage<
   protected handleError(error: unknown): Observable<never> {
     return throwError(() => error);
   }
-}
-
-export interface FormActionBasedPage<
-  TForm extends Record<string, AbstractControl<any>>,
-  TFormValue,
-  TTaskResult
-> {
-  onSuccessfulTaskCompletion?(): void;
 }

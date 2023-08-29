@@ -1,9 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import {
+  Component,
+  WritableSignal,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { Observable, map, tap } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import {
   PasswordRecoveryForm,
   PasswordRecoveryFormComponent,
@@ -27,34 +34,34 @@ import { AuthService } from '../../services/auth.service';
 export class PasswordRecoveryComponent extends AuthPage<
   PasswordRecoveryForm,
   PasswordRecoveryFormValue,
-  boolean
+  string
 > {
   private readonly auth = inject(AuthService);
 
-  readonly wasMainActionSuccessful = computed(() => {
-    const viewModel = this.viewModel;
+  /** Contains the latest email sent by the user or an empty string if the user hasn`t submitted the form yet. */
+  readonly email: WritableSignal<string> = signal('');
 
-    return viewModel?.data() && !viewModel?.error();
-  });
+  readonly hasAttemptRecover = computed(() => !!this.email());
 
-  email: string = '';
+  constructor() {
+    super();
+
+    this.data$.pipe(takeUntilDestroyed()).subscribe((email) => {
+      this.email.set(email);
+    });
+  }
 
   resendEmail() {
     if (!this.email) {
       throw new Error('Cannot resend an email without a previous attempt.');
     }
 
-    return this.auth.sendPasswordResetEmail(this.email);
+    return this.auth.sendPasswordResetEmail(this.email());
   }
 
-  override buildTask(
-    formValue: PasswordRecoveryFormValue
-  ): Observable<boolean> {
+  override buildTask(formValue: PasswordRecoveryFormValue): Observable<string> {
     const { email } = formValue;
 
-    return this.auth.sendPasswordResetEmail(email).pipe(
-      map(() => true),
-      tap(() => (this.email = email))
-    );
+    return this.auth.sendPasswordResetEmail(email).pipe(map(() => email));
   }
 }
