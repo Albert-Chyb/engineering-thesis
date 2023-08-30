@@ -1,7 +1,7 @@
 import { FirebaseError } from '@angular/fire/app';
-import { FormGroupErrorObject } from './BaseForm';
 import { Instruction } from './ConversionMap';
-import { kebabToCamel } from './kebabToCamel';
+import { FormGroupErrorObject } from '../abstract/BaseForm';
+import { kebabToCamel } from '../helpers/kebabToCamel';
 
 export class FirebaseErrorConversionInstruction
   implements Instruction<FirebaseError, FormGroupErrorObject>

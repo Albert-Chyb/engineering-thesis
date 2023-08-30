@@ -2,14 +2,14 @@ import { AfterViewInit, Directive } from '@angular/core';
 import { FirebaseError } from '@angular/fire/app';
 import { AbstractControl } from '@angular/forms';
 import { EMPTY, Observable, throwError } from 'rxjs';
-import { ConversionMap } from 'src/app/common/ConversionMap';
-import { FirebaseErrorConversionInstruction } from 'src/app/common/FirebaseErrorToFormErrorConversion';
-import { FormActionBasedPage } from 'src/app/common/FormBasedPage';
+import { ConversionMap } from 'src/app/common/classes/ConversionMap';
+import { FirebaseErrorConversionInstruction } from '@common/classes/FirebaseErrorToFormErrorConversion';
+import { FormActionBasedPage } from 'src/app/common/abstract/FormBasedPage';
 
 @Directive()
 export abstract class AuthPage<
     TForm extends Record<string, AbstractControl<any>>,
-    TFormValue extends { [K in keyof TForm]: TForm[K]["value"]; },
+    TFormValue extends { [K in keyof TForm]: TForm[K]['value'] },
     TTaskResult
   >
   extends FormActionBasedPage<TForm, TFormValue, TTaskResult>

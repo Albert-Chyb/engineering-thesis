@@ -1,7 +1,8 @@
 import { AuthGuard, redirectLoggedInTo } from '@angular/fire/auth-guard';
 import { Routes } from '@angular/router';
-import { LoginComponent, SignupComponent } from '@authentication/pages';
+import { LoginComponent } from './authentication/pages/login/login.component';
 import { PasswordRecoveryComponent } from './authentication/pages/password-recovery/password-recovery.component';
+import { SignupComponent } from './authentication/pages/signup/signup.component';
 
 function redirectLoggedInToHome() {
   return redirectLoggedInTo('/');

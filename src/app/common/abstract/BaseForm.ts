@@ -1,6 +1,6 @@
 import { Directive, EventEmitter, Input, Output } from '@angular/core';
 import { AbstractControl, FormGroup, ValidationErrors } from '@angular/forms';
-import { setControlsErrors } from './setControlsErrors';
+import { setControlsErrors } from '../helpers/setControlsErrors';
 
 export type FormGroupErrorObject = { [key: string]: ValidationErrors };
 

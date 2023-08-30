@@ -2,14 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import {
   LoginForm,
   LoginFormComponent,
   LoginFormValue,
-} from '@authentication/components';
-import { AuthService } from '@authentication/services';
-import { Observable } from 'rxjs';
+} from '../../components/login-form/login-form.component';
 import { AuthPage } from '../../models/AuthPage';
+import { AuthService } from '../../services/auth.service';
 import { AppUser } from '../../types/AppUser';
 
 @Component({

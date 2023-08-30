@@ -11,7 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
-import { BaseFrom } from 'src/app/common/BaseForm';
+import { BaseFrom } from 'src/app/common/abstract/BaseForm';
 
 export type SignUpForm = {
   displayName: FormControl<string | null>;

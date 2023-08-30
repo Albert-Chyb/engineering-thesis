@@ -11,7 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
-import { BaseFrom } from 'src/app/common/BaseForm';
+import { BaseFrom } from 'src/app/common/abstract/BaseForm';
 
 export type LoginForm = {
   email: FormControl<string | null>;
@@ -42,9 +42,9 @@ export type LoginFormValue = {
   providers: [
     {
       provide: BaseFrom,
-      useExisting: LoginFormComponent
-    }
-  ]
+      useExisting: LoginFormComponent,
+    },
+  ],
 })
 export class LoginFormComponent extends BaseFrom<LoginForm, LoginFormValue> {
   constructor() {

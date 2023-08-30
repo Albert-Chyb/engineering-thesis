@@ -21,12 +21,8 @@
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"],
     "paths": {
-      "@authentication/services": ["src/app/authentication/services/share.ts"],
-      "@authentication/pages": ["src/app/authentication/pages/share.ts"],
-      "@authentication/types": ["src/app/authentication/types/share.ts"],
-      "@authentication/components": [
-        "src/app/authentication/components/share.ts"
-      ]
+      "@authentication/*": ["src/app/authentication/*"],
+      "@common/*": ["src/app/common/*"]
     }
   },
   "angularCompilerOptions": {
