@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from '@authentication/pages/login/login.component';
 import { PasswordRecoveryComponent } from '@authentication/pages/password-recovery/password-recovery.component';
 import { SignupComponent } from '@authentication/pages/signup/signup.component';
+import { requireSilentNavigationGuard } from '@common/route-guards/require-silent-navigation/require-silent-navigation.guard';
 import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
 
 function redirectLoggedInToHome() {
@@ -35,5 +36,6 @@ export const routes: Routes = [
   {
     path: 'error',
     component: UnhandledErrorComponent,
+    canActivate: [requireSilentNavigationGuard]
   }
 ];

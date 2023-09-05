@@ -7,7 +7,7 @@ export class AppErrorHandler implements ErrorHandler {
 
   handleError(error: any): void {
     this.zone.run(() => {
-      this.router.navigateByUrl('/error');
+      this.router.navigateByUrl('/error', { skipLocationChange: true });
     });
 
     console.error(error);
