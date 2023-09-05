@@ -1,0 +1,75 @@
+<mat-card>
+  <mat-card-header>
+    <img mat-card-avatar src="assets/icons/danger.svg" />
+    <h1 mat-card-title>Napotkano niespodziewany błąd</h1>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p>
+      Przepraszamy za wszelkie niedogodności, ale wygląda na to, że napotkaliśmy
+      niespodziewany błąd. Nie martw się, to nie jest Twoja wina! Nasz zespół
+      techniczny pracuje już nad rozwiązaniem problemu.
+    </p>
+
+    <section>
+      <h2>Co możesz zrobić ?</h2>
+
+      <div class="v-stack" style="--stack-spacing: 8px">
+        <section>
+          <mat-card appearance="outlined">
+            <mat-card-header>
+              <img mat-card-avatar src="assets/icons/refresh.svg" />
+              <h3 mat-card-title>Odśwież stronę</h3>
+            </mat-card-header>
+            <mat-card-content>
+              <p>
+                Spróbuj odświeżyć stronę, naciśnij przycisk <kbd>F5</kbd> lub
+                kliknij strzałkę w górę w pasku adresu przeglądarki.
+              </p>
+            </mat-card-content>
+          </mat-card>
+        </section>
+
+        <section>
+          <mat-card appearance="outlined">
+            <mat-card-header>
+              <img mat-card-avatar src="assets/icons/repeat.svg" />
+              <h3 mat-card-title>Spróbuj ponownie</h3>
+            </mat-card-header>
+            <mat-card-content>
+              <p>
+                Jeśli błąd nadal występuje, wróć na wcześniejszą stronę później.
+                W międzyczasie zajmujemy się rozwiązaniem problemu.
+              </p>
+            </mat-card-content>
+          </mat-card>
+        </section>
+
+        <section>
+          <mat-card appearance="outlined">
+            <mat-card-header>
+              <img mat-card-avatar src="assets/icons/message.svg" />
+              <h3 mat-card-title>Skontaktuj się z nami</h3>
+            </mat-card-header>
+            <mat-card-content>
+              <p>
+                Jeśli problem nie ustępuje przez dłuższy czas lub jesteś
+                pewien/pewna, że to ważna sprawa, skontaktuj się z naszym
+                działem obsługi klienta za pomocą
+                <a mat-button color="accent" href="mailto:support@testify.pl"
+                  >wiadomości email</a
+                >
+                lub
+                <a mat-button color="accent" href="tel:123456789"
+                  >numeru telefonu.</a
+                >
+              </p>
+            </mat-card-content>
+          </mat-card>
+        </section>
+      </div>
+    </section>
+
+    <p>Dziękujemy za zrozumienie!</p>
+  </mat-card-content>
+</mat-card>
