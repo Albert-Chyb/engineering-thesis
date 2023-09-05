@@ -1,0 +1,8 @@
+.v-stack {
+  --stack-spacing: 8px;
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  row-gap: var(--stack-spacing);
+}
