@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, importProvidersFrom } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
 import {
@@ -20,6 +20,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
+import { AppErrorHandler } from '@common/classes/AppErrorHandler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -86,5 +87,9 @@ export const appConfig: ApplicationConfig = {
       }),
     ]),
     provideAnimations(),
+    {
+      provide: ErrorHandler,
+      useClass: AppErrorHandler
+    }
   ],
 };
