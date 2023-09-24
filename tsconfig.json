@@ -23,7 +23,8 @@
     "paths": {
       "@authentication/*": ["src/app/authentication/*"],
       "@common/*": ["src/app/common/*"],
-      "@presenting-errors/*": ["src/app/presenting-errors/*"]
+      "@presenting-errors/*": ["src/app/presenting-errors/*"],
+      "@test-creator/*": ["src/app/test-creator/*"]
     }
   },
   "angularCompilerOptions": {
