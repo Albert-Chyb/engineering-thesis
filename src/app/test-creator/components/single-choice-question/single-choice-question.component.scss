@@ -1,0 +1,9 @@
+.question {
+  &__drag-handle {
+    visibility: hidden;
+  }
+
+  &__answer:hover &__drag-handle {
+    visibility: visible;
+  }
+}

@@ -10,7 +10,27 @@
 
   <mat-divider></mat-divider>
 
-  <mat-card-content> PYTANIA </mat-card-content>
+  <mat-card-content>
+    <form [formGroup]="testForm">
+      <mat-form-field class="width-100">
+        <input type="text" matInput formControlName="name" />
+        <mat-label>Nazwa testu</mat-label>
+      </mat-form-field>
+
+      <ng-container formArrayName="questions">
+        <app-single-choice-question
+          *ngFor="
+            let questionControl of testForm.controls.questions.controls;
+            let i = index
+          "
+          [formGroupName]="i"
+          (onAnswerReorder)="handleAnswersReorder($event)"
+          (onAddAnswer)="handleAddAnswer($event)"
+          (onDeleteAnswer)="handleDeleteAnswer($event)"
+        />
+      </ng-container>
+    </form>
+  </mat-card-content>
 
   <mat-divider></mat-divider>
 

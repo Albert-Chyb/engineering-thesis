@@ -2,6 +2,8 @@
 
 @use "./app/sass/theme";
 @use "./app/sass/utils/vertical-stack";
+@use "./app/sass/utils/width";
+@use "./app/sass/utils/mat-card-spacing-fix";
 
 html,
 body {
