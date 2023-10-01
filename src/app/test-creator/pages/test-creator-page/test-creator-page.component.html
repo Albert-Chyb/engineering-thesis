@@ -18,16 +18,31 @@
       </mat-form-field>
 
       <ng-container formArrayName="questions">
-        <app-single-choice-question
+        <ng-container
           *ngFor="
             let questionControl of testForm.controls.questions.controls;
             let i = index
           "
-          [formGroupName]="i"
-          (onAnswerReorder)="handleAnswersReorder($event)"
-          (onAddAnswer)="handleAddAnswer($event)"
-          (onDeleteAnswer)="handleDeleteAnswer($event)"
-        />
+          [ngSwitch]="questionControl.controls.type.value"
+        >
+          <app-choice-question
+            *ngSwitchCase="'single-choice'"
+            [formGroupName]="i"
+            (onAnswerReorder)="handleAnswersReorder($event)"
+            (onAddAnswer)="handleAddAnswer($event)"
+            (onDeleteAnswer)="handleDeleteAnswer($event)"
+            [multi]="false"
+          />
+
+          <app-choice-question
+            *ngSwitchCase="'multi-choice'"
+            [formGroupName]="i"
+            (onAnswerReorder)="handleAnswersReorder($event)"
+            (onAddAnswer)="handleAddAnswer($event)"
+            (onDeleteAnswer)="handleDeleteAnswer($event)"
+            [multi]="true"
+          />
+        </ng-container>
       </ng-container>
     </form>
   </mat-card-content>

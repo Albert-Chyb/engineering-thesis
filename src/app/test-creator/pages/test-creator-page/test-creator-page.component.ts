@@ -11,9 +11,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { SingleChoiceQuestionComponent } from '@test-creator/components/single-choice-question/single-choice-question.component';
+import { ChoiceQuestionComponent } from '@test-creator/components/choice-question/choice-question.component';
 import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
+import { QuestionType } from '@test-creator/types/question-types';
 
 @Component({
   standalone: true,
@@ -22,10 +23,10 @@ import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
     MatCardModule,
     MatButtonModule,
     MatDividerModule,
-    SingleChoiceQuestionComponent,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    ChoiceQuestionComponent,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -35,9 +36,8 @@ export class TestCreatorPageComponent {
     id: new FormControl('1'),
     name: new FormControl('Test bez nazwy'),
     questions: new FormArray([
-      this.createQuestion(),
-      this.createQuestion(),
-      this.createQuestion(),
+      this.createQuestion(QuestionType.SingleChoice),
+      this.createQuestion(QuestionType.MultiChoice),
     ]),
   });
 
@@ -77,9 +77,10 @@ export class TestCreatorPageComponent {
     answers.removeAt(answerIndex);
   }
 
-  private createQuestion() {
+  private createQuestion(type: string) {
     return new FormGroup({
       id: new FormControl('1'),
+      type: new FormControl(type),
       content: new FormControl('Co to jest HTML ?'),
       answers: new FormArray([
         new FormGroup({

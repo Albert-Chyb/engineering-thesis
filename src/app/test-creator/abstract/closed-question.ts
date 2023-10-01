@@ -1,38 +1,12 @@
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, inject } from '@angular/core';
-import {
-  ControlContainer,
-  FormArray,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { Directive, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import { ControlContainer, FormArray } from '@angular/forms';
 import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
 import { QuestionFormGroup } from '@test-creator/types/question-form-group';
 
-@Component({
-  selector: 'app-single-choice-question',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCardModule,
-    DragDropModule,
-    MatIconModule,
-    MatButtonModule,
-    ReactiveFormsModule,
-    DragDropModule,
-  ],
-  templateUrl: './single-choice-question.component.html',
-  styleUrls: ['./single-choice-question.component.scss'],
-})
-export class SingleChoiceQuestionComponent {
+@Directive()
+export class ClosedQuestion implements OnInit {
   private readonly controlContainer = inject(ControlContainer);
 
   question!: QuestionFormGroup;
