@@ -17,7 +17,7 @@
         <mat-label>Nazwa testu</mat-label>
       </mat-form-field>
 
-      <ng-container formArrayName="questions">
+      <div class="v-stack" formArrayName="questions">
         <ng-container
           *ngFor="
             let questionControl of testForm.controls.questions.controls;
@@ -48,7 +48,7 @@
             [formGroupName]="i"
           />
         </ng-container>
-      </ng-container>
+      </div>
     </form>
   </mat-card-content>
 
