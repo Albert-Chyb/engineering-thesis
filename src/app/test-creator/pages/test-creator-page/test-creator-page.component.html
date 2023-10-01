@@ -42,6 +42,11 @@
             (onDeleteAnswer)="handleDeleteAnswer($event)"
             [multi]="true"
           />
+
+          <app-open-question
+            *ngSwitchCase="'open'"
+            [formGroupName]="i"
+          />
         </ng-container>
       </ng-container>
     </form>

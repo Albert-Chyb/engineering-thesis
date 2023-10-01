@@ -12,6 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ChoiceQuestionComponent } from '@test-creator/components/choice-question/choice-question.component';
+import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
 import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
 import { QuestionType } from '@test-creator/types/question-types';
@@ -27,15 +28,17 @@ import { QuestionType } from '@test-creator/types/question-types';
     MatFormFieldModule,
     MatInputModule,
     ChoiceQuestionComponent,
+    OpenQuestionComponent
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
 })
 export class TestCreatorPageComponent {
   readonly testForm = new FormGroup({
-    id: new FormControl('1'),
+    id: new FormControl(crypto.randomUUID()),
     name: new FormControl('Test bez nazwy'),
     questions: new FormArray([
+      this.createQuestion(QuestionType.Open),
       this.createQuestion(QuestionType.SingleChoice),
       this.createQuestion(QuestionType.MultiChoice),
     ]),
@@ -78,26 +81,34 @@ export class TestCreatorPageComponent {
   }
 
   private createQuestion(type: string) {
+    if (type === QuestionType.Open) {
+      return new FormGroup({
+        id: new FormControl(crypto.randomUUID()),
+        type: new FormControl(type),
+        content: new FormControl('Jaka jest twoja opinia na temat tego testu ?'),
+      });
+    }
+
     return new FormGroup({
-      id: new FormControl('1'),
+      id: new FormControl(crypto.randomUUID()),
       type: new FormControl(type),
       content: new FormControl('Co to jest HTML ?'),
       answers: new FormArray([
         new FormGroup({
           content: new FormControl('Język programowania'),
-          id: new FormControl('1'),
+          id: new FormControl(crypto.randomUUID()),
         }),
         new FormGroup({
           content: new FormControl('Język znaczników'),
-          id: new FormControl('2'),
+          id: new FormControl(crypto.randomUUID()),
         }),
         new FormGroup({
           content: new FormControl('Język skryptowy'),
-          id: new FormControl('3'),
+          id: new FormControl(crypto.randomUUID()),
         }),
         new FormGroup({
           content: new FormControl('Język do tworzenia stron internetowych'),
-          id: new FormControl('4'),
+          id: new FormControl(crypto.randomUUID()),
         }),
       ]),
     });

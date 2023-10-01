@@ -1,15 +1,12 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { Directive, EventEmitter, OnInit, Output, inject } from '@angular/core';
-import { ControlContainer, FormArray } from '@angular/forms';
+import { Directive, EventEmitter, OnInit, Output } from '@angular/core';
+import { FormArray } from '@angular/forms';
 import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
-import { QuestionFormGroup } from '@test-creator/types/question-form-group';
+import { Question } from './question';
 
 @Directive()
-export class ClosedQuestion implements OnInit {
-  private readonly controlContainer = inject(ControlContainer);
-
-  question!: QuestionFormGroup;
+export abstract class ClosedQuestion extends Question implements OnInit {
   answers!: FormArray<AnswerFormGroup>;
 
   @Output() onAnswerReorder = new EventEmitter<AnswersReorderEvent>();
@@ -32,20 +29,8 @@ export class ClosedQuestion implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.question = this.controlContainer.control as QuestionFormGroup;
+  override ngOnInit() {
+    super.ngOnInit();
     this.answers = this.question.controls.answers;
-  }
-
-  get index(): number {
-    const name = this.controlContainer.name;
-
-    if (name !== null && Number.isInteger(Number.parseInt(String(name)))) {
-      return Number.parseInt(String(name));
-    } else {
-      throw new Error(
-        'FormGroup that contains a question must be a child of a FormArray'
-      );
-    }
   }
 }
