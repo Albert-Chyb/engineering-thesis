@@ -36,7 +36,7 @@ export const appConfig: ApplicationConfig = {
             auth: { port },
           } = environment.firebaseEmulatorsConfig;
 
-          connectAuthEmulator(firebaseAuth, `${host}:${port}`, {
+          connectAuthEmulator(firebaseAuth, `http://${host}:${port}`, {
             disableWarnings: true,
           });
         }

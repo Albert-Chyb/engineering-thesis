@@ -11,7 +11,7 @@ export const environment = {
   },
   useFirebaseEmulators: true,
   firebaseEmulatorsConfig: {
-    host: 'http://127.0.0.1',
+    host: '127.0.0.1',
     auth: {
       port: 9099,
     },
