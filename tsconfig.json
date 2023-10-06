@@ -24,7 +24,8 @@
       "@authentication/*": ["src/app/authentication/*"],
       "@common/*": ["src/app/common/*"],
       "@presenting-errors/*": ["src/app/presenting-errors/*"],
-      "@test-creator/*": ["src/app/test-creator/*"]
+      "@test-creator/*": ["src/app/test-creator/*"],
+      "@reactive-forms-sync/*": ["src/app/reactive-forms-sync/*"]
     }
   },
   "angularCompilerOptions": {
