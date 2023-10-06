@@ -1,40 +1,26 @@
 import { Answer } from './answer';
-
-interface QuestionsContentsTypesMap {
-  'single-choice': {
-    question: string;
-    answer: string;
-  };
-  'multi-choice': {
-    question: string;
-    answer: string;
-  };
-  open: {
-    question: string;
-    answer: null;
-  };
-}
+import { QuestionsContentsTypesMap } from './questions-contents-types';
 
 export type QuestionsTypes = keyof QuestionsContentsTypesMap;
 
-interface QuestionBase<TContent extends keyof QuestionsContentsTypesMap> {
+interface QuestionBase<QuestionType extends keyof QuestionsContentsTypesMap> {
   id: string;
   type: QuestionsTypes;
-  content: QuestionsContentsTypesMap[TContent]['question'];
+  content: QuestionsContentsTypesMap[QuestionType]['question'];
 }
 
 export interface OpenQuestion extends QuestionBase<'open'> {}
 
 export interface ClosedQuestion<
-  TQuestionContent extends keyof QuestionsContentsTypesMap
-> extends QuestionBase<TQuestionContent> {
-  answers: Answer<QuestionsContentsTypesMap[TQuestionContent]['answer']>[];
+  QuestionType extends keyof QuestionsContentsTypesMap
+> extends QuestionBase<QuestionType> {
+  answers: Answer<QuestionType>[];
 }
 
 export type QuestionReadPayload<
-  TContent extends keyof QuestionsContentsTypesMap
-> = Omit<ClosedQuestion<TContent>, 'id'> | Omit<OpenQuestion, 'id'>;
+  QuestionType extends keyof QuestionsContentsTypesMap
+> = Omit<ClosedQuestion<QuestionType>, 'id'> | Omit<OpenQuestion, 'id'>;
 
 export type QuestionCreatePayload<
-  TContent extends keyof QuestionsContentsTypesMap
-> = Omit<ClosedQuestion<TContent>, 'id'> | Omit<OpenQuestion, 'id'>;
+  QuestionType extends keyof QuestionsContentsTypesMap
+> = Omit<ClosedQuestion<QuestionType>, 'id'> | Omit<OpenQuestion, 'id'>;
