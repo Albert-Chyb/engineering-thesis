@@ -15,7 +15,7 @@ import { ChoiceQuestionComponent } from '@test-creator/components/choice-questio
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
 import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
-import { QuestionType } from '@test-creator/types/question-types';
+import { QuestionsTypes } from '@test-creator/types/question';
 
 @Component({
   standalone: true,
@@ -28,7 +28,7 @@ import { QuestionType } from '@test-creator/types/question-types';
     MatFormFieldModule,
     MatInputModule,
     ChoiceQuestionComponent,
-    OpenQuestionComponent
+    OpenQuestionComponent,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -38,9 +38,9 @@ export class TestCreatorPageComponent {
     id: new FormControl(crypto.randomUUID()),
     name: new FormControl('Test bez nazwy'),
     questions: new FormArray([
-      this.createQuestion(QuestionType.Open),
-      this.createQuestion(QuestionType.SingleChoice),
-      this.createQuestion(QuestionType.MultiChoice),
+      this.createQuestion('open'),
+      this.createQuestion('single-choice'),
+      this.createQuestion('multi-choice'),
     ]),
   });
 
@@ -80,12 +80,14 @@ export class TestCreatorPageComponent {
     answers.removeAt(answerIndex);
   }
 
-  private createQuestion(type: string) {
-    if (type === QuestionType.Open) {
+  private createQuestion(type: QuestionsTypes) {
+    if (type === 'open') {
       return new FormGroup({
         id: new FormControl(crypto.randomUUID()),
         type: new FormControl(type),
-        content: new FormControl('Jaka jest twoja opinia na temat tego testu ?'),
+        content: new FormControl(
+          'Jaka jest twoja opinia na temat tego testu ?'
+        ),
       });
     }
 
