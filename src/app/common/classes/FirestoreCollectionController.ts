@@ -2,6 +2,7 @@ import {
   CollectionReference,
   DocumentData,
   DocumentReference,
+  DocumentSnapshot,
   QueryConstraint,
   UpdateData,
   WithFieldValue,
@@ -14,7 +15,7 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import { Observable, from, map, switchMap } from 'rxjs';
+import { Observable, from, map, switchMap, take } from 'rxjs';
 
 export class FirestoreCollectionController<
   TData extends DocumentData,
@@ -33,14 +34,23 @@ export class FirestoreCollectionController<
         const docRef = id ? doc(collectionRef, id) : doc(collectionRef);
 
         return from(setDoc(docRef, data as any)).pipe(map(() => docRef));
-      })
+      }),
+      take(1)
     );
   }
 
   read(id: string): Observable<TData | undefined> {
     return this.getDocRef(id).pipe(
       switchMap((docRef) => from(getDoc(docRef))),
-      map((doc) => doc.data())
+      map((doc) => doc.data()),
+      take(1)
+    );
+  }
+
+  readSnapshot(id: string): Observable<DocumentSnapshot<TData>> {
+    return this.getDocRef(id).pipe(
+      switchMap((docRef) => from(getDoc(docRef))),
+      take(1)
     );
   }
 
@@ -50,13 +60,15 @@ export class FirestoreCollectionController<
 
   update(id: string, updatedData: UpdateData<TData>): Observable<void> {
     return this.getDocRef(id).pipe(
-      switchMap((docRef) => from(updateDoc(docRef, updatedData)))
+      switchMap((docRef) => from(updateDoc(docRef, updatedData))),
+      take(1)
     );
   }
 
   delete(id: string): Observable<void> {
     return this.getDocRef(id).pipe(
-      switchMap((docRef) => from(deleteDoc(docRef)))
+      switchMap((docRef) => from(deleteDoc(docRef))),
+      take(1)
     );
   }
 
