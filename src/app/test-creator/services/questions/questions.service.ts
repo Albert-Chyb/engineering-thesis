@@ -73,7 +73,7 @@ class Converter
 @Injectable({
   providedIn: 'root',
 })
-export class QuestionsServiceService {
+export class QuestionsService {
   private readonly auth = inject(AuthService);
   private readonly firestore = inject(Firestore);
 
