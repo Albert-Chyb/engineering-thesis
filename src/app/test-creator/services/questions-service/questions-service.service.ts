@@ -84,7 +84,7 @@ export class QuestionsServiceService {
     QuestionCreatePayload<any>
   > {
     const collectionRef$ = this.auth.uid$.pipe(
-      map((uid) => `users/${uid}/tests/${testId}/`),
+      map((uid) => `users/${uid}/tests/${testId}/questions/`),
       map((path) =>
         collection(this.firestore, path).withConverter(new Converter())
       )
