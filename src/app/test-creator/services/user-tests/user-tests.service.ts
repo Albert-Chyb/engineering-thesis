@@ -68,6 +68,6 @@ export class UserTestsService extends FirestoreCollectionController<
       })
     );
 
-    super(collectionRef$);
+    super(firestore, collectionRef$);
   }
 }

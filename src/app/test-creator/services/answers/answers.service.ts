@@ -61,6 +61,6 @@ export class AnswersService {
         ).withConverter(new DataConverter())
       )
     );
-    return new FirestoreCollectionController(collectionRef$);
+    return new FirestoreCollectionController(this.firestore, collectionRef$);
   }
 }

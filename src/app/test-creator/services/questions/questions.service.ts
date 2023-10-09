@@ -90,6 +90,6 @@ export class QuestionsService {
       )
     );
 
-    return new FirestoreCollectionController(collectionRef$);
+    return new FirestoreCollectionController(this.firestore, collectionRef$);
   }
 }

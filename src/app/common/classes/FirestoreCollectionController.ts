@@ -3,9 +3,11 @@ import {
   DocumentData,
   DocumentReference,
   DocumentSnapshot,
+  Firestore,
   QueryConstraint,
   UpdateData,
   WithFieldValue,
+  collection,
   deleteDoc,
   doc,
   docData,
@@ -22,6 +24,7 @@ export class FirestoreCollectionController<
   TCreatePayload extends DocumentData
 > {
   constructor(
+    private readonly firestore: Firestore,
     private readonly collectionRef$: Observable<CollectionReference<TData>>
   ) {}
 
@@ -81,6 +84,13 @@ export class FirestoreCollectionController<
       }),
       map((querySnapshot) => querySnapshot.docs.map((doc) => doc.data()))
     );
+  }
+
+  generateId(): string {
+    const fakeCollection = collection(this.firestore, 'fake');
+    const fakeDoc = doc(fakeCollection);
+
+    return fakeDoc.id;
   }
 
   private getDocRef(id: string): Observable<DocumentReference<TData>> {

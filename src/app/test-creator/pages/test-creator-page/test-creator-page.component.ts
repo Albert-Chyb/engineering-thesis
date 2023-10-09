@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormArray,
   FormControl,
@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ChoiceQuestionComponent } from '@test-creator/components/choice-question/choice-question.component';
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
+import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
 import { QuestionsTypes } from '@test-creator/types/question';
@@ -43,6 +44,12 @@ export class TestCreatorPageComponent {
       this.createQuestion('multi-choice'),
     ]),
   });
+
+  constructor() {
+    const tests = inject(UserTestsService);
+
+    console.log(tests.generateId())
+  }
 
   handleAnswersReorder($event: AnswersReorderEvent) {
     const { previousIndex, currentIndex, questionIndex } = $event;
