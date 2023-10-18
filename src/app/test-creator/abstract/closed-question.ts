@@ -3,10 +3,14 @@ import { Directive, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormArray } from '@angular/forms';
 import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
+import { QuestionsTypes } from '@test-creator/types/question';
 import { Question } from './question';
 
 @Directive()
-export abstract class ClosedQuestion extends Question implements OnInit {
+export abstract class ClosedQuestion
+  extends Question<Exclude<QuestionsTypes, 'open'>>
+  implements OnInit
+{
   answers!: FormArray<AnswerFormGroup>;
 
   @Output() onAnswerReorder = new EventEmitter<AnswersReorderEvent>();

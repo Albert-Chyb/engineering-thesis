@@ -1,15 +1,19 @@
 import { Directive, OnInit, inject } from '@angular/core';
 import { ControlContainer } from '@angular/forms';
+import { QuestionsTypes } from '@test-creator/types/question';
 import { QuestionFormGroup } from '@test-creator/types/question-form-group';
 
 @Directive()
-export abstract class Question implements OnInit {
+export abstract class Question<TQuestionType extends QuestionsTypes>
+  implements OnInit
+{
   protected readonly controlContainer = inject(ControlContainer);
 
-  question!: QuestionFormGroup;
+  question!: QuestionFormGroup<TQuestionType>;
 
   ngOnInit(): void {
-    this.question = this.controlContainer.control as QuestionFormGroup;
+    this.question = this.controlContainer
+      .control as QuestionFormGroup<TQuestionType>;
   }
 
   get index(): number {
