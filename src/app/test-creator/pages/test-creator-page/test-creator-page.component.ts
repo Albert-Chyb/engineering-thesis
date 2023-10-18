@@ -36,7 +36,6 @@ import { QuestionsTypes } from '@test-creator/types/question';
 })
 export class TestCreatorPageComponent {
   readonly testForm = new FormGroup({
-    id: new FormControl(crypto.randomUUID()),
     name: new FormControl('Test bez nazwy'),
     questions: new FormArray([
       this.createQuestion('open'),
@@ -89,7 +88,6 @@ export class TestCreatorPageComponent {
   private createQuestion(type: QuestionsTypes) {
     if (type === 'open') {
       return new FormGroup({
-        id: new FormControl(crypto.randomUUID()),
         type: new FormControl(type),
         content: new FormControl(
           'Jaka jest twoja opinia na temat tego testu ?'
@@ -98,25 +96,20 @@ export class TestCreatorPageComponent {
     }
 
     return new FormGroup({
-      id: new FormControl(crypto.randomUUID()),
       type: new FormControl(type),
       content: new FormControl('Co to jest HTML ?'),
       answers: new FormArray([
         new FormGroup({
           content: new FormControl('Język programowania'),
-          id: new FormControl(crypto.randomUUID()),
         }),
         new FormGroup({
           content: new FormControl('Język znaczników'),
-          id: new FormControl(crypto.randomUUID()),
         }),
         new FormGroup({
           content: new FormControl('Język skryptowy'),
-          id: new FormControl(crypto.randomUUID()),
         }),
         new FormGroup({
           content: new FormControl('Język do tworzenia stron internetowych'),
-          id: new FormControl(crypto.randomUUID()),
         }),
       ]),
     });
