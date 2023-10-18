@@ -48,7 +48,7 @@ export class TestCreatorPageComponent {
   constructor() {
     const tests = inject(UserTestsService);
 
-    console.log(tests.generateId())
+    console.log(tests.generateId());
   }
 
   handleAnswersReorder($event: AnswersReorderEvent) {
@@ -72,7 +72,6 @@ export class TestCreatorPageComponent {
     answers.push(
       new FormGroup({
         content: new FormControl(''),
-        id: new FormControl(''),
       })
     );
   }
