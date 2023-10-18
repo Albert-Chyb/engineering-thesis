@@ -5,6 +5,7 @@ import {
   DocumentSnapshot,
   Firestore,
   QueryConstraint,
+  Transaction,
   UpdateData,
   WithFieldValue,
   collection,
@@ -14,6 +15,7 @@ import {
   getDoc,
   getDocs,
   query,
+  runTransaction,
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
@@ -91,6 +93,12 @@ export class FirestoreCollectionController<
     const fakeDoc = doc(fakeCollection);
 
     return fakeDoc.id;
+  }
+
+  transaction<TTransactionReturnData>(
+    transactionFn: (transaction: Transaction) => Promise<TTransactionReturnData>
+  ): Observable<TTransactionReturnData> {
+    return from(runTransaction(this.firestore, transactionFn)).pipe(take(1));
   }
 
   private getDocRef(id: string): Observable<DocumentReference<TData>> {
