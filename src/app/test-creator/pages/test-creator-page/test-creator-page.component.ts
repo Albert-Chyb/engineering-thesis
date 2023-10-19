@@ -11,7 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ChoiceQuestionComponent } from '@test-creator/components/choice-question/choice-question.component';
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
 import { AnswersService } from '@test-creator/services/answers/answers.service';
@@ -19,8 +19,21 @@ import { QuestionsService } from '@test-creator/services/questions/questions.ser
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
+import { AssembledTest } from '@test-creator/types/assembled-test';
 import { QuestionsTypes } from '@test-creator/types/question';
-import { Observable, map, of, switchMap, throwError } from 'rxjs';
+import { QuestionFormGroup } from '@test-creator/types/question-form-group';
+import { Test } from '@test-creator/types/test';
+import { TestFormGroup } from '@test-creator/types/test-form-group';
+import {
+  Observable,
+  defaultIfEmpty,
+  forkJoin,
+  map,
+  of,
+  switchMap,
+  take,
+  throwError,
+} from 'rxjs';
 
 @Component({
   standalone: true,
@@ -42,9 +55,7 @@ export class TestCreatorPageComponent {
   private readonly userTests = inject(UserTestsService);
   private readonly testQuestions = inject(QuestionsService);
   private readonly questionsAnswers = inject(AnswersService);
-
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
 
   readonly testId$: Observable<string> = this.route.paramMap.pipe(
     map((params) => params.get('id')),
@@ -54,6 +65,68 @@ export class TestCreatorPageComponent {
       } else {
         return of(id);
       }
+    })
+  );
+
+  readonly assembledTest$: Observable<AssembledTest> = this.testId$.pipe(
+    switchMap((id) =>
+      this.userTests
+        .read(id)
+        .pipe(
+          switchMap((test) => (test ? of(test) : this.createInitialTest(id)))
+        )
+    ),
+    switchMap((partialTest) =>
+      this.testQuestions
+        .getController(partialTest.id)
+        .readAll()
+        .pipe(map((questions) => ({ ...partialTest, questions })))
+    ),
+    switchMap((partialTest) =>
+      forkJoin(
+        partialTest.questions.map((question) =>
+          this.questionsAnswers
+            .getController(partialTest.id, question.id)
+            .readAll()
+            .pipe(
+              take(1),
+              map((answers) => ({ ...question, answers }))
+            )
+        )
+      ).pipe(
+        defaultIfEmpty([]),
+        map((questions) => ({ ...partialTest, questions }))
+      )
+    )
+  );
+
+  readonly testForm$: Observable<TestFormGroup> = this.assembledTest$.pipe(
+    map((test) => {
+      const form = new FormGroup({
+        name: new FormControl(test.name),
+        questions: new FormArray<QuestionFormGroup<QuestionsTypes>>(
+          test.questions.map((question) => {
+            const answers = question.answers ?? [];
+
+            return new FormGroup({
+              content: new FormControl(question.content),
+              type: new FormControl(question.type, { nonNullable: true }),
+              answers: new FormArray<AnswerFormGroup>(
+                answers.map(
+                  (answer) =>
+                    new FormGroup({
+                      content: new FormControl(answer.content),
+                    })
+                )
+              ),
+            });
+          })
+        ),
+      });
+
+      form.patchValue(test);
+
+      return form;
     })
   );
 
@@ -140,5 +213,20 @@ export class TestCreatorPageComponent {
 
     formArray.removeAt(index1);
     formArray.insert(index2, temp);
+  }
+
+  private createInitialTest(id: string): Observable<Test> {
+    return this.userTests
+      .create(
+        {
+          name: 'Test bez nazwy',
+        },
+        id
+      )
+      .pipe(
+        switchMap(
+          (testRef) => this.userTests.read(testRef.id) as Observable<Test>
+        )
+      );
   }
 }
