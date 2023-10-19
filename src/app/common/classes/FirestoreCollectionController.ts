@@ -52,6 +52,13 @@ export class FirestoreCollectionController<
     );
   }
 
+  readAll(): Observable<TData[]> {
+    return this.collectionRef$.pipe(
+      switchMap((collectionRef) => from(getDocs(collectionRef))),
+      map((querySnapshot) => querySnapshot.docs.map((doc) => doc.data()))
+    );
+  }
+
   readSnapshot(id: string): Observable<DocumentSnapshot<TData>> {
     return this.getDocRef(id).pipe(
       switchMap((docRef) => from(getDoc(docRef))),
