@@ -10,6 +10,8 @@ import { SignupComponent } from '@authentication/pages/signup/signup.component';
 import { requireSilentNavigationGuard } from '@common/route-guards/require-silent-navigation/require-silent-navigation.guard';
 import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
 import { TestCreatorPageComponent } from './test-creator/pages/test-creator-page/test-creator-page.component';
+import { ensureParamGuard } from '@common/route-guards/ensure-param/ensure-param.guard';
+import { DOC_ID_GENERATOR } from '@common/injection-tokens/doc-id-generator';
 
 function redirectLoggedInToHome() {
   return redirectLoggedInTo('/');
@@ -44,6 +46,14 @@ export const routes: Routes = [
   },
   {
     path: 'test-creator',
+    component: TestCreatorPageComponent,
+    canActivate: [AuthGuard, ensureParamGuard('id', DOC_ID_GENERATOR)],
+    data: {
+      authGuardPipe: redirectLoggedOutToLogin,
+    },
+  },
+  {
+    path: 'test-creator/:id',
     component: TestCreatorPageComponent,
     canActivate: [AuthGuard],
     data: {

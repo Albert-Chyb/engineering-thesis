@@ -2,7 +2,9 @@ import { ApplicationConfig, ErrorHandler, importProvidersFrom } from '@angular/c
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
 import {
+  Firestore,
   connectFirestoreEmulator,
+  doc,
   getFirestore,
   provideFirestore,
 } from '@angular/fire/firestore';
@@ -21,6 +23,8 @@ import { provideRouter } from '@angular/router';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { AppErrorHandler } from '@common/classes/AppErrorHandler';
+import { DOC_ID_GENERATOR } from '@common/injection-tokens/doc-id-generator';
+import { generateId } from '@common/helpers/generate-doc-id';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -90,6 +94,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: ErrorHandler,
       useClass: AppErrorHandler
+    },
+    {
+      provide: DOC_ID_GENERATOR,
+      deps: [Firestore],
+      useFactory: (firestore: Firestore) => () => generateId(firestore)
     }
   ],
 };

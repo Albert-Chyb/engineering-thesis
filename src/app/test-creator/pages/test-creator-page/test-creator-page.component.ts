@@ -11,12 +11,16 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ChoiceQuestionComponent } from '@test-creator/components/choice-question/choice-question.component';
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
+import { AnswersService } from '@test-creator/services/answers/answers.service';
+import { QuestionsService } from '@test-creator/services/questions/questions.service';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
 import { QuestionsTypes } from '@test-creator/types/question';
+import { Observable, map, of, switchMap, throwError } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -35,6 +39,24 @@ import { QuestionsTypes } from '@test-creator/types/question';
   styleUrls: ['./test-creator-page.component.scss'],
 })
 export class TestCreatorPageComponent {
+  private readonly userTests = inject(UserTestsService);
+  private readonly testQuestions = inject(QuestionsService);
+  private readonly questionsAnswers = inject(AnswersService);
+
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  readonly testId$: Observable<string> = this.route.paramMap.pipe(
+    map((params) => params.get('id')),
+    switchMap((id) => {
+      if (!id) {
+        return throwError(() => new Error('Test id is not provided.'));
+      } else {
+        return of(id);
+      }
+    })
+  );
+
   readonly testForm = new FormGroup({
     name: new FormControl('Test bez nazwy'),
     questions: new FormArray([
@@ -43,12 +65,6 @@ export class TestCreatorPageComponent {
       this.createQuestion('multi-choice'),
     ]),
   });
-
-  constructor() {
-    const tests = inject(UserTestsService);
-
-    console.log(tests.generateId());
-  }
 
   handleAnswersReorder($event: AnswersReorderEvent) {
     const { previousIndex, currentIndex, questionIndex } = $event;
