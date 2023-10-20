@@ -33,7 +33,10 @@ export class FormGroupChangeSource<
   }
 
   override get value(): TFormGroup {
-    return this.copyFormGroup(this.formGroup);
+    return this.extendFormGroup(
+      this.copyFormGroup(this.formGroup),
+      this.excludedKeys
+    );
   }
 
   override get forLocalController(): TFormGroup {
