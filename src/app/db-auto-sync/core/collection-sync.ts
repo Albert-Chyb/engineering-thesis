@@ -9,9 +9,9 @@ import {
   map,
   merge,
   of,
+  throwError,
 } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
-import { SyncError } from '../types/sync-error';
+import { mergeMap, share } from 'rxjs/operators';
 import { DocumentSync } from './document-sync';
 
 export class CollectionSync<TObj> {
@@ -37,6 +37,7 @@ export class CollectionSync<TObj> {
         task.pipe(
           catchError((error) => {
             this.errorHandler?.handleError(error);
+
             return of(undefined);
           })
         )
@@ -53,7 +54,30 @@ export class CollectionSync<TObj> {
     this.docSyncs$.next(docSync);
   }
 
-  delete(id: string): void {
+  set(docSync: DocumentSync<TObj>) {
+    this.push(docSync);
+
+    const task$ = this.serverController.set(docSync.value, docSync.id).pipe(
+      catchError((error) => {
+        const docSyncIndex = this.docSyncs.findIndex(
+          (docSync) => docSync.id === docSync.id
+        );
+        const removedDocSync = this.docSyncs.splice(docSyncIndex, 1)[0];
+        this.localController.removeAt(docSyncIndex);
+
+        removedDocSync.stopSync();
+
+        return throwError(() => error);
+      }),
+      share()
+    );
+
+    this.tasksQueue$.next(task$);
+
+    return task$;
+  }
+
+  delete(id: string): Observable<void> {
     // Get the doc sync reference
     const index = this.docSyncs.findIndex((docSync) => docSync.id === id);
     const docSync = this.docSyncs[index];
@@ -80,21 +104,20 @@ export class CollectionSync<TObj> {
         // Restore the doc sync
         this.docSyncs.splice(index, 0, docSync);
 
-        this.errorHandler?.handleError({
-          action: 'delete',
-          originalException: error,
-        } as SyncError);
-        return of(undefined);
-      })
+        return throwError(() => error);
+      }),
+      share()
     );
 
     this.tasksQueue$.next(task);
+
+    return task;
   }
 
   /**
    * Swaps the position of two documents inside the collection.
    */
-  swap(index1: number, index2: number): void {
+  swap(index1: number, index2: number): Observable<void> {
     const id1 = this.docSyncs[index1].id;
     const id2 = this.docSyncs[index2].id;
 
@@ -106,15 +129,14 @@ export class CollectionSync<TObj> {
         this.localController.swap(index2, index1);
         this.swapDocSyncs(index2, index1);
 
-        this.errorHandler?.handleError({
-          action: 'swap',
-          originalException: error,
-        } as SyncError);
-        return of(undefined);
-      })
+        return throwError(() => error);
+      }),
+      share()
     );
 
     this.tasksQueue$.next(task);
+
+    return task;
   }
 
   private swapDocSyncs(index1: number, index2: number): void {

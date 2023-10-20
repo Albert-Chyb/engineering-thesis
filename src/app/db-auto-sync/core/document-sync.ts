@@ -57,6 +57,10 @@ export class DocumentSync<TObj> {
     public readonly id: string
   ) {}
 
+  get value() {
+    return this.changeSource.value;
+  }
+
   get valueForLocalController() {
     return this.changeSource.forLocalController;
   }
