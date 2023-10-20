@@ -24,7 +24,7 @@ export class DocumentSync<TObj> {
   /** Emits whenever the value was saved on the server. */
   private readonly serverChanges$: Observable<TObj> = pauseableBuffer(
     this.changeSource.valueChanges,
-    this.startSync$,
+    this.startSync$.pipe(startWith(undefined)),
     this.stopSync$
   ).pipe(
     concatMap((value) =>
