@@ -1,23 +1,23 @@
-import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray } from '@angular/forms';
 import { LocalController } from '@db-auto-sync/abstract/local-controller';
 
 export class FormArrayLocalController<
-  TControl extends {
-    [K in keyof TControl]: AbstractControl<any, any>;
-  }
-> extends LocalController<FormGroup<TControl>> {
-  constructor(private readonly formArrayRef: FormArray<FormGroup<TControl>>) {
+  TObj extends AbstractControl<any, any>
+> extends LocalController<TObj> {
+  constructor(private readonly formArrayRef: FormArray<TObj>) {
     super();
   }
-  override push(obj: FormGroup<TControl>): void {
+  override push(obj: TObj): void {
     this.formArrayRef.push(obj);
   }
 
-  override findIndex(predicate: (obj: FormGroup<TControl>) => boolean): number {
-    return this.formArrayRef.controls.findIndex(predicate);
+  override findIndex(predicate: (obj: TObj) => boolean): number {
+    return this.formArrayRef.controls.findIndex((control) =>
+      predicate(control as TObj)
+    );
   }
 
-  override insert(obj: FormGroup<TControl>, index: number): void {
+  override insert(obj: TObj, index: number): void {
     this.formArrayRef.insert(index, obj);
   }
 
@@ -25,7 +25,7 @@ export class FormArrayLocalController<
     this.formArrayRef.removeAt(index);
   }
 
-  override at(index: number): FormGroup<TControl> {
-    return this.formArrayRef.at(index);
+  override at(index: number): TObj {
+    return this.formArrayRef.at(index) as TObj;
   }
 }
