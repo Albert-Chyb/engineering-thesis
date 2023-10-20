@@ -6,18 +6,14 @@ import {
   Subject,
   catchError,
   concatMap,
-  map,
-  merge,
   of,
   throwError,
 } from 'rxjs';
-import { mergeMap, share } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { DocumentSync } from './document-sync';
 
 export class CollectionSync<TObj> {
-  private readonly docSyncs$ = new Subject<DocumentSync<TObj>>();
   private readonly docSyncs: DocumentSync<TObj>[] = [];
-
   private readonly tasksQueue$: Subject<Observable<void>> = new Subject();
 
   constructor(
@@ -27,11 +23,6 @@ export class CollectionSync<TObj> {
   ) {}
 
   init(): Observable<void> {
-    const syncTasks = this.docSyncs$.pipe(
-      mergeMap((docSync) => docSync.startSync()),
-      map(() => undefined)
-    );
-
     const operationsTasks: Observable<void> = this.tasksQueue$.pipe(
       concatMap((task) =>
         task.pipe(
@@ -41,17 +32,15 @@ export class CollectionSync<TObj> {
             return of(undefined);
           })
         )
-      ),
-      map(() => undefined)
+      )
     );
 
-    return merge(syncTasks, operationsTasks);
+    return operationsTasks;
   }
 
   push(docSync: DocumentSync<TObj>) {
     this.docSyncs.push(docSync);
     this.localController.push(docSync.valueForLocalController);
-    this.docSyncs$.next(docSync);
   }
 
   set(docSync: DocumentSync<TObj>) {
@@ -69,15 +58,13 @@ export class CollectionSync<TObj> {
 
         return throwError(() => error);
       }),
-      share()
+      tap(() => docSync.startSync())
     );
 
     this.tasksQueue$.next(task$);
-
-    return task$;
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: string) {
     // Get the doc sync reference
     const index = this.docSyncs.findIndex((docSync) => docSync.id === id);
     const docSync = this.docSyncs[index];
@@ -104,20 +91,21 @@ export class CollectionSync<TObj> {
         // Restore the doc sync
         this.docSyncs.splice(index, 0, docSync);
 
+        // Resume syncing
+        docSync.startSync();
+
         return throwError(() => error);
-      }),
-      share()
+      })
     );
 
+    // Schedule the task
     this.tasksQueue$.next(task);
-
-    return task;
   }
 
   /**
    * Swaps the position of two documents inside the collection.
    */
-  swap(index1: number, index2: number): Observable<void> {
+  swap(index1: number, index2: number) {
     const id1 = this.docSyncs[index1].id;
     const id2 = this.docSyncs[index2].id;
 
@@ -130,17 +118,15 @@ export class CollectionSync<TObj> {
         this.swapDocSyncs(index2, index1);
 
         return throwError(() => error);
-      }),
-      share()
+      })
     );
 
     this.tasksQueue$.next(task);
-
-    return task;
   }
 
   private swapDocSyncs(index1: number, index2: number): void {
     const temp = this.docSyncs[index1];
+    
     this.docSyncs[index1] = this.docSyncs[index2];
     this.docSyncs[index2] = temp;
   }
