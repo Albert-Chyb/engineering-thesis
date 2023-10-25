@@ -1,57 +1,123 @@
-<mat-card>
-  <mat-card-header>
-    <h1 mat-card-title>Kreator testu</h1>
-    <p mat-card-subtitle>
-      Skonfiguruj swój test. Dodaj pytania oraz co najmniej po 2 odpowiedzi do
-      pytań zamkniętych. Każde pytanie zamknięte musi mieć przynajmniej 1
-      poprawną odpowiedź. Twój test zapisze się automatycznie po każdej zmianie.
-    </p>
-  </mat-card-header>
+<ng-container *ngIf="viewModel$ | async as viewModel">
+  <mat-card>
+    <mat-card-header>
+      <h1 mat-card-title>Kreator testu</h1>
+      <p mat-card-subtitle>
+        Skonfiguruj swój test. Dodaj pytania oraz co najmniej po 2 odpowiedzi do
+        pytań zamkniętych. Każde pytanie zamknięte musi mieć przynajmniej 1
+        poprawną odpowiedź. Twój test zapisze się automatycznie po każdej
+        zmianie.
+      </p>
+    </mat-card-header>
 
-  <mat-divider></mat-divider>
+    <mat-divider></mat-divider>
 
-  <mat-card-content>
-    <form *ngIf="testForm$ | async as testForm" [formGroup]="testForm">
-      <mat-form-field class="width-100">
-        <input type="text" matInput formControlName="name" />
-        <mat-label>Nazwa testu</mat-label>
-      </mat-form-field>
+    <mat-card-content>
+      <form
+        [appFormGroupSync]="testsController"
+        [docId]="viewModel.test.id"
+        [excludeFields]="['questions']"
+        [formGroup]="viewModel.form"
+      >
+        <mat-form-field class="width-100">
+          <input type="text" matInput formControlName="name" />
+          <mat-label>Nazwa testu</mat-label>
+        </mat-form-field>
 
-      <div class="v-stack" formArrayName="questions">
-        <ng-container
-          *ngFor="
-            let questionControl of testForm.controls.questions.controls;
-            let i = index
-          "
-          [ngSwitch]="questionControl.controls.type.value"
+        <app-form-array-sync-container
+          class="v-stack"
+          formArrayName="questions"
+          [serverController]="viewModel.questionsController"
+          #questionsCollection="appFormArraySyncContainer"
         >
-          <app-choice-question
-            *ngSwitchCase="'single-choice'"
-            [formGroupName]="i"
-            (onAnswerReorder)="handleAnswersReorder($event)"
-            (onAddAnswer)="handleAddAnswer($event)"
-            (onDeleteAnswer)="handleDeleteAnswer($event)"
-            [multi]="false"
-          />
+          <ng-container
+            *ngFor="
+              let questionControl of viewModel.form.controls.questions.controls;
+              let i = index
+            "
+            [ngSwitch]="questionControl.controls.type.value"
+          >
+            <app-choice-question
+              [appFormGroupSync]="viewModel.questionsController"
+              [docId]="questionControl.controls.id.value"
+              [excludeFields]="viewModel.questionExcludedKeys"
+              *ngSwitchCase="'single-choice'"
+              [formGroupName]="i"
+              (onAnswerReorder)="handleAnswersReorder($event)"
+              (onAddAnswer)="handleAddAnswer($event)"
+              (onDeleteAnswer)="handleDeleteAnswer($event)"
+              [multi]="false"
+            />
 
-          <app-choice-question
-            *ngSwitchCase="'multi-choice'"
-            [formGroupName]="i"
-            (onAnswerReorder)="handleAnswersReorder($event)"
-            (onAddAnswer)="handleAddAnswer($event)"
-            (onDeleteAnswer)="handleDeleteAnswer($event)"
-            [multi]="true"
-          />
+            <app-choice-question
+              [appFormGroupSync]="viewModel.questionsController"
+              [docId]="questionControl.controls.id.value"
+              [excludeFields]="viewModel.questionExcludedKeys"
+              *ngSwitchCase="'multi-choice'"
+              [formGroupName]="i"
+              (onAnswerReorder)="handleAnswersReorder($event)"
+              (onAddAnswer)="handleAddAnswer($event)"
+              (onDeleteAnswer)="handleDeleteAnswer($event)"
+              [multi]="true"
+            />
 
-          <app-open-question *ngSwitchCase="'open'" [formGroupName]="i" />
-        </ng-container>
-      </div>
-    </form>
-  </mat-card-content>
+            <app-open-question
+              [appFormGroupSync]="viewModel.questionsController"
+              [docId]="questionControl.controls.id.value"
+              [excludeFields]="viewModel.questionExcludedKeys"
+              *ngSwitchCase="'open'"
+              [formGroupName]="i"
+            />
+          </ng-container>
+        </app-form-array-sync-container>
+      </form>
+    </mat-card-content>
 
-  <mat-divider></mat-divider>
+    <mat-divider></mat-divider>
 
-  <mat-card-actions>
-    <button mat-raised-button color="accent">Dodaj pytanie</button>
-  </mat-card-actions>
-</mat-card>
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="accent"
+        [matMenuTriggerFor]="addQuestionMenu"
+      >
+        Dodaj pytanie
+      </button>
+
+      <mat-menu #addQuestionMenu="matMenu">
+        <button
+          mat-menu-item
+          (click)="
+            questionsCollection.set(
+              createQuestionSync('single-choice', viewModel.questionsController)
+            )
+          "
+        >
+          Pytanie jednokrotnego wyboru
+        </button>
+
+        <button
+          mat-menu-item
+          (click)="
+            questionsCollection.set(
+              createQuestionSync('multi-choice', viewModel.questionsController)
+            )
+          "
+        >
+          Pytanie wielokrotnego wyboru
+        </button>
+
+        <button
+          mat-menu-item
+          (click)="
+            questionsCollection.set(
+              createQuestionSync('open', viewModel.questionsController)
+            )
+          "
+        >
+          Pytanie otwarte
+        </button>
+      </mat-menu>
+    </mat-card-actions>
+  </mat-card>
+</ng-container>

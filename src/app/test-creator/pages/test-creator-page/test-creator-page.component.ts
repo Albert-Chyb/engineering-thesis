@@ -11,7 +11,15 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
+import { DOC_ID_GENERATOR } from '@common/injection-tokens/doc-id-generator';
+import { ServerController } from '@db-auto-sync/abstract/server-controller';
+import { FirestoreServerController } from '@db-auto-sync/classes/firestore-server-controller';
+import { DocumentSync } from '@db-auto-sync/core/document-sync';
+import { FormArraySyncContainerComponent } from '@db-auto-sync/reactive-forms-utils/components/form-array-sync-container/form-array-sync-container.component';
+import { FormGroupSyncDirective } from '@db-auto-sync/reactive-forms-utils/directives/form-group-sync/form-group-sync.directive';
+import { FormGroupChangeSource } from '@db-auto-sync/reactive-forms-utils/form-group-change-source';
 import { ChoiceQuestionComponent } from '@test-creator/components/choice-question/choice-question.component';
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
 import { AnswersService } from '@test-creator/services/answers/answers.service';
@@ -26,6 +34,7 @@ import { Test } from '@test-creator/types/test';
 import { TestFormGroup } from '@test-creator/types/test-form-group';
 import {
   Observable,
+  combineLatest,
   defaultIfEmpty,
   forkJoin,
   map,
@@ -47,6 +56,9 @@ import {
     MatInputModule,
     ChoiceQuestionComponent,
     OpenQuestionComponent,
+    FormGroupSyncDirective,
+    FormArraySyncContainerComponent,
+    MatMenuModule,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -56,6 +68,7 @@ export class TestCreatorPageComponent {
   private readonly testQuestions = inject(QuestionsService);
   private readonly questionsAnswers = inject(AnswersService);
   private readonly route = inject(ActivatedRoute);
+  private readonly generateId = inject(DOC_ID_GENERATOR);
 
   readonly testId$: Observable<string> = this.route.paramMap.pipe(
     map((params) => params.get('id')),
@@ -109,6 +122,7 @@ export class TestCreatorPageComponent {
             const answers = question.answers ?? [];
 
             return new FormGroup({
+              id: new FormControl(question.id, { nonNullable: true }),
               content: new FormControl(question.content),
               type: new FormControl(question.type, { nonNullable: true }),
               answers: new FormArray<AnswerFormGroup>(
@@ -130,64 +144,68 @@ export class TestCreatorPageComponent {
     })
   );
 
-  readonly testForm = new FormGroup({
-    name: new FormControl('Test bez nazwy'),
-    questions: new FormArray([
-      this.createQuestion('open'),
-      this.createQuestion('single-choice'),
-      this.createQuestion('multi-choice'),
-    ]),
-  });
+  readonly questionsController$ = this.testId$.pipe(
+    map(
+      (id) =>
+        new FirestoreServerController(this.testQuestions.getController(id))
+    )
+  );
 
-  handleAnswersReorder($event: AnswersReorderEvent) {
-    const { previousIndex, currentIndex, questionIndex } = $event;
-    const answers = this.testForm.get([
-      'questions',
-      questionIndex,
-      'answers',
-    ]) as FormArray<AnswerFormGroup>;
+  readonly viewModel$ = combineLatest([
+    this.assembledTest$,
+    this.testForm$,
+    this.questionsController$,
+  ]).pipe(
+    map(([test, form, questionsController]) => ({
+      test,
+      form,
+      questionsController,
+      questionExcludedKeys: ['answers', 'id'],
+    }))
+  );
 
-    this.swapControls(answers, previousIndex, currentIndex);
-  }
+  readonly testsController = new FirestoreServerController(this.userTests);
 
-  handleAddAnswer(index: number) {
-    const answers = this.testForm.get([
-      'questions',
-      index,
-      'answers',
-    ]) as FormArray<AnswerFormGroup>;
+  handleAnswersReorder($event: AnswersReorderEvent) {}
 
-    answers.push(
-      new FormGroup({
-        content: new FormControl(''),
-      })
+  handleAddAnswer(index: number) {}
+
+  handleDeleteAnswer([questionIndex, answerIndex]: [number, number]) {}
+
+  createQuestionSync<TQuestionType extends QuestionsTypes>(
+    type: TQuestionType,
+    serverController: ServerController<QuestionFormGroup<TQuestionType>>
+  ): DocumentSync<QuestionFormGroup<TQuestionType>> {
+    const id = this.generateId();
+    const formGroup = this.createQuestion(type, id);
+
+    return new DocumentSync(
+      new FormGroupChangeSource(formGroup, ['answers', 'id']),
+      serverController,
+      id
     );
   }
 
-  handleDeleteAnswer([questionIndex, answerIndex]: [number, number]) {
-    const answers = this.testForm.get([
-      'questions',
-      questionIndex,
-      'answers',
-    ]) as FormArray<AnswerFormGroup>;
-
-    answers.removeAt(answerIndex);
-  }
-
-  private createQuestion(type: QuestionsTypes) {
+  private createQuestion<TQuestionType extends QuestionsTypes>(
+    type: TQuestionType,
+    id: string
+  ): QuestionFormGroup<TQuestionType> {
     if (type === 'open') {
       return new FormGroup({
-        type: new FormControl(type),
+        id: new FormControl(id, { nonNullable: true }),
+        type: new FormControl<TQuestionType>(type, { nonNullable: true }),
         content: new FormControl(
           'Jaka jest twoja opinia na temat tego testu ?'
         ),
+        answers: new FormArray<any>([]),
       });
     }
 
     return new FormGroup({
-      type: new FormControl(type),
+      id: new FormControl(id, { nonNullable: true }),
+      type: new FormControl<TQuestionType>(type, { nonNullable: true }),
       content: new FormControl('Co to jest HTML ?'),
-      answers: new FormArray([
+      answers: new FormArray<AnswerFormGroup>([
         new FormGroup({
           content: new FormControl('Język programowania'),
         }),
