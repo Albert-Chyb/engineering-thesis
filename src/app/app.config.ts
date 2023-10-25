@@ -1,10 +1,13 @@
-import { ApplicationConfig, ErrorHandler, importProvidersFrom } from '@angular/core';
+import {
+  ApplicationConfig,
+  ErrorHandler,
+  importProvidersFrom,
+} from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
 import {
   Firestore,
   connectFirestoreEmulator,
-  doc,
   getFirestore,
   provideFirestore,
 } from '@angular/fire/firestore';
@@ -19,16 +22,25 @@ import {
   provideStorage,
 } from '@angular/fire/storage';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import {
+  RouteReuseStrategy,
+  provideRouter,
+  withRouterConfig,
+} from '@angular/router';
+import { AppErrorHandler } from '@common/classes/AppErrorHandler';
+import { AppRouteReuseStrategy } from '@common/classes/app-route-reuse-strategy';
+import { generateId } from '@common/helpers/generate-doc-id';
+import { DOC_ID_GENERATOR } from '@common/injection-tokens/doc-id-generator';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
-import { AppErrorHandler } from '@common/classes/AppErrorHandler';
-import { DOC_ID_GENERATOR } from '@common/injection-tokens/doc-id-generator';
-import { generateId } from '@common/helpers/generate-doc-id';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    {
+      provide: RouteReuseStrategy,
+      useClass: AppRouteReuseStrategy,
+    },
+    provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     importProvidersFrom([
       provideFirebaseApp(() => initializeApp(environment.firebase)),
       provideAuth(() => {
@@ -93,12 +105,12 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     {
       provide: ErrorHandler,
-      useClass: AppErrorHandler
+      useClass: AppErrorHandler,
     },
     {
       provide: DOC_ID_GENERATOR,
       deps: [Firestore],
-      useFactory: (firestore: Firestore) => () => generateId(firestore)
-    }
+      useFactory: (firestore: Firestore) => () => generateId(firestore),
+    },
   ],
 };
