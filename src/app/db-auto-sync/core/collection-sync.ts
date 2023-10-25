@@ -13,12 +13,12 @@ import { tap } from 'rxjs/operators';
 import { DocumentSync } from './document-sync';
 
 export class CollectionSync<TObj> {
-  private readonly docSyncs: DocumentSync<TObj>[] = [];
   private readonly tasksQueue$: Subject<Observable<void>> = new Subject();
 
   constructor(
     private readonly serverController: ServerController<TObj>,
     private readonly localController: LocalController<TObj>,
+    private readonly docSyncs: DocumentSync<TObj>[] = [],
     private readonly errorHandler?: ErrorHandler
   ) {}
 
@@ -58,7 +58,7 @@ export class CollectionSync<TObj> {
 
         return throwError(() => error);
       }),
-      tap(() => docSync.startSync())
+      tap(() => docSync.startSync()),
     );
 
     this.tasksQueue$.next(task$);
@@ -126,7 +126,7 @@ export class CollectionSync<TObj> {
 
   private swapDocSyncs(index1: number, index2: number): void {
     const temp = this.docSyncs[index1];
-    
+
     this.docSyncs[index1] = this.docSyncs[index2];
     this.docSyncs[index2] = temp;
   }
