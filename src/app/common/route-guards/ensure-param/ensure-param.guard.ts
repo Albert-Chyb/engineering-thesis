@@ -17,7 +17,5 @@ export const ensureParamGuard: (
 
   router.navigate([state.url, generatedParam]);
 
-  console.log(generatedParam);
-
   return false;
 };
