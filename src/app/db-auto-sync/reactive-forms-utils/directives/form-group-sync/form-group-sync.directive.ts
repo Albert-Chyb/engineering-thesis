@@ -10,6 +10,7 @@ import {
   Subject,
   combineLatest,
   map,
+  shareReplay,
   switchMap,
 } from 'rxjs';
 
@@ -48,7 +49,8 @@ export class FormGroupSyncDirective<
           serverController,
           docId
         )
-    )
+    ),
+    shareReplay(1)
   );
 
   private readonly sync$ = this.docSync$.pipe(
