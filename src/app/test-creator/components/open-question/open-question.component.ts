@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { OpenQuestion } from '@test-creator/abstract/open-question';
+import { QuestionActionsComponent } from '../question-actions/question-actions.component';
 
 @Component({
   selector: 'app-open-question',
@@ -15,6 +16,7 @@ import { OpenQuestion } from '@test-creator/abstract/open-question';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
+    QuestionActionsComponent,
   ],
   templateUrl: './open-question.component.html',
   styleUrls: ['./open-question.component.scss'],

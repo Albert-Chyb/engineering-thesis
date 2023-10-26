@@ -1,0 +1,31 @@
+<mat-card appearance="outlined" class="with-spacing-fix">
+  <mat-card-header class="header-actions">
+    <div class="header-actions__action">
+      <ng-content select="[drag-handle]" />
+    </div>
+
+    <mat-card-title-group>
+      <mat-card-title>
+        <ng-content select="[title]" />
+      </mat-card-title>
+
+      <mat-card-subtitle>
+        <ng-content select="[subtitle]" />
+      </mat-card-subtitle>
+    </mat-card-title-group>
+
+    <div class="header-actions__action">
+      <button mat-icon-button (click)="onQuestionDelete.emit()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <ng-content select="[content]" />
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <ng-content select="[actions]" />
+  </mat-card-actions>
+</mat-card>

@@ -1,13 +1,18 @@
-<mat-card appearance="outlined" [formGroup]="question" class="with-spacing-fix">
-  <mat-card-header>
-    <h2 mat-card-title>Pytanie {{ index + 1 }}</h2>
-    <p mat-card-subtitle>Pytanie otwarte</p>
-  </mat-card-header>
+<app-question-actions
+  (onQuestionDelete)="onQuestionDelete.emit()"
+  [formGroup]="question"
+>
+  <span role="heading" aria-level="2" title>Pytanie {{ index + 1 }}</span>
+  <p subtitle>Pytanie otwarte</p>
 
-  <mat-card-content>
+  <ng-container content>
     <mat-form-field class="width-100">
       <input type="text" matInput formControlName="content" />
       <mat-label>Treść pytania</mat-label>
     </mat-form-field>
-  </mat-card-content>
-</mat-card>
+  </ng-container>
+
+  <ng-container drag-handle>
+    <ng-content select="[drag-handle]" />
+  </ng-container>
+</app-question-actions>

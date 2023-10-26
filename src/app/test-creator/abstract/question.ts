@@ -1,4 +1,4 @@
-import { Directive, OnInit, inject } from '@angular/core';
+import { Directive, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { ControlContainer } from '@angular/forms';
 import { QuestionsTypes } from '@test-creator/types/question';
 import { QuestionFormGroup } from '@test-creator/types/question-form-group';
@@ -10,6 +10,8 @@ export abstract class Question<TQuestionType extends QuestionsTypes>
   protected readonly controlContainer = inject(ControlContainer);
 
   question!: QuestionFormGroup<TQuestionType>;
+
+  @Output() onQuestionDelete = new EventEmitter<void>();
 
   ngOnInit(): void {
     this.question = this.controlContainer

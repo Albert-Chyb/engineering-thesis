@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ClosedQuestion } from '@test-creator/abstract/closed-question';
+import { QuestionActionsComponent } from '../question-actions/question-actions.component';
 
 /** A component for a question that requires the user to pick an answer from the list of available answers. */
 @Component({
@@ -23,6 +24,7 @@ import { ClosedQuestion } from '@test-creator/abstract/closed-question';
     MatButtonModule,
     ReactiveFormsModule,
     DragDropModule,
+    QuestionActionsComponent
   ],
   templateUrl: './choice-question.component.html',
   styleUrls: ['./choice-question.component.scss'],

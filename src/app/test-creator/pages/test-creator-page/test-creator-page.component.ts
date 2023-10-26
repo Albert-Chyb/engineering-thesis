@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
@@ -59,6 +60,7 @@ import {
     FormGroupSyncDirective,
     FormArraySyncContainerComponent,
     MatMenuModule,
+    MatIconModule,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -171,6 +173,10 @@ export class TestCreatorPageComponent {
   handleAddAnswer(index: number) {}
 
   handleDeleteAnswer([questionIndex, answerIndex]: [number, number]) {}
+
+  handleDeleteQuestion(id: string) {
+    console.log('Delete question: ', id);
+  }
 
   createQuestionSync<TQuestionType extends QuestionsTypes>(
     type: TQuestionType,

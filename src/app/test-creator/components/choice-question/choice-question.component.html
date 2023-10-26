@@ -1,20 +1,18 @@
-<mat-card
-  appearance="outlined"
+<app-question-actions
   [formGroup]="question"
-  class="with-spacing-fix question"
+  class="question"
+  (onQuestionDelete)="onQuestionDelete.emit()"
 >
-  <mat-card-header>
-    <h2 mat-card-title>Pytanie {{ index + 1 }}</h2>
-    <p mat-card-subtitle>
-      {{
-        isMultiChoice()
-          ? "Pytanie wielokrotnego wyboru"
-          : "Pytanie jednokrotnego wyboru"
-      }}
-    </p>
-  </mat-card-header>
+  <span title role="heading" aria-level="2">Pytanie {{ index + 1 }}</span>
+  <p subtitle>
+    {{
+      isMultiChoice()
+        ? "Pytanie wielokrotnego wyboru"
+        : "Pytanie jednokrotnego wyboru"
+    }}
+  </p>
 
-  <mat-card-content>
+  <ng-container content>
     <mat-form-field class="width-100">
       <input type="text" matInput formControlName="content" />
       <mat-label>Treść pytania</mat-label>
@@ -51,11 +49,15 @@
         </button>
       </mat-form-field>
     </div>
-  </mat-card-content>
+  </ng-container>
 
-  <mat-card-actions align="end">
+  <ng-container actions>
     <button mat-button color="accent" (click)="onAddAnswer.emit(index)">
       <mat-icon>add</mat-icon> Dodaj odpowiedź
     </button>
-  </mat-card-actions>
-</mat-card>
+  </ng-container>
+
+  <ng-container drag-handle>
+    <ng-content select="[drag-handle]" />
+  </ng-container>
+</app-question-actions>

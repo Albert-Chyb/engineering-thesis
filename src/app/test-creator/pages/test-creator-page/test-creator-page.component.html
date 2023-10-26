@@ -46,8 +46,15 @@
               (onAnswerReorder)="handleAnswersReorder($event)"
               (onAddAnswer)="handleAddAnswer($event)"
               (onDeleteAnswer)="handleDeleteAnswer($event)"
+              (onQuestionDelete)="
+                handleDeleteQuestion(questionControl.controls.id.value)
+              "
               [multi]="false"
-            />
+            >
+              <button drag-handle mat-icon-button>
+                <mat-icon>drag_indicator</mat-icon>
+              </button>
+            </app-choice-question>
 
             <app-choice-question
               [appFormGroupSync]="viewModel.questionsController"
@@ -58,8 +65,15 @@
               (onAnswerReorder)="handleAnswersReorder($event)"
               (onAddAnswer)="handleAddAnswer($event)"
               (onDeleteAnswer)="handleDeleteAnswer($event)"
+              (onQuestionDelete)="
+                handleDeleteQuestion(questionControl.controls.id.value)
+              "
               [multi]="true"
-            />
+            >
+              <button drag-handle mat-icon-button>
+                <mat-icon>drag_indicator</mat-icon>
+              </button>
+            </app-choice-question>
 
             <app-open-question
               [appFormGroupSync]="viewModel.questionsController"
@@ -67,7 +81,14 @@
               [excludeFields]="viewModel.questionExcludedKeys"
               *ngSwitchCase="'open'"
               [formGroupName]="i"
-            />
+              (onQuestionDelete)="
+                handleDeleteQuestion(questionControl.controls.id.value)
+              "
+            >
+              <button drag-handle mat-icon-button>
+                <mat-icon>drag_indicator</mat-icon>
+              </button>
+            </app-open-question>
           </ng-container>
         </app-form-array-sync-container>
       </form>
