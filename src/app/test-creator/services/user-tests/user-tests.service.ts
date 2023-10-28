@@ -12,11 +12,7 @@ import {
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
-import {
-  Test,
-  TestCreatePayload,
-  TestReadPayload,
-} from '@test-creator/types/test';
+import { RawTest, Test } from '@test-creator/types/test';
 import { map } from 'rxjs';
 
 class DataConverter implements FirestoreDataConverter<Test> {
@@ -30,7 +26,7 @@ class DataConverter implements FirestoreDataConverter<Test> {
   }
 
   fromFirestore(
-    snapshot: QueryDocumentSnapshot<TestReadPayload>,
+    snapshot: QueryDocumentSnapshot<RawTest>,
     options?: SnapshotOptions | undefined
   ): Test {
     const data = snapshot.data();
@@ -48,7 +44,7 @@ class DataConverter implements FirestoreDataConverter<Test> {
 })
 export class UserTestsService extends FirestoreCollectionController<
   Test,
-  TestCreatePayload
+  RawTest
 > {
   constructor() {
     const firestore = inject(Firestore);

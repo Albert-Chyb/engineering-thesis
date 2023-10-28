@@ -23,7 +23,7 @@ import { Observable, from, map, switchMap, take } from 'rxjs';
 
 export class FirestoreCollectionController<
   TData extends DocumentData,
-  TCreatePayload extends DocumentData
+  TRawData extends DocumentData
 > {
   constructor(
     private readonly firestore: Firestore,
@@ -31,7 +31,7 @@ export class FirestoreCollectionController<
   ) {}
 
   create(
-    data: WithFieldValue<TCreatePayload>,
+    data: WithFieldValue<TRawData>,
     id?: string
   ): Observable<DocumentReference<TData>> {
     return this.collectionRef$.pipe(
