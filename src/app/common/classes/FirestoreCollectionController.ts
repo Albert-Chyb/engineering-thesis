@@ -77,6 +77,14 @@ export class FirestoreCollectionController<
     );
   }
 
+  list(): Observable<TData[]> {
+    return this.collectionRef$.pipe(
+      switchMap((collectionRef) => getDocs(collectionRef)),
+      map((querySnapshot) => querySnapshot.docs.map((doc) => doc.data())),
+      take(1)
+    );
+  }
+
   query(...filters: QueryConstraint[]): Observable<TData[]> {
     return this.collectionRef$.pipe(
       switchMap((collectionRef) => {
