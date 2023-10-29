@@ -27,7 +27,9 @@ import { ClosedQuestion } from '@test-creator/abstract/closed-question';
   templateUrl: './choice-question.component.html',
   styleUrls: ['./choice-question.component.scss'],
 })
-export class ChoiceQuestionComponent extends ClosedQuestion {
+export class ChoiceQuestionComponent extends ClosedQuestion<
+  'multi-choice' | 'single-choice'
+> {
   readonly isMultiChoice = signal(false);
 
   @Input('multi') set multiChoice(value: boolean) {

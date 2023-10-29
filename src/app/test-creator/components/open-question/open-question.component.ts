@@ -19,4 +19,4 @@ import { OpenQuestion } from '@test-creator/abstract/open-question';
   templateUrl: './open-question.component.html',
   styleUrls: ['./open-question.component.scss'],
 })
-export class OpenQuestionComponent extends OpenQuestion {}
+export class OpenQuestionComponent extends OpenQuestion<'text-answer'> {}

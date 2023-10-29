@@ -13,16 +13,21 @@ import {
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
 import { Answer, RawAnswer } from '@test-creator/types/answer';
+import { ClosedQuestionsTypes } from '@test-creator/types/questions';
 import { map } from 'rxjs';
 
-class DataConverter implements FirestoreDataConverter<Answer<any>> {
-  toFirestore(modelObject: WithFieldValue<Answer<any>>): DocumentData;
+class DataConverter
+  implements FirestoreDataConverter<Answer<ClosedQuestionsTypes>>
+{
   toFirestore(
-    modelObject: PartialWithFieldValue<Answer<any>>,
+    modelObject: WithFieldValue<Answer<ClosedQuestionsTypes>>
+  ): DocumentData;
+  toFirestore(
+    modelObject: PartialWithFieldValue<Answer<ClosedQuestionsTypes>>,
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
-    const model = modelObject as Answer<any>;
+    const model = modelObject as Answer<ClosedQuestionsTypes>;
 
     return {
       content: model.content,
@@ -30,10 +35,10 @@ class DataConverter implements FirestoreDataConverter<Answer<any>> {
   }
 
   fromFirestore(
-    snapshot: QueryDocumentSnapshot<RawAnswer<any>>,
+    snapshot: QueryDocumentSnapshot<RawAnswer<ClosedQuestionsTypes>>,
     options?: SnapshotOptions | undefined
-  ): Answer<any> {
-    const data = snapshot.data() as Answer<any>;
+  ): Answer<ClosedQuestionsTypes> {
+    const data = snapshot.data() as Answer<ClosedQuestionsTypes>;
 
     return {
       id: snapshot.id,
@@ -52,7 +57,10 @@ export class AnswersService {
   getController(
     testId: string,
     questionId: string
-  ): FirestoreCollectionController<Answer<any>, RawAnswer<any>> {
+  ): FirestoreCollectionController<
+    Answer<ClosedQuestionsTypes>,
+    RawAnswer<ClosedQuestionsTypes>
+  > {
     const collectionRef$ = this.auth.uid$.pipe(
       map((uid) =>
         collection(

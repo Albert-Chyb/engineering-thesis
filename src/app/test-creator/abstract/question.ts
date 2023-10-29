@@ -1,7 +1,7 @@
 import { Directive, OnInit, inject } from '@angular/core';
 import { ControlContainer } from '@angular/forms';
-import { QuestionsTypes } from '@test-creator/types/question';
-import { QuestionFormGroup } from '@test-creator/types/question-form-group';
+import { QuestionsTypes } from '@test-creator/types/questions';
+import { QuestionFormGroup } from '@test-creator/types/test-creator-form';
 
 @Directive()
 export abstract class Question<TQuestionType extends QuestionsTypes>

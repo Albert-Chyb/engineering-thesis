@@ -1,12 +1,10 @@
-import { QuestionsContentsTypesMap } from './questions-contents-types';
-
-export type QuestionsTypes = keyof QuestionsContentsTypesMap;
+import { QuestionsContentsTypes, QuestionsTypes } from './questions';
 
 /** Object of a question that a service returns and accepts. */
 export interface Question<TQuestionType extends QuestionsTypes> {
   id: string;
   type: TQuestionType;
-  content: QuestionsContentsTypesMap[TQuestionType]['question'];
+  content: QuestionsContentsTypes[TQuestionType]['questionContentType'];
 }
 
 /** Object of a question that is stored in the database. */

@@ -1,12 +1,11 @@
-import { QuestionsTypes } from './question';
-import { QuestionsContentsTypesMap } from './questions-contents-types';
+import { ClosedQuestionsTypes, QuestionsContentsTypes } from './questions';
 
-export interface Answer<QuestionType extends QuestionsTypes> {
+export interface Answer<TQuestionType extends ClosedQuestionsTypes> {
   id: string;
-  content: QuestionsContentsTypesMap[QuestionType]['answer'];
+  content: QuestionsContentsTypes[TQuestionType]['answerContentType'];
 }
 
-export type RawAnswer<QuestionType extends QuestionsTypes> = Omit<
+export type RawAnswer<QuestionType extends ClosedQuestionsTypes> = Omit<
   Answer<QuestionType>,
   'id'
 >;

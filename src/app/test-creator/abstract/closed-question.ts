@@ -1,19 +1,21 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Directive, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormArray } from '@angular/forms';
-import { AnswerFormGroup } from '@test-creator/types/answer-form-group';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
-import { QuestionsTypes } from '@test-creator/types/question';
+import { ClosedQuestionsTypes } from '@test-creator/types/questions';
+import { AnswerFormGroup } from '@test-creator/types/test-creator-form';
 import { Question } from './question';
 
 @Directive()
-export abstract class ClosedQuestion
-  extends Question<Exclude<QuestionsTypes, 'open'>>
+export abstract class ClosedQuestion<TQuestion extends ClosedQuestionsTypes>
+  extends Question<TQuestion>
   implements OnInit
 {
-  answers!: FormArray<AnswerFormGroup>;
+  answers!: FormArray<AnswerFormGroup<TQuestion>>;
 
-  @Output() onAnswerReorder = new EventEmitter<AnswersReorderEvent>();
+  @Output() onAnswerReorder = new EventEmitter<
+    AnswersReorderEvent<TQuestion>
+  >();
 
   @Output() onAddAnswer = new EventEmitter<number>();
 
@@ -21,9 +23,9 @@ export abstract class ClosedQuestion
 
   handleAnswersReorder(
     $event: CdkDragDrop<
-      FormArray<AnswerFormGroup>,
-      FormArray<AnswerFormGroup>,
-      AnswerFormGroup
+      FormArray<AnswerFormGroup<TQuestion>>,
+      FormArray<AnswerFormGroup<TQuestion>>,
+      AnswerFormGroup<TQuestion>
     >
   ) {
     this.onAnswerReorder.emit({
@@ -35,6 +37,8 @@ export abstract class ClosedQuestion
 
   override ngOnInit() {
     super.ngOnInit();
-    this.answers = this.question.controls.answers;
+    this.answers = this.question.controls.answers as FormArray<
+      AnswerFormGroup<TQuestion>
+    >;
   }
 }

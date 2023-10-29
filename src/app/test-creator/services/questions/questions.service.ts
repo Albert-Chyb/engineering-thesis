@@ -12,7 +12,8 @@ import {
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
-import { Question, QuestionsTypes, RawQuestion } from '@test-creator/types/question';
+import { Question, RawQuestion } from '@test-creator/types/question';
+import { QuestionsTypes } from '@test-creator/types/questions';
 import { map } from 'rxjs';
 
 class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
