@@ -4,11 +4,13 @@ import { Answer } from '@test-creator/types/answer';
 import { Question } from '@test-creator/types/question';
 import {
   ClosedQuestionsTypes,
+  OpenQuestionsTypes,
   QuestionsTypes,
 } from '@test-creator/types/questions';
 import {
   AnswerFormGroup,
   AnswersGenerators,
+  ClosedQuestionFormGroup,
   OpenQuestionFormGroup,
   QuestionsGenerators,
   TestForm,
@@ -74,9 +76,20 @@ interface TestCreatorPageState {
   testForm: TestForm;
 }
 
+const INITIAL_STATE: TestCreatorPageState = {
+  testForm: new FormGroup({
+    id: new FormControl('', { nonNullable: true }),
+    name: new FormControl(''),
+    questions: new FormArray<
+      | OpenQuestionFormGroup<OpenQuestionsTypes>
+      | ClosedQuestionFormGroup<ClosedQuestionsTypes>
+    >([]),
+  }),
+};
+
 export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   constructor() {
-    super();
+    super(INITIAL_STATE);
   }
 
   private generateQuestion<TQuestionType extends QuestionsTypes>(
