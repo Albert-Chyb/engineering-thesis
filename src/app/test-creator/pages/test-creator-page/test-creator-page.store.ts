@@ -1,5 +1,7 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ComponentStore } from '@ngrx/component-store';
+import { answersGenerators } from '@test-creator/constants/answers-generators';
+import { questionsGenerators } from '@test-creator/constants/questions-generators';
 import { Answer } from '@test-creator/types/answer';
 import { Question } from '@test-creator/types/question';
 import {
@@ -7,69 +9,9 @@ import {
   QuestionsTypes,
 } from '@test-creator/types/questions';
 import {
-  AnswerFormGroup,
-  AnswersGenerators,
-  OpenQuestionFormGroup,
   QuestionFormGroup,
-  QuestionsGenerators,
   TestForm,
 } from '@test-creator/types/test-creator-form';
-
-const questionsGenerators: QuestionsGenerators = {
-  'single-choice': {
-    generate: (question: Question<'single-choice'>) =>
-      new FormGroup({
-        id: new FormControl(question.id, {
-          nonNullable: true,
-        }),
-        content: new FormControl(question.content),
-        type: new FormControl(question.type, { nonNullable: true }),
-        answers: new FormArray<AnswerFormGroup<'single-choice'>>([]),
-      }),
-  },
-  'multi-choice': {
-    generate: (question: Question<'multi-choice'>) =>
-      new FormGroup({
-        id: new FormControl(question.id, {
-          nonNullable: true,
-        }),
-        content: new FormControl(question.content),
-        type: new FormControl(question.type, { nonNullable: true }),
-        answers: new FormArray<AnswerFormGroup<'multi-choice'>>([]),
-      }),
-  },
-  'text-answer': {
-    generate: (question: Question<'text-answer'>) =>
-      new FormGroup({
-        id: new FormControl(question.id, {
-          nonNullable: true,
-        }),
-        content: new FormControl(question.content),
-        type: new FormControl(question.type, { nonNullable: true }),
-      }) as OpenQuestionFormGroup<'text-answer'>,
-  },
-};
-
-const answersGenerators: AnswersGenerators = {
-  'single-choice': {
-    generate: (answer: Answer<'single-choice'>) =>
-      new FormGroup({
-        id: new FormControl(answer.id, {
-          nonNullable: true,
-        }),
-        content: new FormControl(answer.content),
-      }),
-  },
-  'multi-choice': {
-    generate: (answer: Answer<'multi-choice'>) =>
-      new FormGroup({
-        id: new FormControl(answer.id, {
-          nonNullable: true,
-        }),
-        content: new FormControl(answer.content),
-      }),
-  },
-};
 
 interface TestCreatorPageState {
   testForm: TestForm;
