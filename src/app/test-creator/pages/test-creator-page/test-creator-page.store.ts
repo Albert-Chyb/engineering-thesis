@@ -8,57 +8,65 @@ import {
 } from '@test-creator/types/questions';
 import {
   AnswerFormGroup,
+  AnswersGenerators,
   OpenQuestionFormGroup,
+  QuestionsGenerators,
   TestForm,
-  TestFormControlsGenerators,
 } from '@test-creator/types/test-creator-form';
 
-const testFormControlsGenerator: TestFormControlsGenerators = {
+const questionsGenerators: QuestionsGenerators = {
   'single-choice': {
-    generateAnswer: () =>
+    generate: (question: Question<'single-choice'>) =>
       new FormGroup({
-        id: new FormControl(crypto.randomUUID() as string, {
+        id: new FormControl(question.id, {
           nonNullable: true,
         }),
-        content: new FormControl(''),
-      }) as AnswerFormGroup<'single-choice'>,
-    generateQuestion: () =>
-      new FormGroup({
-        id: new FormControl(crypto.randomUUID() as string, {
-          nonNullable: true,
-        }),
-        content: new FormControl(''),
-        type: new FormControl('single-choice', { nonNullable: true }),
+        content: new FormControl(question.content),
+        type: new FormControl(question.type, { nonNullable: true }),
         answers: new FormArray<AnswerFormGroup<'single-choice'>>([]),
       }),
   },
   'multi-choice': {
-    generateAnswer: () =>
+    generate: (question: Question<'multi-choice'>) =>
       new FormGroup({
-        id: new FormControl(crypto.randomUUID() as string, {
+        id: new FormControl(question.id, {
           nonNullable: true,
         }),
-        content: new FormControl(''),
-      }) as AnswerFormGroup<'single-choice'>,
-    generateQuestion: () =>
-      new FormGroup({
-        id: new FormControl(crypto.randomUUID() as string, {
-          nonNullable: true,
-        }),
-        content: new FormControl(''),
-        type: new FormControl('multi-choice', { nonNullable: true }),
+        content: new FormControl(question.content),
+        type: new FormControl(question.type, { nonNullable: true }),
         answers: new FormArray<AnswerFormGroup<'multi-choice'>>([]),
       }),
   },
   'text-answer': {
-    generateQuestion: () =>
+    generate: (question: Question<'text-answer'>) =>
       new FormGroup({
-        id: new FormControl(crypto.randomUUID() as string, {
+        id: new FormControl(question.id, {
           nonNullable: true,
         }),
-        content: new FormControl(''),
-        type: new FormControl('text-answer', { nonNullable: true }),
+        content: new FormControl(question.content),
+        type: new FormControl(question.type, { nonNullable: true }),
       }) as OpenQuestionFormGroup<'text-answer'>,
+  },
+};
+
+const answersGenerators: AnswersGenerators = {
+  'single-choice': {
+    generate: (answer: Answer<'single-choice'>) =>
+      new FormGroup({
+        id: new FormControl(answer.id, {
+          nonNullable: true,
+        }),
+        content: new FormControl(answer.content),
+      }),
+  },
+  'multi-choice': {
+    generate: (answer: Answer<'multi-choice'>) =>
+      new FormGroup({
+        id: new FormControl(answer.id, {
+          nonNullable: true,
+        }),
+        content: new FormControl(answer.content),
+      }),
   },
 };
 
@@ -74,8 +82,8 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   private generateQuestion<TQuestionType extends QuestionsTypes>(
     question: Question<TQuestionType>
   ) {
-    const generator = testFormControlsGenerator[question.type];
-    const formGroup = generator.generateQuestion(question);
+    const generator = this.getQuestionGenerator(question.type);
+    const formGroup = generator.generate(question);
 
     return formGroup;
   }
@@ -84,9 +92,21 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
     type: TQuestionType,
     answer: Answer<TQuestionType>
   ) {
-    const generator = testFormControlsGenerator[type];
-    const formGroup = generator.generateAnswer(answer);
+    const generator = this.getAnswerGenerator(type);
+    const formGroup = generator.generate(answer);
 
     return formGroup;
+  }
+
+  private getQuestionGenerator<TQuestionType extends QuestionsTypes>(
+    type: TQuestionType
+  ) {
+    return questionsGenerators[type];
+  }
+
+  private getAnswerGenerator<TQuestionType extends ClosedQuestionsTypes>(
+    type: TQuestionType
+  ) {
+    return answersGenerators[type];
   }
 }

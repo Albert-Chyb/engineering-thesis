@@ -69,24 +69,22 @@ export type TestForm = FormGroup<{
   >;
 }>;
 
-/**
- * The generator of questions and answers form groups for each question type.
- */
-// TODO: Make this type more readable.
-export type TestFormControlsGenerators = {
-  [K in keyof QuestionsContentsTypes]: {
-    generateQuestion: (
-      question: Question<K>
-    ) => K extends ClosedQuestionsTypes
-      ? ClosedQuestionFormGroup<K>
-      : K extends OpenQuestionsTypes
-      ? OpenQuestionFormGroup<K>
-      : never;
-  } & (K extends ClosedQuestionsTypes
-    ? {
-        generateAnswer: <TQuestionType extends ClosedQuestionsTypes>(
-          answer: Answer<TQuestionType>
-        ) => AnswerFormGroup<TQuestionType>;
-      }
-    : {});
+export type QuestionGenerator<TQuestionType extends QuestionsTypes> = {
+  generate: (
+    question: Question<TQuestionType>
+  ) => QuestionFormGroup<TQuestionType>;
+};
+
+export type QuestionsGenerators = {
+  [K in QuestionsTypes]: QuestionGenerator<K>;
+};
+
+export type AnswerGenerator<TQuestionType extends ClosedQuestionsTypes> = {
+  generate: (answer: Answer<TQuestionType>) => AnswerFormGroup<TQuestionType>;
+};
+
+export type AnswersGenerators = {
+  [K in ClosedQuestionsTypes]: {
+    generate: (answer: Answer<K>) => AnswerFormGroup<K>;
+  };
 };
