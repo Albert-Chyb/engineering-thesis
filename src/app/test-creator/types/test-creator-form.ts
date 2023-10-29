@@ -63,10 +63,7 @@ export type QuestionFormGroup<TQuestionType extends QuestionsTypes> =
 export type TestForm = FormGroup<{
   id: FormControl<string>;
   name: FormControl<string | null>;
-  questions: FormArray<
-    | OpenQuestionFormGroup<OpenQuestionsTypes>
-    | ClosedQuestionFormGroup<ClosedQuestionsTypes>
-  >;
+  questions: FormArray<QuestionFormGroup<QuestionsTypes>>;
 }>;
 
 export type QuestionGenerator<TQuestionType extends QuestionsTypes> = {

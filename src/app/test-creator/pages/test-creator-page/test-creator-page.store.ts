@@ -4,14 +4,13 @@ import { Answer } from '@test-creator/types/answer';
 import { Question } from '@test-creator/types/question';
 import {
   ClosedQuestionsTypes,
-  OpenQuestionsTypes,
   QuestionsTypes,
 } from '@test-creator/types/questions';
 import {
   AnswerFormGroup,
   AnswersGenerators,
-  ClosedQuestionFormGroup,
   OpenQuestionFormGroup,
+  QuestionFormGroup,
   QuestionsGenerators,
   TestForm,
 } from '@test-creator/types/test-creator-form';
@@ -80,10 +79,7 @@ const INITIAL_STATE: TestCreatorPageState = {
   testForm: new FormGroup({
     id: new FormControl('', { nonNullable: true }),
     name: new FormControl(''),
-    questions: new FormArray<
-      | OpenQuestionFormGroup<OpenQuestionsTypes>
-      | ClosedQuestionFormGroup<ClosedQuestionsTypes>
-    >([]),
+    questions: new FormArray<QuestionFormGroup<QuestionsTypes>>([]),
   }),
 };
 
