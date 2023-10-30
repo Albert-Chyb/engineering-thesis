@@ -1,8 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { answersGenerators } from '@test-creator/constants/answers-generators';
-import { questionsGenerators } from '@test-creator/constants/questions-generators';
 import { AnswersService } from '@test-creator/services/answers/answers.service';
 import { QuestionsService } from '@test-creator/services/questions/questions.service';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
@@ -13,10 +10,6 @@ import {
   QuestionsTypes,
 } from '@test-creator/types/questions';
 import { Test } from '@test-creator/types/test';
-import {
-  QuestionFormGroup,
-  TestForm,
-} from '@test-creator/types/test-creator-form';
 import {
   Observable,
   concatMap,
@@ -32,7 +25,6 @@ type AnswerEntryValue = Answer<ClosedQuestionsTypes>[];
 type AnswerEntry = [AnswerEntryKey, AnswerEntryValue];
 
 interface TestCreatorPageState {
-  testForm: TestForm;
   test: Test | null;
   questions: Question<QuestionsTypes>[];
   answers: Map<AnswerEntryKey, AnswerEntryValue>;
@@ -40,11 +32,6 @@ interface TestCreatorPageState {
 }
 
 const INITIAL_STATE: TestCreatorPageState = {
-  testForm: new FormGroup({
-    id: new FormControl('', { nonNullable: true }),
-    name: new FormControl(''),
-    questions: new FormArray<QuestionFormGroup<QuestionsTypes>>([]),
-  }),
   test: null,
   questions: [],
   answers: new Map(),
@@ -136,42 +123,63 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
     )
   );
 
-  /** Updates the test locally. */
+  /**
+   * Saves the question on the database.
+   */
+  readonly saveQuestion = this.effect(
+    (question$: Observable<Question<QuestionsTypes>>) =>
+      question$.pipe(
+        concatMap((question) => {
+          const testId = this.test()?.id ?? '';
+
+          if (!testId) {
+            throw new Error(
+              'Tried to update a question without previously loading the test.'
+            );
+          }
+
+          return this.questionsService.getController(testId).create(
+            {
+              content: question.content,
+              type: question.type,
+            },
+            question.id
+          );
+        })
+      )
+  );
+
+  /**
+   * Updates the local question state.
+   */
+  readonly updateQuestion = this.updater(
+    (state, newQuestion: Question<QuestionsTypes>) => {
+      const id = newQuestion.id;
+      const questionIndex = state.questions.findIndex(
+        (question) => question.id === id
+      );
+
+      if (questionIndex === -1) {
+        throw new Error('Tried to update a question that does not exist');
+      }
+
+      const updatedQuestions = [...state.questions];
+      updatedQuestions[questionIndex] = newQuestion;
+
+      return {
+        ...state,
+        questions: updatedQuestions,
+      };
+    }
+  );
+
+  /**
+   * Updates the test locally.
+   */
   readonly updateTest = this.updater((state, test: Test) => {
     return {
       ...state,
       test,
     };
   });
-
-  private generateQuestion<TQuestionType extends QuestionsTypes>(
-    question: Question<TQuestionType>
-  ) {
-    const generator = this.getQuestionGenerator(question.type);
-    const formGroup = generator.generate(question);
-
-    return formGroup;
-  }
-
-  private generateAnswer<TQuestionType extends ClosedQuestionsTypes>(
-    type: TQuestionType,
-    answer: Answer<TQuestionType>
-  ) {
-    const generator = this.getAnswerGenerator(type);
-    const formGroup = generator.generate(answer);
-
-    return formGroup;
-  }
-
-  private getQuestionGenerator<TQuestionType extends QuestionsTypes>(
-    type: TQuestionType
-  ) {
-    return questionsGenerators[type];
-  }
-
-  private getAnswerGenerator<TQuestionType extends ClosedQuestionsTypes>(
-    type: TQuestionType
-  ) {
-    return answersGenerators[type];
-  }
 }
