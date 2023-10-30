@@ -15,6 +15,7 @@ import { ChoiceQuestionComponent } from '@test-creator/components/choice-questio
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
 import { ClosedQuestionsTypes } from '@test-creator/types/questions';
+import { TestCreatorPageStore } from './test-creator-page.store';
 
 @Component({
   standalone: true,
@@ -31,6 +32,7 @@ import { ClosedQuestionsTypes } from '@test-creator/types/questions';
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
+  providers: [TestCreatorPageStore],
 })
 export class TestCreatorPageComponent {
   readonly testForm = new FormGroup({
