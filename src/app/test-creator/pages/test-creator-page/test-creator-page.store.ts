@@ -62,6 +62,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   }
 
   readonly test = this.selectSignal((state) => state.test);
+  readonly questions = this.selectSignal((state) => state.questions);
 
   /**
    * Loads the test, questions and answers from the database.

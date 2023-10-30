@@ -1,6 +1,7 @@
 <mat-card
+  *ngIf="questionForm()"
   appearance="outlined"
-  [formGroup]="question"
+  [formGroup]="$any(questionForm())"
   class="with-spacing-fix question"
 >
   <mat-card-header>
@@ -14,7 +15,7 @@
       <mat-label>Treść pytania</mat-label>
     </mat-form-field>
 
-    <div cdkDropList formArrayName="answers" [cdkDropListData]="answers">
+    <!-- <div cdkDropList formArrayName="answers" [cdkDropListData]="answers">
       <mat-form-field
         class="width-100 question__answer"
         *ngFor="let answer of answers.controls; let answerIndex = index"
@@ -44,11 +45,11 @@
           <mat-icon>delete</mat-icon>
         </button>
       </mat-form-field>
-    </div>
+    </div> -->
   </mat-card-content>
 
   <mat-card-actions align="end">
-    <button mat-button color="accent" (click)="onAddAnswer.emit(index)">
+    <button mat-button color="accent">
       <mat-icon>add</mat-icon> Dodaj odpowiedź
     </button>
   </mat-card-actions>

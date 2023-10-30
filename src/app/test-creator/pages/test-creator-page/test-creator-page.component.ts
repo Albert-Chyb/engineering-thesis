@@ -10,8 +10,8 @@ import { ActivatedRoute } from '@angular/router';
 import { MultiChoiceQuestionComponent } from '@test-creator/components/multi-choice-question/multi-choice-question.component';
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
 import { SingleChoiceQuestionComponent } from '@test-creator/components/single-choice-question/single-choice-question.component';
-import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
-import { ClosedQuestionsTypes } from '@test-creator/types/questions';
+import { Question } from '@test-creator/types/question';
+import { QuestionsTypes } from '@test-creator/types/questions';
 import { debounceTime, map, tap } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
 
@@ -38,6 +38,7 @@ export class TestCreatorPageComponent {
   private readonly route = inject(ActivatedRoute);
 
   readonly test = this.store.test;
+  readonly questions = this.store.questions;
 
   readonly testForm = new FormGroup({
     name: new FormControl(''),
@@ -70,11 +71,13 @@ export class TestCreatorPageComponent {
     );
   }
 
-  handleAnswersReorder<TQuestionType extends ClosedQuestionsTypes>(
-    $event: AnswersReorderEvent<TQuestionType>
-  ) {}
+  trackByQuestionId(index: number, question: Question<QuestionsTypes>) {
+    return question.id;
+  }
 
-  handleAddAnswer(index: number) {}
-
-  handleDeleteAnswer([questionIndex, answerIndex]: [number, number]) {}
+  getQuestion<TQuestionType extends QuestionsTypes>(
+    question: Question<TQuestionType>
+  ) {
+    return question as any;
+  }
 }

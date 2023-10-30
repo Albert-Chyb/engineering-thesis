@@ -1,4 +1,9 @@
-<mat-card appearance="outlined" [formGroup]="question" class="with-spacing-fix">
+<mat-card
+  *ngIf="questionForm()"
+  appearance="outlined"
+  [formGroup]="$any(questionForm())"
+  class="with-spacing-fix"
+>
   <mat-card-header>
     <h2 mat-card-title>Pytanie {{ index + 1 }}</h2>
     <p mat-card-subtitle>Pytanie otwarte</p>

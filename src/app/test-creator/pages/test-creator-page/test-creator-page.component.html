@@ -17,33 +17,34 @@
         <mat-label>Nazwa testu</mat-label>
       </mat-form-field>
 
-      <!-- <div class="v-stack" formArrayName="questions">
+      <div class="v-stack">
         <ng-container
           *ngFor="
-            let questionControl of testForm.controls.questions.controls;
-            let i = index
+            let question of questions();
+            let i = index;
+            trackBy: trackByQuestionId
           "
-          [ngSwitch]="questionControl.controls.type.value"
+          [ngSwitch]="question.type"
         >
           <app-single-choice-question
             *ngSwitchCase="'single-choice'"
-            [formGroupName]="i"
-            (onAnswerReorder)="handleAnswersReorder($event)"
-            (onAddAnswer)="handleAddAnswer($event)"
-            (onDeleteAnswer)="handleDeleteAnswer($event)"
+            [question]="$any(question)"
+            [index]="i"
           />
 
           <app-multi-choice-question
             *ngSwitchCase="'multi-choice'"
-            [formGroupName]="i"
-            (onAnswerReorder)="handleAnswersReorder($event)"
-            (onAddAnswer)="handleAddAnswer($event)"
-            (onDeleteAnswer)="handleDeleteAnswer($event)"
+            [question]="$any(question)"
+            [index]="i"
           />
 
-          <app-open-question *ngSwitchCase="'open'" [formGroupName]="i" />
+          <app-open-question
+            *ngSwitchCase="'text-answer'"
+            [question]="$any(question)"
+            [index]="i"
+          />
         </ng-container>
-      </div> -->
+      </div>
     </form>
   </mat-card-content>
 
