@@ -50,7 +50,19 @@
 
   <mat-divider></mat-divider>
 
-  <mat-card-actions>
-    <button mat-raised-button color="accent">Dodaj pytanie</button>
+  <mat-card-actions align="end">
+    <button
+      mat-stroked-button
+      [matMenuTriggerFor]="addQuestionMenu"
+      color="accent"
+    >
+      <mat-icon>add</mat-icon> Dodaj pytanie
+    </button>
+
+    <mat-menu #addQuestionMenu>
+      <button mat-menu-item *ngFor="let questionType of questionsTypes">
+        <mat-icon>{{ questionType.icon }}</mat-icon> {{ questionType.label }}
+      </button>
+    </mat-menu>
   </mat-card-actions>
 </mat-card>

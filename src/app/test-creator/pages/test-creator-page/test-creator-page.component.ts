@@ -5,7 +5,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
 import { MultiChoiceQuestionComponent } from '@test-creator/components/multi-choice-question/multi-choice-question.component';
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
@@ -28,6 +30,8 @@ import { TestCreatorPageStore } from './test-creator-page.store';
     SingleChoiceQuestionComponent,
     MultiChoiceQuestionComponent,
     OpenQuestionComponent,
+    MatIconModule,
+    MatMenuModule,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -43,6 +47,16 @@ export class TestCreatorPageComponent {
   readonly testForm = new FormGroup({
     name: new FormControl(''),
   });
+
+  readonly questionsTypes = [
+    {
+      type: 'single-choice',
+      label: 'Single choice',
+      icon: 'radio_button_checked',
+    },
+    { type: 'multi-choice', label: 'Multi choice', icon: 'check_box' },
+    { type: 'open', label: 'Open', icon: 'text_fields' },
+  ];
 
   private readonly syncStoreWithForm = effect(() => {
     const test = this.store.test();
