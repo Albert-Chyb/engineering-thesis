@@ -25,28 +25,23 @@
           "
           [ngSwitch]="questionControl.controls.type.value"
         >
-          <app-choice-question
+          <app-single-choice-question
             *ngSwitchCase="'single-choice'"
             [formGroupName]="i"
             (onAnswerReorder)="handleAnswersReorder($event)"
             (onAddAnswer)="handleAddAnswer($event)"
             (onDeleteAnswer)="handleDeleteAnswer($event)"
-            [multi]="false"
           />
 
-          <app-choice-question
+          <app-multi-choice-question
             *ngSwitchCase="'multi-choice'"
             [formGroupName]="i"
             (onAnswerReorder)="handleAnswersReorder($event)"
             (onAddAnswer)="handleAddAnswer($event)"
             (onDeleteAnswer)="handleDeleteAnswer($event)"
-            [multi]="true"
           />
 
-          <app-open-question
-            *ngSwitchCase="'open'"
-            [formGroupName]="i"
-          />
+          <app-open-question *ngSwitchCase="'open'" [formGroupName]="i" />
         </ng-container>
       </div> -->
     </form>

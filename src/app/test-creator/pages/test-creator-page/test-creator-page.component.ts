@@ -7,8 +7,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute } from '@angular/router';
-import { ChoiceQuestionComponent } from '@test-creator/components/choice-question/choice-question.component';
+import { MultiChoiceQuestionComponent } from '@test-creator/components/multi-choice-question/multi-choice-question.component';
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
+import { SingleChoiceQuestionComponent } from '@test-creator/components/single-choice-question/single-choice-question.component';
 import { AnswersReorderEvent } from '@test-creator/types/answers-reorder-event';
 import { ClosedQuestionsTypes } from '@test-creator/types/questions';
 import { debounceTime, map, tap } from 'rxjs';
@@ -24,7 +25,8 @@ import { TestCreatorPageStore } from './test-creator-page.store';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    ChoiceQuestionComponent,
+    SingleChoiceQuestionComponent,
+    MultiChoiceQuestionComponent,
     OpenQuestionComponent,
   ],
   templateUrl: './test-creator-page.component.html',
