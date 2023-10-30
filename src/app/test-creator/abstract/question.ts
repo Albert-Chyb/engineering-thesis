@@ -1,11 +1,14 @@
-import { Directive, Input, Signal, computed, signal } from '@angular/core';
-import { questionsGenerators } from '@test-creator/constants/questions-generators';
+import { Directive, Input, effect, inject, signal } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { TestCreatorPageStore } from '@test-creator/pages/test-creator-page/test-creator-page.store';
 import { QuestionsTypes } from '@test-creator/types/questions';
-import { QuestionFormGroup } from '@test-creator/types/test-creator-form';
+import { debounceTime, map, tap } from 'rxjs';
 import { Question as QuestionDoc } from '../types/question';
 
 @Directive()
 export abstract class Question<TQuestionType extends QuestionsTypes> {
+  private readonly store = inject(TestCreatorPageStore);
+
   private readonly _question = signal<QuestionDoc<TQuestionType> | null>(null);
   @Input({ required: true }) set question(
     value: QuestionDoc<TQuestionType> | null
@@ -24,27 +27,46 @@ export abstract class Question<TQuestionType extends QuestionsTypes> {
     return this._index();
   }
 
-  readonly questionForm: Signal<QuestionFormGroup<TQuestionType> | null> =
-    computed(() => {
+  readonly questionForm = new FormGroup({
+    content: new FormControl(''),
+    type: new FormControl<TQuestionType>('' as TQuestionType, {
+      nonNullable: true,
+    }),
+  });
+
+  constructor() {
+    effect(() => {
       const question = this._question();
 
-      if (question === null) {
-        return null;
+      if (!question) {
+        return;
       }
 
-      return this.generateQuestionForm(question.type, question);
+      this.questionForm.setValue(
+        {
+          content: question.content,
+          type: question.type,
+        },
+        { emitEvent: false }
+      );
     });
 
-  private getQuestionFormGenerator(type: TQuestionType) {
-    return questionsGenerators[type];
+    this.store.saveQuestion(
+      this.questionForm.valueChanges.pipe(
+        map((value) => this.createQuestionFromFormValue(value)),
+        tap((question) => this.store.updateQuestion(question)),
+        debounceTime(500)
+      )
+    );
   }
 
-  private generateQuestionForm(
-    type: TQuestionType,
-    question: QuestionDoc<TQuestionType>
-  ) {
-    const generator = this.getQuestionFormGenerator(type);
-
-    return generator.generate(question);
+  private createQuestionFromFormValue(
+    value: typeof this.questionForm.value
+  ): QuestionDoc<TQuestionType> {
+    return {
+      id: this.question?.id ?? '',
+      type: value.type,
+      content: value.content ?? '',
+    } as QuestionDoc<TQuestionType>;
   }
 }

@@ -1,7 +1,6 @@
 <mat-card
-  *ngIf="questionForm()"
   appearance="outlined"
-  [formGroup]="$any(questionForm())"
+  [formGroup]="questionForm"
   class="with-spacing-fix question"
 >
   <mat-card-header>
