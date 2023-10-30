@@ -149,6 +149,15 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       )
   );
 
+  readonly addQuestion = this.updater(
+    (state, question: Question<QuestionsTypes>) => {
+      return {
+        ...state,
+        questions: [...state.questions, question],
+      };
+    }
+  );
+
   /**
    * Updates the local question state.
    */

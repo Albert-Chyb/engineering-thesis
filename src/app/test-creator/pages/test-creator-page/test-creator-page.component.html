@@ -56,11 +56,15 @@
       [matMenuTriggerFor]="addQuestionMenu"
       color="accent"
     >
-      <mat-icon>add</mat-icon> Dodaj pytanie
+      <mat-icon>quiz</mat-icon> Dodaj pytanie
     </button>
 
     <mat-menu #addQuestionMenu>
-      <button mat-menu-item *ngFor="let questionType of questionsTypes">
+      <button
+        mat-menu-item
+        *ngFor="let questionType of questionsTypes"
+        (click)="handleAddQuestion(questionType.type)"
+      >
         <mat-icon>{{ questionType.icon }}</mat-icon> {{ questionType.label }}
       </button>
     </mat-menu>

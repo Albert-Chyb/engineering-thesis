@@ -12,6 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MultiChoiceQuestionComponent } from '@test-creator/components/multi-choice-question/multi-choice-question.component';
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
 import { SingleChoiceQuestionComponent } from '@test-creator/components/single-choice-question/single-choice-question.component';
+import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Question } from '@test-creator/types/question';
 import { QuestionsTypes } from '@test-creator/types/questions';
 import { debounceTime, map, tap } from 'rxjs';
@@ -38,6 +39,7 @@ import { TestCreatorPageStore } from './test-creator-page.store';
   providers: [TestCreatorPageStore],
 })
 export class TestCreatorPageComponent {
+  private readonly testsService = inject(UserTestsService);
   private readonly store = inject(TestCreatorPageStore);
   private readonly route = inject(ActivatedRoute);
 
@@ -48,14 +50,18 @@ export class TestCreatorPageComponent {
     name: new FormControl(''),
   });
 
-  readonly questionsTypes = [
+  readonly questionsTypes: {
+    type: QuestionsTypes;
+    label: string;
+    icon: string;
+  }[] = [
     {
       type: 'single-choice',
-      label: 'Single choice',
+      label: 'Jednokrotny wybór',
       icon: 'radio_button_checked',
     },
-    { type: 'multi-choice', label: 'Multi choice', icon: 'check_box' },
-    { type: 'open', label: 'Open', icon: 'text_fields' },
+    { type: 'multi-choice', label: 'Wielokrotny wybór', icon: 'check_box' },
+    { type: 'text-answer', label: 'Otwarte', icon: 'text_fields' },
   ];
 
   private readonly syncStoreWithForm = effect(() => {
@@ -85,13 +91,18 @@ export class TestCreatorPageComponent {
     );
   }
 
-  trackByQuestionId(index: number, question: Question<QuestionsTypes>) {
-    return question.id;
+  handleAddQuestion<TQuestionType extends QuestionsTypes>(type: TQuestionType) {
+    const newQuestion: Question<TQuestionType> = {
+      id: this.testsService.generateId(),
+      type,
+      content: 'Nowe pytanie',
+    };
+
+    this.store.addQuestion(newQuestion);
+    this.store.saveQuestion(newQuestion);
   }
 
-  getQuestion<TQuestionType extends QuestionsTypes>(
-    question: Question<TQuestionType>
-  ) {
-    return question as any;
+  trackByQuestionId(index: number, question: Question<QuestionsTypes>) {
+    return question.id;
   }
 }
