@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ComponentStore } from '@ngrx/component-store';
 import { answersGenerators } from '@test-creator/constants/answers-generators';
@@ -25,6 +26,7 @@ const INITIAL_STATE: TestCreatorPageState = {
   }),
 };
 
+@Injectable()
 export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   constructor() {
     super(INITIAL_STATE);
