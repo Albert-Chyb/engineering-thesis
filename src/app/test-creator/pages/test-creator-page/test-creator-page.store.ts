@@ -19,6 +19,7 @@ import {
 } from '@test-creator/types/test-creator-form';
 import {
   Observable,
+  concatMap,
   defaultIfEmpty,
   forkJoin,
   map,
@@ -59,6 +60,8 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   constructor() {
     super(INITIAL_STATE);
   }
+
+  readonly test = this.selectSignal((state) => state.test);
 
   /**
    * Loads the test, questions and answers from the database.
@@ -109,6 +112,36 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       )
     )
   );
+
+  /**
+   * Saves the test on the database.
+   */
+  readonly saveTest = this.effect((test$: Observable<Test>) =>
+    test$.pipe(
+      concatMap((newTest) =>
+        this.testsService.create(
+          {
+            name: newTest.name,
+          },
+          newTest.id
+        )
+      ),
+      tapResponse(
+        () => {},
+        (error) => {
+          this.setState((state) => ({ ...state, error }));
+        }
+      )
+    )
+  );
+
+  /** Updates the test locally. */
+  readonly updateTest = this.updater((state, test: Test) => {
+    return {
+      ...state,
+      test,
+    };
+  });
 
   private generateQuestion<TQuestionType extends QuestionsTypes>(
     question: Question<TQuestionType>

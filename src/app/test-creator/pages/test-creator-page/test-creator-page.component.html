@@ -11,13 +11,13 @@
   <mat-divider></mat-divider>
 
   <mat-card-content>
-    <form [formGroup]="testForm">
+    <form [formGroup]="testForm" *ngIf="test()">
       <mat-form-field class="width-100">
         <input type="text" matInput formControlName="name" />
         <mat-label>Nazwa testu</mat-label>
       </mat-form-field>
 
-      <div class="v-stack" formArrayName="questions">
+      <!-- <div class="v-stack" formArrayName="questions">
         <ng-container
           *ngFor="
             let questionControl of testForm.controls.questions.controls;
@@ -48,7 +48,7 @@
             [formGroupName]="i"
           />
         </ng-container>
-      </div>
+      </div> -->
     </form>
   </mat-card-content>
 
