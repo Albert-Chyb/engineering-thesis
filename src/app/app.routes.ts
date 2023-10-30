@@ -43,7 +43,7 @@ export const routes: Routes = [
     },
   },
   {
-    path: 'test-creator',
+    path: 'test-creator/:id',
     component: TestCreatorPageComponent,
     canActivate: [AuthGuard],
     data: {
