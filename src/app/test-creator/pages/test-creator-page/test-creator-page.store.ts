@@ -184,6 +184,77 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       )
   );
 
+  readonly swapQuestionsOnDb = this.effect(
+    (
+      $: Observable<{
+        from: Question<QuestionsTypes>;
+        to: Question<QuestionsTypes>;
+      }>
+    ) =>
+      $.pipe(
+        concatMap(({ from: fromQuestion, to: toQuestion }) => {
+          const testId = this.test()?.id;
+
+          if (!testId) {
+            throw new Error(
+              'Tried to swap questions without previously loading the test.'
+            );
+          }
+
+          const questionsService = this.questionsService.getController(testId);
+
+          return questionsService.swapPositions(fromQuestion, toQuestion).pipe(
+            catchError((error) => {
+              this.swapQuestions({ from: toQuestion, to: fromQuestion });
+
+              return EMPTY;
+            })
+          );
+        }),
+        tapResponse(
+          () => {},
+          (error) => {
+            this.setState((state) => ({ ...state, error }));
+          }
+        )
+      )
+  );
+
+  readonly swapQuestions = this.updater(
+    (
+      state,
+      {
+        from,
+        to,
+      }: { from: Question<QuestionsTypes>; to: Question<QuestionsTypes> }
+    ) => {
+      const questions = [...state.questions];
+      const fromIndex = questions.findIndex(
+        (question) => question.id === from.id
+      );
+      const toIndex = questions.findIndex((question) => question.id === to.id);
+
+      if (fromIndex === -1 || toIndex === -1) {
+        throw new Error('Tried to swap questions that do not exist');
+      }
+
+      if (fromIndex === toIndex) {
+        return state;
+      }
+
+      questions[fromIndex] = to;
+      questions[toIndex] = from;
+
+      questions[fromIndex].position = to.position;
+      questions[toIndex].position = from.position;
+
+      return {
+        ...state,
+        questions,
+      };
+    }
+  );
+
   readonly deleteQuestion = this.updater(
     (state, question: Question<QuestionsTypes>) => {
       return {

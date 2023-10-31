@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import {
   DocumentData,
+  DocumentReference,
   Firestore,
   FirestoreDataConverter,
   PartialWithFieldValue,
@@ -19,7 +20,7 @@ import {
   QuestionsContentsTypes,
   QuestionsTypes,
 } from '@test-creator/types/questions';
-import { Observable, from, map, switchMap } from 'rxjs';
+import { Observable, from, map, switchMap, take } from 'rxjs';
 
 class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
   toFirestore(
@@ -61,23 +62,31 @@ class QuestionsServiceController extends FirestoreCollectionController<
     question2: Question<QuestionsTypes>
   ) {
     return this.collectionRef$.pipe(
+      take(1),
       map((collectionRef) => collectionRef.path),
       switchMap((collectionPath) =>
         from(
-          this.transaction((transaction) => {
-            const doc1 = doc(
+          this.transaction(async (transaction) => {
+            const docRef1 = doc(
               this.firestore,
               `${collectionPath}/${question1.id}`
-            );
-            const doc2 = doc(
+            ) as DocumentReference<RawQuestion<QuestionsTypes>>;
+
+            const docRef2 = doc(
               this.firestore,
               `${collectionPath}/${question2.id}`
-            );
+            ) as DocumentReference<RawQuestion<QuestionsTypes>>;
 
-            transaction.update(doc1, { position: question2.position });
-            transaction.update(doc2, { position: question1.position });
+            const doc1 = await transaction.get(docRef1);
+            const doc2 = await transaction.get(docRef2);
 
-            return Promise.resolve();
+            if (!doc1.exists() || !doc2.exists()) {
+              throw new Error('One of the questions does not exist');
+            }
+
+            transaction
+              .update(docRef1, { position: doc2.data().position })
+              .update(docRef2, { position: doc1.data().position });
           })
         )
       )

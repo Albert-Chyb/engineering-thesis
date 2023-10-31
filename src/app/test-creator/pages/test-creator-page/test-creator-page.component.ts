@@ -1,3 +1,4 @@
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -35,6 +36,7 @@ import { TestCreatorPageStore } from './test-creator-page.store';
     MatIconModule,
     MatMenuModule,
     QuestionWrapperComponent,
+    DragDropModule,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -133,6 +135,24 @@ export class TestCreatorPageComponent {
   handleDeleteQuestion(question: Question<QuestionsTypes>) {
     this.store.deleteQuestion(question);
     this.store.deleteQuestionFromDb(question);
+  }
+
+  handleQuestionsPositionsSwap(
+    $event: CdkDragDrop<
+      Question<QuestionsTypes>[],
+      Question<QuestionsTypes>[],
+      Question<QuestionsTypes>
+    >
+  ) {
+    const prevIndex = $event.previousIndex;
+    const currentIndex = $event.currentIndex;
+    const questions = this.questions();
+    const question1 = questions[prevIndex];
+    const question2 = questions[currentIndex];
+    const swap = { from: question1, to: question2 };
+
+    this.store.swapQuestionsOnDb(swap);
+    this.store.swapQuestions(swap);
   }
 
   trackByQuestionId(index: number, question: Question<QuestionsTypes>) {

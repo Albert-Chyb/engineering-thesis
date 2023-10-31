@@ -17,7 +17,12 @@
         <mat-label>Nazwa testu</mat-label>
       </mat-form-field>
 
-      <div class="v-stack">
+      <div
+        class="v-stack"
+        cdkDropList
+        [cdkDropListData]="questions()"
+        (cdkDropListDropped)="handleQuestionsPositionsSwap($event)"
+      >
         <ng-container
           *ngFor="
             let question of questions();
@@ -27,10 +32,12 @@
           [ngSwitch]="question.type"
         >
           <app-question-wrapper
+            cdkDrag
+            [cdkDragData]="question"
             *ngSwitchCase="'text-answer'"
             (onDelete)="handleDeleteQuestion(question)"
           >
-            <button mat-icon-button drag-handle>
+            <button mat-icon-button drag-handle cdkDragHandle>
               <mat-icon>drag_indicator</mat-icon>
             </button>
 
@@ -50,10 +57,12 @@
           </app-question-wrapper>
 
           <app-question-wrapper
+            cdkDrag
+            [cdkDragData]="question"
             *ngSwitchCase="'multi-choice'"
             (onDelete)="handleDeleteQuestion(question)"
           >
-            <button mat-icon-button drag-handle>
+            <button mat-icon-button drag-handle cdkDragHandle>
               <mat-icon>drag_indicator</mat-icon>
             </button>
 
@@ -73,10 +82,12 @@
           </app-question-wrapper>
 
           <app-question-wrapper
+            cdkDrag
+            [cdkDragData]="question"
             *ngSwitchCase="'single-choice'"
             (onDelete)="handleDeleteQuestion(question)"
           >
-            <button mat-icon-button drag-handle>
+            <button mat-icon-button drag-handle cdkDragHandle>
               <mat-icon>drag_indicator</mat-icon>
             </button>
 
