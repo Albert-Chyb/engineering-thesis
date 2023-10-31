@@ -1,55 +1,38 @@
-<mat-card
-  appearance="outlined"
-  [formGroup]="questionForm"
-  class="with-spacing-fix question"
->
-  <mat-card-header>
-    <h2 mat-card-title>Pytanie {{ index + 1 }}</h2>
-    <p mat-card-subtitle>Pytanie jednokrotnego wyboru</p>
-  </mat-card-header>
+<ng-container [formGroup]="questionForm">
+  <mat-form-field class="width-100">
+    <input type="text" matInput formControlName="content" />
+    <mat-label>Treść pytania</mat-label>
+  </mat-form-field>
 
-  <mat-card-content>
-    <mat-form-field class="width-100">
+  <!-- <div cdkDropList formArrayName="answers" [cdkDropListData]="answers">
+    <mat-form-field
+      class="width-100 question__answer"
+      *ngFor="let answer of answers.controls; let answerIndex = index"
+      [formGroupName]="answerIndex"
+      cdkDrag
+      [cdkDragData]="answer"
+      (cdkDragDropped)="handleAnswersReorder($event)"
+    >
       <input type="text" matInput formControlName="content" />
-      <mat-label>Treść pytania</mat-label>
-    </mat-form-field>
 
-    <!-- <div cdkDropList formArrayName="answers" [cdkDropListData]="answers">
-      <mat-form-field
-        class="width-100 question__answer"
-        *ngFor="let answer of answers.controls; let answerIndex = index"
-        [formGroupName]="answerIndex"
-        cdkDrag
-        [cdkDragData]="answer"
-        (cdkDragDropped)="handleAnswersReorder($event)"
+      <mat-label>Odpowiedź {{ answerIndex + 1 }}</mat-label>
+
+      <button
+        mat-icon-button
+        matPrefix
+        cdkDragHandle
+        class="question__drag-handle"
       >
-        <input type="text" matInput formControlName="content" />
+        <mat-icon>drag_indicator</mat-icon>
+      </button>
 
-        <mat-label>Odpowiedź {{ answerIndex + 1 }}</mat-label>
-
-        <button
-          mat-icon-button
-          matPrefix
-          cdkDragHandle
-          class="question__drag-handle"
-        >
-          <mat-icon>drag_indicator</mat-icon>
-        </button>
-
-        <button
-          mat-icon-button
-          matSuffix
-          (click)="onDeleteAnswer.emit([index, answerIndex])"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
-      </mat-form-field>
-    </div> -->
-  </mat-card-content>
-
-  <mat-card-actions align="end">
-    <button mat-button color="accent">
-      <mat-icon>add</mat-icon> Dodaj odpowiedź
-    </button>
-  </mat-card-actions>
-</mat-card>
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="onDeleteAnswer.emit([index, answerIndex])"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-form-field>
+  </div> -->
+</ng-container>

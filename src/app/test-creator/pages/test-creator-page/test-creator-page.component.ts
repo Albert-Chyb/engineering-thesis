@@ -11,6 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
 import { MultiChoiceQuestionComponent } from '@test-creator/components/multi-choice-question/multi-choice-question.component';
 import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
+import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
 import { SingleChoiceQuestionComponent } from '@test-creator/components/single-choice-question/single-choice-question.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Question } from '@test-creator/types/question';
@@ -33,6 +34,7 @@ import { TestCreatorPageStore } from './test-creator-page.store';
     OpenQuestionComponent,
     MatIconModule,
     MatMenuModule,
+    QuestionWrapperComponent,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -53,15 +55,27 @@ export class TestCreatorPageComponent {
   readonly questionsTypes: {
     type: QuestionsTypes;
     label: string;
+    shortLabel: string;
     icon: string;
   }[] = [
     {
       type: 'single-choice',
-      label: 'Jednokrotny wybór',
+      label: 'Pytanie jednokrotnego wyboru',
+      shortLabel: 'Jednokrotny wybór',
       icon: 'radio_button_checked',
     },
-    { type: 'multi-choice', label: 'Wielokrotny wybór', icon: 'check_box' },
-    { type: 'text-answer', label: 'Otwarte', icon: 'text_fields' },
+    {
+      type: 'multi-choice',
+      label: 'Pytanie wielokrotnego wyboru',
+      shortLabel: 'Wielokrotny wybór',
+      icon: 'check_box',
+    },
+    {
+      type: 'text-answer',
+      label: 'Pytanie otwarte',
+      shortLabel: 'Otwarte',
+      icon: 'text_fields',
+    },
   ];
 
   private readonly syncStoreWithForm = effect(() => {
@@ -89,6 +103,12 @@ export class TestCreatorPageComponent {
         debounceTime(500)
       )
     );
+  }
+
+  getQuestionLabel(type: QuestionsTypes) {
+    return this.questionsTypes.find(
+      (questionType) => questionType.type === type
+    )?.label;
   }
 
   handleAddQuestion<TQuestionType extends QuestionsTypes>(type: TQuestionType) {

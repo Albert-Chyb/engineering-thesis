@@ -26,23 +26,64 @@
           "
           [ngSwitch]="question.type"
         >
-          <app-single-choice-question
-            *ngSwitchCase="'single-choice'"
-            [question]="$any(question)"
-            [index]="i"
-          />
+          <app-question-wrapper *ngSwitchCase="'text-answer'">
+            <button mat-icon-button drag-handle>
+              <mat-icon>drag_indicator</mat-icon>
+            </button>
 
-          <app-multi-choice-question
-            *ngSwitchCase="'multi-choice'"
-            [question]="$any(question)"
-            [index]="i"
-          />
+            <span question-title role="heading" aria-level="2">
+              Pytanie {{ i + 1 }}
+            </span>
 
-          <app-open-question
-            *ngSwitchCase="'text-answer'"
-            [question]="$any(question)"
-            [index]="i"
-          />
+            <span question-subtitle role="heading" aria-level="3">
+              {{ getQuestionLabel(question.type) }}
+            </span>
+
+            <app-open-question
+              *ngSwitchCase="'text-answer'"
+              [question]="$any(question)"
+              [index]="i"
+            />
+          </app-question-wrapper>
+
+          <app-question-wrapper *ngSwitchCase="'multi-choice'">
+            <button mat-icon-button drag-handle>
+              <mat-icon>drag_indicator</mat-icon>
+            </button>
+
+            <span question-title role="heading" aria-level="2">
+              Pytanie {{ i + 1 }}
+            </span>
+
+            <span question-subtitle role="heading" aria-level="3">
+              {{ getQuestionLabel(question.type) }}
+            </span>
+
+            <app-multi-choice-question
+              *ngSwitchCase="'multi-choice'"
+              [question]="$any(question)"
+              [index]="i"
+            />
+          </app-question-wrapper>
+
+          <app-question-wrapper *ngSwitchCase="'single-choice'">
+            <button mat-icon-button drag-handle>
+              <mat-icon>drag_indicator</mat-icon>
+            </button>
+
+            <span question-title role="heading" aria-level="2">
+              Pytanie {{ i + 1 }}
+            </span>
+
+            <span question-subtitle role="heading" aria-level="3">
+              {{ getQuestionLabel(question.type) }}
+            </span>
+
+            <app-single-choice-question
+              [question]="$any(question)"
+              [index]="i"
+            />
+          </app-question-wrapper>
         </ng-container>
       </div>
     </form>
@@ -65,7 +106,8 @@
         *ngFor="let questionType of questionsTypes"
         (click)="handleAddQuestion(questionType.type)"
       >
-        <mat-icon>{{ questionType.icon }}</mat-icon> {{ questionType.label }}
+        <mat-icon>{{ questionType.icon }}</mat-icon>
+        {{ questionType.shortLabel }}
       </button>
     </mat-menu>
   </mat-card-actions>

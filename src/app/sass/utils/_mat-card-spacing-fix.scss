@@ -1,6 +1,7 @@
 mat-card.with-spacing-fix {
   // This fixes the lack of margin after the subtitle in mat-card-header.
-  & mat-card-header [mat-card-subtitle]:last-child {
+  & mat-card-header [mat-card-subtitle]:last-child,
+  & mat-card-header mat-card-subtitle:last-child {
     margin-bottom: 8px;
   }
 }
