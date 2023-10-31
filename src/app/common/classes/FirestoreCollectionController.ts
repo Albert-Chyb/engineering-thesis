@@ -26,8 +26,8 @@ export class FirestoreCollectionController<
   TRawData extends DocumentData
 > {
   constructor(
-    private readonly firestore: Firestore,
-    private readonly collectionRef$: Observable<CollectionReference<TData>>
+    protected readonly firestore: Firestore,
+    protected readonly collectionRef$: Observable<CollectionReference<TData>>
   ) {}
 
   create(
