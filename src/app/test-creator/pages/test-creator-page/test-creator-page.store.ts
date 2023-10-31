@@ -11,7 +11,9 @@ import {
 } from '@test-creator/types/questions';
 import { Test } from '@test-creator/types/test';
 import {
+  EMPTY,
   Observable,
+  catchError,
   concatMap,
   defaultIfEmpty,
   forkJoin,
@@ -147,6 +149,47 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
           );
         })
       )
+  );
+
+  readonly deleteQuestionFromDb = this.effect(
+    (question$: Observable<Question<QuestionsTypes>>) =>
+      question$.pipe(
+        concatMap((question) => {
+          const testId = this.test()?.id;
+
+          if (!testId) {
+            throw new Error(
+              'Tried to delete a question without previously loading the test.'
+            );
+          }
+
+          return this.questionsService
+            .getController(testId)
+            .delete(question.id)
+            .pipe(
+              catchError((error) => {
+                this.addQuestion(question);
+
+                return EMPTY;
+              })
+            );
+        }),
+        tapResponse(
+          () => {},
+          (error) => {
+            this.setState((state) => ({ ...state, error }));
+          }
+        )
+      )
+  );
+
+  readonly deleteQuestion = this.updater(
+    (state, question: Question<QuestionsTypes>) => {
+      return {
+        ...state,
+        questions: state.questions.filter((q) => q.id !== question.id),
+      };
+    }
   );
 
   readonly addQuestion = this.updater(

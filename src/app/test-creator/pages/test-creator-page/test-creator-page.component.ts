@@ -122,6 +122,11 @@ export class TestCreatorPageComponent {
     this.store.saveQuestion(newQuestion);
   }
 
+  handleDeleteQuestion(question: Question<QuestionsTypes>) {
+    this.store.deleteQuestion(question);
+    this.store.deleteQuestionFromDb(question);
+  }
+
   trackByQuestionId(index: number, question: Question<QuestionsTypes>) {
     return question.id;
   }

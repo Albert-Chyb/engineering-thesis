@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,4 +11,9 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './question-wrapper.component.html',
   styleUrls: ['./question-wrapper.component.scss'],
 })
-export class QuestionWrapperComponent {}
+export class QuestionWrapperComponent {
+  /**
+   * Emits whenever the delete button is clicked.
+   */
+  @Output() onDelete = new EventEmitter<void>();
+}

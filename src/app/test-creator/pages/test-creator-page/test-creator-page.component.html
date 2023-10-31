@@ -26,7 +26,10 @@
           "
           [ngSwitch]="question.type"
         >
-          <app-question-wrapper *ngSwitchCase="'text-answer'">
+          <app-question-wrapper
+            *ngSwitchCase="'text-answer'"
+            (onDelete)="handleDeleteQuestion(question)"
+          >
             <button mat-icon-button drag-handle>
               <mat-icon>drag_indicator</mat-icon>
             </button>
@@ -46,7 +49,10 @@
             />
           </app-question-wrapper>
 
-          <app-question-wrapper *ngSwitchCase="'multi-choice'">
+          <app-question-wrapper
+            *ngSwitchCase="'multi-choice'"
+            (onDelete)="handleDeleteQuestion(question)"
+          >
             <button mat-icon-button drag-handle>
               <mat-icon>drag_indicator</mat-icon>
             </button>
@@ -66,7 +72,10 @@
             />
           </app-question-wrapper>
 
-          <app-question-wrapper *ngSwitchCase="'single-choice'">
+          <app-question-wrapper
+            *ngSwitchCase="'single-choice'"
+            (onDelete)="handleDeleteQuestion(question)"
+          >
             <button mat-icon-button drag-handle>
               <mat-icon>drag_indicator</mat-icon>
             </button>
