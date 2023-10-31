@@ -32,6 +32,7 @@ export abstract class Question<TQuestionType extends QuestionsTypes> {
     type: new FormControl<TQuestionType>('' as TQuestionType, {
       nonNullable: true,
     }),
+    position: new FormControl(this.index, { nonNullable: true }),
   });
 
   constructor() {
@@ -46,6 +47,7 @@ export abstract class Question<TQuestionType extends QuestionsTypes> {
         {
           content: question.content,
           type: question.type,
+          position: question.position,
         },
         { emitEvent: false }
       );
@@ -67,6 +69,7 @@ export abstract class Question<TQuestionType extends QuestionsTypes> {
       id: this.question?.id ?? '',
       type: value.type,
       content: value.content ?? '',
+      position: value.position,
     } as QuestionDoc<TQuestionType>;
   }
 }

@@ -26,6 +26,7 @@ export type QuestionFormGroup<TQuestionType extends QuestionsTypes> =
       QuestionsContentsTypes[TQuestionType]['questionContentType'] | null
     >;
     type: FormControl<QuestionsTypes>;
+    position: FormControl<number>;
   }>;
 
 /**

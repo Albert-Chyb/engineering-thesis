@@ -113,7 +113,12 @@
       <button
         mat-menu-item
         *ngFor="let questionType of questionsTypes"
-        (click)="handleAddQuestion(questionType.type)"
+        (click)="
+          handleAddQuestion(
+            questionType.type,
+            getNewQuestionPosition(questions())
+          )
+        "
       >
         <mat-icon>{{ questionType.icon }}</mat-icon>
         {{ questionType.shortLabel }}

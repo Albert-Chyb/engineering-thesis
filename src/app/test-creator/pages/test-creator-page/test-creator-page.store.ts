@@ -144,6 +144,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
             {
               content: question.content,
               type: question.type,
+              position: question.position,
             },
             question.id
           );

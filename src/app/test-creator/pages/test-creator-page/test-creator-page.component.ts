@@ -105,17 +105,25 @@ export class TestCreatorPageComponent {
     );
   }
 
+  getNewQuestionPosition(questions: Question<QuestionsTypes>[]) {
+    return (questions.at(-1)?.position ?? 0) + 1;
+  }
+
   getQuestionLabel(type: QuestionsTypes) {
     return this.questionsTypes.find(
       (questionType) => questionType.type === type
     )?.label;
   }
 
-  handleAddQuestion<TQuestionType extends QuestionsTypes>(type: TQuestionType) {
+  handleAddQuestion<TQuestionType extends QuestionsTypes>(
+    type: TQuestionType,
+    position: number
+  ) {
     const newQuestion: Question<TQuestionType> = {
       id: this.testsService.generateId(),
       type,
       content: 'Nowe pytanie',
+      position,
     };
 
     this.store.addQuestion(newQuestion);

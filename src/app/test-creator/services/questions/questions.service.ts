@@ -9,12 +9,16 @@ import {
   SnapshotOptions,
   WithFieldValue,
   collection,
+  orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
 import { Question, RawQuestion } from '@test-creator/types/question';
-import { QuestionsTypes } from '@test-creator/types/questions';
-import { map } from 'rxjs';
+import {
+  QuestionsContentsTypes,
+  QuestionsTypes,
+} from '@test-creator/types/questions';
+import { Observable, map } from 'rxjs';
 
 class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
   toFirestore(
@@ -38,7 +42,17 @@ class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
       id: snapshot.id,
       type: data.type,
       content: data.content,
+      position: data.position,
     };
+  }
+}
+
+class QuestionsServiceController extends FirestoreCollectionController<
+  Question<QuestionsTypes>,
+  RawQuestion<QuestionsTypes>
+> {
+  override list(): Observable<Question<keyof QuestionsContentsTypes>[]> {
+    return this.query(orderBy('position'));
   }
 }
 
@@ -62,6 +76,6 @@ export class QuestionsService {
       )
     );
 
-    return new FirestoreCollectionController(this.firestore, collectionRef$);
+    return new QuestionsServiceController(this.firestore, collectionRef$);
   }
 }
