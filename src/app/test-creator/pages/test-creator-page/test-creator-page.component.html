@@ -29,12 +29,12 @@
             let i = index;
             trackBy: trackByQuestionId
           "
-          [ngSwitch]="question.type"
         >
           <app-question-wrapper
+            [question]="question"
+            [index]="i"
             cdkDrag
             [cdkDragData]="question"
-            *ngSwitchCase="'text-answer'"
             (onDelete)="handleDeleteQuestion(question)"
           >
             <button mat-icon-button drag-handle cdkDragHandle>
@@ -48,61 +48,6 @@
             <span question-subtitle role="heading" aria-level="3">
               {{ getQuestionLabel(question.type) }}
             </span>
-
-            <app-open-question
-              *ngSwitchCase="'text-answer'"
-              [question]="$any(question)"
-              [index]="i"
-            />
-          </app-question-wrapper>
-
-          <app-question-wrapper
-            cdkDrag
-            [cdkDragData]="question"
-            *ngSwitchCase="'multi-choice'"
-            (onDelete)="handleDeleteQuestion(question)"
-          >
-            <button mat-icon-button drag-handle cdkDragHandle>
-              <mat-icon>drag_indicator</mat-icon>
-            </button>
-
-            <span question-title role="heading" aria-level="2">
-              Pytanie {{ i + 1 }}
-            </span>
-
-            <span question-subtitle role="heading" aria-level="3">
-              {{ getQuestionLabel(question.type) }}
-            </span>
-
-            <app-multi-choice-question
-              *ngSwitchCase="'multi-choice'"
-              [question]="$any(question)"
-              [index]="i"
-            />
-          </app-question-wrapper>
-
-          <app-question-wrapper
-            cdkDrag
-            [cdkDragData]="question"
-            *ngSwitchCase="'single-choice'"
-            (onDelete)="handleDeleteQuestion(question)"
-          >
-            <button mat-icon-button drag-handle cdkDragHandle>
-              <mat-icon>drag_indicator</mat-icon>
-            </button>
-
-            <span question-title role="heading" aria-level="2">
-              Pytanie {{ i + 1 }}
-            </span>
-
-            <span question-subtitle role="heading" aria-level="3">
-              {{ getQuestionLabel(question.type) }}
-            </span>
-
-            <app-single-choice-question
-              [question]="$any(question)"
-              [index]="i"
-            />
           </app-question-wrapper>
         </ng-container>
       </div>

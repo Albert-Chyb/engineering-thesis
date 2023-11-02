@@ -10,10 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
-import { MultiChoiceQuestionComponent } from '@test-creator/components/multi-choice-question/multi-choice-question.component';
-import { OpenQuestionComponent } from '@test-creator/components/open-question/open-question.component';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
-import { SingleChoiceQuestionComponent } from '@test-creator/components/single-choice-question/single-choice-question.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Question } from '@test-creator/types/question';
 import { QuestionsTypes } from '@test-creator/types/questions';
@@ -30,9 +27,6 @@ import { TestCreatorPageStore } from './test-creator-page.store';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    SingleChoiceQuestionComponent,
-    MultiChoiceQuestionComponent,
-    OpenQuestionComponent,
     MatIconModule,
     MatMenuModule,
     QuestionWrapperComponent,
