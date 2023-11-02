@@ -36,6 +36,10 @@ export abstract class Question<TQuestionType extends QuestionsTypes> {
     QuestionDoc<TQuestionType>
   >();
 
+  @Output() readonly onQuestionDelete = new EventEmitter<
+    QuestionDoc<TQuestionType>
+  >();
+
   readonly questionForm = new FormGroup({
     content: new FormControl(''),
     type: new FormControl<TQuestionType>('' as TQuestionType, {

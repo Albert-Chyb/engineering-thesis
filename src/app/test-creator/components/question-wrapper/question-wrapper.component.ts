@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -26,9 +26,4 @@ import { QuestionsTypes } from '@test-creator/types/questions';
 })
 export class QuestionWrapperComponent<
   TQuestionType extends QuestionsTypes
-> extends Question<TQuestionType> {
-  /**
-   * Emits whenever the delete button is clicked.
-   */
-  @Output() onDelete = new EventEmitter<void>();
-}
+> extends Question<TQuestionType> {}
