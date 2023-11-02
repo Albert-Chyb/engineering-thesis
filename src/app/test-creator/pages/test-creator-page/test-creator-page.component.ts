@@ -111,6 +111,11 @@ export class TestCreatorPageComponent {
     )?.label;
   }
 
+  handleUpdateQuestion(updatedQuestion: Question<QuestionsTypes>) {
+    this.store.updateQuestion(updatedQuestion);
+    this.store.saveQuestion(updatedQuestion);
+  }
+
   handleAddQuestion<TQuestionType extends QuestionsTypes>(
     type: TQuestionType,
     position: number

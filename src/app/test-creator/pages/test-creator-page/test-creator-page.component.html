@@ -36,6 +36,7 @@
             cdkDrag
             [cdkDragData]="question"
             (onDelete)="handleDeleteQuestion(question)"
+            (onQuestionUpdate)="handleUpdateQuestion($event)"
           >
             <button mat-icon-button drag-handle cdkDragHandle>
               <mat-icon>drag_indicator</mat-icon>

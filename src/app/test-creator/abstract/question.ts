@@ -1,14 +1,19 @@
-import { Directive, Input, effect, inject, signal } from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  Input,
+  Output,
+  effect,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { TestCreatorPageStore } from '@test-creator/pages/test-creator-page/test-creator-page.store';
 import { QuestionsTypes } from '@test-creator/types/questions';
-import { debounceTime, map, tap } from 'rxjs';
+import { debounceTime } from 'rxjs';
 import { Question as QuestionDoc } from '../types/question';
 
 @Directive()
 export abstract class Question<TQuestionType extends QuestionsTypes> {
-  private readonly store = inject(TestCreatorPageStore);
-
   private readonly _question = signal<QuestionDoc<TQuestionType> | null>(null);
   @Input({ required: true }) set question(
     value: QuestionDoc<TQuestionType> | null
@@ -26,6 +31,10 @@ export abstract class Question<TQuestionType extends QuestionsTypes> {
   get index() {
     return this._index();
   }
+
+  @Output() readonly onQuestionUpdate = new EventEmitter<
+    QuestionDoc<TQuestionType>
+  >();
 
   readonly questionForm = new FormGroup({
     content: new FormControl(''),
@@ -53,13 +62,11 @@ export abstract class Question<TQuestionType extends QuestionsTypes> {
       );
     });
 
-    this.store.saveQuestion(
-      this.questionForm.valueChanges.pipe(
-        map((value) => this.createQuestionFromFormValue(value)),
-        tap((question) => this.store.updateQuestion(question)),
-        debounceTime(500)
-      )
-    );
+    this.questionForm.valueChanges
+      .pipe(takeUntilDestroyed(), debounceTime(500))
+      .subscribe((value) => {
+        this.onQuestionUpdate.emit(this.createQuestionFromFormValue(value));
+      });
   }
 
   private createQuestionFromFormValue(
