@@ -43,36 +43,11 @@ export class TestCreatorPageComponent {
 
   readonly test = this.store.test;
   readonly questions = this.store.questions;
+  readonly questionsMetadata = this.store.questionsMetadata;
 
   readonly testForm = new FormGroup({
     name: new FormControl(''),
   });
-
-  readonly questionsTypes: {
-    type: QuestionsTypes;
-    label: string;
-    shortLabel: string;
-    icon: string;
-  }[] = [
-    {
-      type: 'single-choice',
-      label: 'Pytanie jednokrotnego wyboru',
-      shortLabel: 'Jednokrotny wybór',
-      icon: 'radio_button_checked',
-    },
-    {
-      type: 'multi-choice',
-      label: 'Pytanie wielokrotnego wyboru',
-      shortLabel: 'Wielokrotny wybór',
-      icon: 'check_box',
-    },
-    {
-      type: 'text-answer',
-      label: 'Pytanie otwarte',
-      shortLabel: 'Otwarte',
-      icon: 'text_fields',
-    },
-  ];
 
   private readonly syncStoreWithForm = effect(() => {
     const test = this.store.test();
@@ -103,12 +78,6 @@ export class TestCreatorPageComponent {
 
   getNewQuestionPosition(questions: Question<QuestionsTypes>[]) {
     return (questions.at(-1)?.position ?? 0) + 1;
-  }
-
-  getQuestionLabel(type: QuestionsTypes) {
-    return this.questionsTypes.find(
-      (questionType) => questionType.type === type
-    )?.label;
   }
 
   handleUpdateQuestion(updatedQuestion: Question<QuestionsTypes>) {

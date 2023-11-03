@@ -4,39 +4,12 @@ import {
   OpenQuestionsTypes,
   QuestionsTypes,
 } from '@test-creator/types/questions';
-
-export type QuestionMetadata = {
-  name: string;
-  shortName: string;
-  icon: string;
-};
-
-export type QuestionsMetadataDictionary = {
-  [T in QuestionsTypes]: QuestionMetadata;
-};
-
-const questionsMetadata: QuestionsMetadataDictionary = Object.freeze({
-  'multi-choice': {
-    name: 'Pytanie wielokrotnego wyboru',
-    shortName: 'Wielokrotny wybór',
-    icon: 'check_box',
-  },
-  'single-choice': {
-    name: 'Pytanie jednokrotnego wyboru',
-    shortName: 'Jednokrotny wybór',
-    icon: 'radio_button_checked',
-  },
-  'text-answer': {
-    name: 'Pytanie otwarte',
-    shortName: 'Otwarte',
-    icon: 'text_fields',
-  },
-});
+import { QuestionMetadata, questionsMetadata } from './questions-metadata';
 
 export class Question<TQuestionType extends QuestionsTypes>
   implements QuestionDoc<TQuestionType>
 {
-  private readonly metadata: QuestionMetadata;
+  private readonly metadata: QuestionMetadata<TQuestionType>;
   readonly id: string;
   readonly type: TQuestionType;
   readonly content: string;
@@ -48,7 +21,7 @@ export class Question<TQuestionType extends QuestionsTypes>
     this.content = doc.content;
     this.position = doc.position;
 
-    this.metadata = { ...questionsMetadata[this.type] };
+    this.metadata = questionsMetadata.getMetadata(this.type);
   }
 
   /** The name for the type of the question */

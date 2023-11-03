@@ -1,6 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { Question } from '@test-creator/classes/question';
+import {
+  QuestionMetadata,
+  questionsMetadata,
+} from '@test-creator/classes/questions-metadata';
 import { AnswersService } from '@test-creator/services/answers/answers.service';
 import { QuestionsService } from '@test-creator/services/questions/questions.service';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
@@ -29,6 +33,7 @@ type AnswerEntry = [AnswerEntryKey, AnswerEntryValue];
 interface TestCreatorPageState {
   test: Test | null;
   questions: Question<QuestionsTypes>[];
+  questionsMetadata: QuestionMetadata<QuestionsTypes>[];
   answers: Map<AnswerEntryKey, AnswerEntryValue>;
   error: any | null;
 }
@@ -38,6 +43,7 @@ const INITIAL_STATE: TestCreatorPageState = {
   questions: [],
   answers: new Map(),
   error: null,
+  questionsMetadata: questionsMetadata.getMetadataForAllTypes(),
 };
 
 @Injectable()
@@ -52,6 +58,9 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
 
   readonly test = this.selectSignal((state) => state.test);
   readonly questions = this.selectSignal((state) => state.questions);
+  readonly questionsMetadata = this.selectSignal(
+    (state) => state.questionsMetadata
+  );
 
   /**
    * Loads the test, questions and answers from the database.

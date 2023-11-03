@@ -47,7 +47,7 @@
             </span>
 
             <span question-subtitle role="heading" aria-level="3">
-              {{ getQuestionLabel(question.type) }}
+              {{ question.name }}
             </span>
           </app-question-wrapper>
         </ng-container>
@@ -69,16 +69,13 @@
     <mat-menu #addQuestionMenu>
       <button
         mat-menu-item
-        *ngFor="let questionType of questionsTypes"
+        *ngFor="let qMetadata of questionsMetadata()"
         (click)="
-          handleAddQuestion(
-            questionType.type,
-            getNewQuestionPosition(questions())
-          )
+          handleAddQuestion(qMetadata.type, getNewQuestionPosition(questions()))
         "
       >
-        <mat-icon>{{ questionType.icon }}</mat-icon>
-        {{ questionType.shortLabel }}
+        <mat-icon>{{ qMetadata.icon }}</mat-icon>
+        {{ qMetadata.shortName }}
       </button>
     </mat-menu>
   </mat-card-actions>
