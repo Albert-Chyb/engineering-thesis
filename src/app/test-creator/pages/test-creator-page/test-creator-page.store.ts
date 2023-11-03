@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
+import { Question } from '@test-creator/classes/question';
 import { AnswersService } from '@test-creator/services/answers/answers.service';
 import { QuestionsService } from '@test-creator/services/questions/questions.service';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Answer } from '@test-creator/types/answer';
-import { QuestionDoc } from '@test-creator/types/question';
 import {
   ClosedQuestionsTypes,
   QuestionsTypes,
@@ -28,7 +28,7 @@ type AnswerEntry = [AnswerEntryKey, AnswerEntryValue];
 
 interface TestCreatorPageState {
   test: Test | null;
-  questions: QuestionDoc<QuestionsTypes>[];
+  questions: Question<QuestionsTypes>[];
   answers: Map<AnswerEntryKey, AnswerEntryValue>;
   error: any | null;
 }
@@ -129,7 +129,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
    * Saves the question on the database.
    */
   readonly saveQuestion = this.effect(
-    (question$: Observable<QuestionDoc<QuestionsTypes>>) =>
+    (question$: Observable<Question<QuestionsTypes>>) =>
       question$.pipe(
         concatMap((question) => {
           const testId = this.test()?.id ?? '';
@@ -153,7 +153,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   );
 
   readonly deleteQuestionFromDb = this.effect(
-    (question$: Observable<QuestionDoc<QuestionsTypes>>) =>
+    (question$: Observable<Question<QuestionsTypes>>) =>
       question$.pipe(
         concatMap((question) => {
           const testId = this.test()?.id;
@@ -187,8 +187,8 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   readonly swapQuestionsOnDb = this.effect(
     (
       $: Observable<{
-        from: QuestionDoc<QuestionsTypes>;
-        to: QuestionDoc<QuestionsTypes>;
+        from: Question<QuestionsTypes>;
+        to: Question<QuestionsTypes>;
       }>
     ) =>
       $.pipe(
@@ -226,7 +226,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       {
         from,
         to,
-      }: { from: QuestionDoc<QuestionsTypes>; to: QuestionDoc<QuestionsTypes> }
+      }: { from: Question<QuestionsTypes>; to: Question<QuestionsTypes> }
     ) => {
       const questions = [...state.questions];
       const fromIndex = questions.findIndex(
@@ -242,11 +242,8 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
         return state;
       }
 
-      questions[fromIndex] = to;
-      questions[toIndex] = from;
-
-      questions[fromIndex].position = to.position;
-      questions[toIndex].position = from.position;
+      questions[fromIndex] = new Question({ ...to, position: to.position });
+      questions[toIndex] = new Question({ ...from, position: from.position });
 
       return {
         ...state,
@@ -256,7 +253,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   );
 
   readonly deleteQuestion = this.updater(
-    (state, question: QuestionDoc<QuestionsTypes>) => {
+    (state, question: Question<QuestionsTypes>) => {
       return {
         ...state,
         questions: state.questions.filter((q) => q.id !== question.id),
@@ -265,7 +262,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   );
 
   readonly addQuestion = this.updater(
-    (state, question: QuestionDoc<QuestionsTypes>) => {
+    (state, question: Question<QuestionsTypes>) => {
       return {
         ...state,
         questions: [...state.questions, question],
@@ -277,7 +274,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
    * Updates the local question state.
    */
   readonly updateQuestion = this.updater(
-    (state, newQuestion: QuestionDoc<QuestionsTypes>) => {
+    (state, newQuestion: Question<QuestionsTypes>) => {
       const id = newQuestion.id;
       const questionIndex = state.questions.findIndex(
         (question) => question.id === id

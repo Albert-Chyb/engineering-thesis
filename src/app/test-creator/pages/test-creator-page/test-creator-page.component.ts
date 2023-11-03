@@ -10,9 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
+import { Question } from '@test-creator/classes/question';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
-import { QuestionDoc } from '@test-creator/types/question';
 import { QuestionsTypes } from '@test-creator/types/questions';
 import { debounceTime, map, tap } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
@@ -101,7 +101,7 @@ export class TestCreatorPageComponent {
     );
   }
 
-  getNewQuestionPosition(questions: QuestionDoc<QuestionsTypes>[]) {
+  getNewQuestionPosition(questions: Question<QuestionsTypes>[]) {
     return (questions.at(-1)?.position ?? 0) + 1;
   }
 
@@ -111,7 +111,7 @@ export class TestCreatorPageComponent {
     )?.label;
   }
 
-  handleUpdateQuestion(updatedQuestion: QuestionDoc<QuestionsTypes>) {
+  handleUpdateQuestion(updatedQuestion: Question<QuestionsTypes>) {
     this.store.updateQuestion(updatedQuestion);
     this.store.saveQuestion(updatedQuestion);
   }
@@ -120,27 +120,27 @@ export class TestCreatorPageComponent {
     type: TQuestionType,
     position: number
   ) {
-    const newQuestion: QuestionDoc<TQuestionType> = {
+    const newQuestion: Question<TQuestionType> = new Question({
       id: this.testsService.generateId(),
       type,
       content: 'Nowe pytanie',
       position,
-    };
+    });
 
     this.store.addQuestion(newQuestion);
     this.store.saveQuestion(newQuestion);
   }
 
-  handleDeleteQuestion(question: QuestionDoc<QuestionsTypes>) {
+  handleDeleteQuestion(question: Question<QuestionsTypes>) {
     this.store.deleteQuestion(question);
     this.store.deleteQuestionFromDb(question);
   }
 
   handleQuestionsPositionsSwap(
     $event: CdkDragDrop<
-      QuestionDoc<QuestionsTypes>[],
-      QuestionDoc<QuestionsTypes>[],
-      QuestionDoc<QuestionsTypes>
+      Question<QuestionsTypes>[],
+      Question<QuestionsTypes>[],
+      Question<QuestionsTypes>
     >
   ) {
     const prevIndex = $event.previousIndex;
@@ -154,7 +154,7 @@ export class TestCreatorPageComponent {
     this.store.swapQuestions(swap);
   }
 
-  trackByQuestionId(index: number, question: QuestionDoc<QuestionsTypes>) {
+  trackByQuestionId(index: number, question: Question<QuestionsTypes>) {
     return question.id;
   }
 }

@@ -10,13 +10,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { QuestionsTypes } from '@test-creator/types/questions';
 import { debounceTime } from 'rxjs';
-import { QuestionDoc } from '../types/question';
+import { Question as QuestionObj } from '../classes/question';
 
 @Directive()
 export abstract class Question<TQuestionType extends QuestionsTypes> {
-  private readonly _question = signal<QuestionDoc<TQuestionType> | null>(null);
+  private readonly _question = signal<QuestionObj<TQuestionType> | null>(null);
   @Input({ required: true }) set question(
-    value: QuestionDoc<TQuestionType> | null
+    value: QuestionObj<TQuestionType> | null
   ) {
     this._question.set(value);
   }
@@ -33,11 +33,11 @@ export abstract class Question<TQuestionType extends QuestionsTypes> {
   }
 
   @Output() readonly onQuestionUpdate = new EventEmitter<
-    QuestionDoc<TQuestionType>
+    QuestionObj<TQuestionType>
   >();
 
   @Output() readonly onQuestionDelete = new EventEmitter<
-    QuestionDoc<TQuestionType>
+    QuestionObj<TQuestionType>
   >();
 
   readonly questionForm = new FormGroup({
@@ -75,12 +75,12 @@ export abstract class Question<TQuestionType extends QuestionsTypes> {
 
   private createQuestionFromFormValue(
     value: typeof this.questionForm.value
-  ): QuestionDoc<TQuestionType> {
-    return {
+  ): QuestionObj<TQuestionType> {
+    return new QuestionObj<TQuestionType>({
       id: this.question?.id ?? '',
-      type: value.type,
+      type: value.type as TQuestionType,
       content: value.content ?? '',
-      position: value.position,
-    } as QuestionDoc<TQuestionType>;
+      position: value.position as number,
+    });
   }
 }

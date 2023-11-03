@@ -15,45 +15,53 @@ import {
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
+import { Question } from '@test-creator/classes/question';
 import { QuestionDoc, RawQuestion } from '@test-creator/types/question';
-import {
-  QuestionsContentsTypes,
-  QuestionsTypes,
-} from '@test-creator/types/questions';
+import { QuestionsTypes } from '@test-creator/types/questions';
 import { Observable, from, map, switchMap, take } from 'rxjs';
 
-class Converter implements FirestoreDataConverter<QuestionDoc<QuestionsTypes>> {
+class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
   toFirestore(
-    modelObject: WithFieldValue<QuestionDoc<QuestionsTypes>>
+    modelObject: WithFieldValue<Question<QuestionsTypes>>
   ): DocumentData;
   toFirestore(
-    modelObject: PartialWithFieldValue<QuestionDoc<QuestionsTypes>>,
+    modelObject: PartialWithFieldValue<Question<QuestionsTypes>>,
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
-    return modelObject as DocumentData;
+    if (modelObject instanceof Object) {
+      const obj: Record<string, any> = modelObject;
+
+      return {
+        type: obj['type'],
+        content: obj['content'],
+        position: obj['position'],
+      };
+    } else {
+      return {};
+    }
   }
 
   fromFirestore(
     snapshot: QueryDocumentSnapshot<RawQuestion<QuestionsTypes>>,
     options?: SnapshotOptions | undefined
-  ): QuestionDoc<QuestionsTypes> {
+  ): Question<QuestionsTypes> {
     const data = snapshot.data();
 
-    return {
+    return new Question({
       id: snapshot.id,
       type: data.type,
       content: data.content,
       position: data.position,
-    };
+    });
   }
 }
 
 class QuestionsServiceController extends FirestoreCollectionController<
-  QuestionDoc<QuestionsTypes>,
+  Question<QuestionsTypes>,
   RawQuestion<QuestionsTypes>
 > {
-  override list(): Observable<QuestionDoc<keyof QuestionsContentsTypes>[]> {
+  override list(): Observable<Question<QuestionsTypes>[]> {
     return this.query(orderBy('position'));
   }
 
