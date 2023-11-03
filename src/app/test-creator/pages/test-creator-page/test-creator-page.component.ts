@@ -12,7 +12,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
-import { Question } from '@test-creator/types/question';
+import { QuestionDoc } from '@test-creator/types/question';
 import { QuestionsTypes } from '@test-creator/types/questions';
 import { debounceTime, map, tap } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
@@ -101,7 +101,7 @@ export class TestCreatorPageComponent {
     );
   }
 
-  getNewQuestionPosition(questions: Question<QuestionsTypes>[]) {
+  getNewQuestionPosition(questions: QuestionDoc<QuestionsTypes>[]) {
     return (questions.at(-1)?.position ?? 0) + 1;
   }
 
@@ -111,7 +111,7 @@ export class TestCreatorPageComponent {
     )?.label;
   }
 
-  handleUpdateQuestion(updatedQuestion: Question<QuestionsTypes>) {
+  handleUpdateQuestion(updatedQuestion: QuestionDoc<QuestionsTypes>) {
     this.store.updateQuestion(updatedQuestion);
     this.store.saveQuestion(updatedQuestion);
   }
@@ -120,7 +120,7 @@ export class TestCreatorPageComponent {
     type: TQuestionType,
     position: number
   ) {
-    const newQuestion: Question<TQuestionType> = {
+    const newQuestion: QuestionDoc<TQuestionType> = {
       id: this.testsService.generateId(),
       type,
       content: 'Nowe pytanie',
@@ -131,16 +131,16 @@ export class TestCreatorPageComponent {
     this.store.saveQuestion(newQuestion);
   }
 
-  handleDeleteQuestion(question: Question<QuestionsTypes>) {
+  handleDeleteQuestion(question: QuestionDoc<QuestionsTypes>) {
     this.store.deleteQuestion(question);
     this.store.deleteQuestionFromDb(question);
   }
 
   handleQuestionsPositionsSwap(
     $event: CdkDragDrop<
-      Question<QuestionsTypes>[],
-      Question<QuestionsTypes>[],
-      Question<QuestionsTypes>
+      QuestionDoc<QuestionsTypes>[],
+      QuestionDoc<QuestionsTypes>[],
+      QuestionDoc<QuestionsTypes>
     >
   ) {
     const prevIndex = $event.previousIndex;
@@ -154,7 +154,7 @@ export class TestCreatorPageComponent {
     this.store.swapQuestions(swap);
   }
 
-  trackByQuestionId(index: number, question: Question<QuestionsTypes>) {
+  trackByQuestionId(index: number, question: QuestionDoc<QuestionsTypes>) {
     return question.id;
   }
 }

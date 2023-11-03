@@ -10,7 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { QuestionsTypes } from '@test-creator/types/questions';
 import { debounceTime } from 'rxjs';
-import { Question as QuestionDoc } from '../types/question';
+import { QuestionDoc } from '../types/question';
 
 @Directive()
 export abstract class Question<TQuestionType extends QuestionsTypes> {

@@ -15,19 +15,19 @@ import {
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
-import { Question, RawQuestion } from '@test-creator/types/question';
+import { QuestionDoc, RawQuestion } from '@test-creator/types/question';
 import {
   QuestionsContentsTypes,
   QuestionsTypes,
 } from '@test-creator/types/questions';
 import { Observable, from, map, switchMap, take } from 'rxjs';
 
-class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
+class Converter implements FirestoreDataConverter<QuestionDoc<QuestionsTypes>> {
   toFirestore(
-    modelObject: WithFieldValue<Question<QuestionsTypes>>
+    modelObject: WithFieldValue<QuestionDoc<QuestionsTypes>>
   ): DocumentData;
   toFirestore(
-    modelObject: PartialWithFieldValue<Question<QuestionsTypes>>,
+    modelObject: PartialWithFieldValue<QuestionDoc<QuestionsTypes>>,
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
@@ -37,7 +37,7 @@ class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
   fromFirestore(
     snapshot: QueryDocumentSnapshot<RawQuestion<QuestionsTypes>>,
     options?: SnapshotOptions | undefined
-  ): Question<QuestionsTypes> {
+  ): QuestionDoc<QuestionsTypes> {
     const data = snapshot.data();
 
     return {
@@ -50,16 +50,16 @@ class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
 }
 
 class QuestionsServiceController extends FirestoreCollectionController<
-  Question<QuestionsTypes>,
+  QuestionDoc<QuestionsTypes>,
   RawQuestion<QuestionsTypes>
 > {
-  override list(): Observable<Question<keyof QuestionsContentsTypes>[]> {
+  override list(): Observable<QuestionDoc<keyof QuestionsContentsTypes>[]> {
     return this.query(orderBy('position'));
   }
 
   swapPositions(
-    question1: Question<QuestionsTypes>,
-    question2: Question<QuestionsTypes>
+    question1: QuestionDoc<QuestionsTypes>,
+    question2: QuestionDoc<QuestionsTypes>
   ) {
     return this.collectionRef$.pipe(
       take(1),

@@ -4,7 +4,7 @@ import { AnswersService } from '@test-creator/services/answers/answers.service';
 import { QuestionsService } from '@test-creator/services/questions/questions.service';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Answer } from '@test-creator/types/answer';
-import { Question } from '@test-creator/types/question';
+import { QuestionDoc } from '@test-creator/types/question';
 import {
   ClosedQuestionsTypes,
   QuestionsTypes,
@@ -28,7 +28,7 @@ type AnswerEntry = [AnswerEntryKey, AnswerEntryValue];
 
 interface TestCreatorPageState {
   test: Test | null;
-  questions: Question<QuestionsTypes>[];
+  questions: QuestionDoc<QuestionsTypes>[];
   answers: Map<AnswerEntryKey, AnswerEntryValue>;
   error: any | null;
 }
@@ -129,7 +129,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
    * Saves the question on the database.
    */
   readonly saveQuestion = this.effect(
-    (question$: Observable<Question<QuestionsTypes>>) =>
+    (question$: Observable<QuestionDoc<QuestionsTypes>>) =>
       question$.pipe(
         concatMap((question) => {
           const testId = this.test()?.id ?? '';
@@ -153,7 +153,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   );
 
   readonly deleteQuestionFromDb = this.effect(
-    (question$: Observable<Question<QuestionsTypes>>) =>
+    (question$: Observable<QuestionDoc<QuestionsTypes>>) =>
       question$.pipe(
         concatMap((question) => {
           const testId = this.test()?.id;
@@ -187,8 +187,8 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   readonly swapQuestionsOnDb = this.effect(
     (
       $: Observable<{
-        from: Question<QuestionsTypes>;
-        to: Question<QuestionsTypes>;
+        from: QuestionDoc<QuestionsTypes>;
+        to: QuestionDoc<QuestionsTypes>;
       }>
     ) =>
       $.pipe(
@@ -226,7 +226,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       {
         from,
         to,
-      }: { from: Question<QuestionsTypes>; to: Question<QuestionsTypes> }
+      }: { from: QuestionDoc<QuestionsTypes>; to: QuestionDoc<QuestionsTypes> }
     ) => {
       const questions = [...state.questions];
       const fromIndex = questions.findIndex(
@@ -256,7 +256,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   );
 
   readonly deleteQuestion = this.updater(
-    (state, question: Question<QuestionsTypes>) => {
+    (state, question: QuestionDoc<QuestionsTypes>) => {
       return {
         ...state,
         questions: state.questions.filter((q) => q.id !== question.id),
@@ -265,7 +265,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   );
 
   readonly addQuestion = this.updater(
-    (state, question: Question<QuestionsTypes>) => {
+    (state, question: QuestionDoc<QuestionsTypes>) => {
       return {
         ...state,
         questions: [...state.questions, question],
@@ -277,7 +277,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
    * Updates the local question state.
    */
   readonly updateQuestion = this.updater(
-    (state, newQuestion: Question<QuestionsTypes>) => {
+    (state, newQuestion: QuestionDoc<QuestionsTypes>) => {
       const id = newQuestion.id;
       const questionIndex = state.questions.findIndex(
         (question) => question.id === id

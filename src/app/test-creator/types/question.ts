@@ -1,7 +1,7 @@
 import { QuestionsContentsTypes, QuestionsTypes } from './questions';
 
 /** Object of a question that a service returns and accepts. */
-export interface Question<TQuestionType extends QuestionsTypes> {
+export interface QuestionDoc<TQuestionType extends QuestionsTypes> {
   id: string;
   type: TQuestionType;
   content: QuestionsContentsTypes[TQuestionType]['questionContentType'];
@@ -10,6 +10,6 @@ export interface Question<TQuestionType extends QuestionsTypes> {
 
 /** Object of a question that is stored in the database. */
 export type RawQuestion<TQuestionType extends QuestionsTypes> = Omit<
-  Question<TQuestionType>,
+  QuestionDoc<TQuestionType>,
   'id'
 >;
