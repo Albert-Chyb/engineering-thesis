@@ -89,6 +89,13 @@ export class TestCreatorPageComponent {
     return this.answers().get(question.id) ?? [];
   }
 
+  handleUpdateAnswer(questionId: string, answer: Answer<ClosedQuestionsTypes>) {
+    const payload = { questionId, answer };
+
+    this.store.updateAnswer(payload);
+    this.store.saveAnswerOnDb(payload);
+  }
+
   handleAddAnswer(question: Question<QuestionsTypes>) {
     if (question.isOpenQuestion()) {
       throw new Error('Cannot add answer to an open question');
