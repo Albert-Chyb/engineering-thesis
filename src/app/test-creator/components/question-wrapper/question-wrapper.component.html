@@ -22,6 +22,8 @@
       <input type="text" matInput formControlName="content" />
       <mat-label>Treść pytania</mat-label>
     </mat-form-field>
+
+    <ng-content select="[question-answers]" />
   </mat-card-content>
 
   <mat-card-actions align="end">

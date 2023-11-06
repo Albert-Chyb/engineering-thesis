@@ -13,7 +13,11 @@ import { ActivatedRoute } from '@angular/router';
 import { Question } from '@test-creator/classes/question';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
-import { QuestionsTypes } from '@test-creator/types/questions';
+import { Answer } from '@test-creator/types/answer';
+import {
+  ClosedQuestionsTypes,
+  QuestionsTypes,
+} from '@test-creator/types/questions';
 import { debounceTime, map, tap } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
 
@@ -44,6 +48,7 @@ export class TestCreatorPageComponent {
   readonly test = this.store.test;
   readonly questions = this.store.questions;
   readonly questionsMetadata = this.store.questionsMetadata;
+  readonly answers = this.store.answers;
 
   readonly testForm = new FormGroup({
     name: new FormControl(''),
@@ -78,6 +83,32 @@ export class TestCreatorPageComponent {
 
   getNewQuestionPosition(questions: Question<QuestionsTypes>[]) {
     return (questions.at(-1)?.position ?? 0) + 1;
+  }
+
+  getAnswers(question: Question<QuestionsTypes>) {
+    return this.answers().get(question.id) ?? [];
+  }
+
+  handleAddAnswer(question: Question<QuestionsTypes>) {
+    if (question.isOpenQuestion()) {
+      throw new Error('Cannot add answer to an open question');
+    }
+
+    const answer: Answer<ClosedQuestionsTypes> = {
+      content: 'Nowa odpowiedź',
+      id: this.testsService.generateId(),
+    };
+    const payload = { questionId: question.id, answer };
+
+    this.store.addAnswer(payload);
+    this.store.saveAnswerOnDb(payload);
+  }
+
+  handleDeleteAnswer(questionId: string, answerId: string) {
+    const payload = { questionId, answerId };
+
+    this.store.deleteAnswer(payload);
+    this.store.deleteAnswerFromDb(payload);
   }
 
   handleUpdateQuestion(updatedQuestion: Question<QuestionsTypes>) {
@@ -125,5 +156,9 @@ export class TestCreatorPageComponent {
 
   trackByQuestionId(index: number, question: Question<QuestionsTypes>) {
     return question.id;
+  }
+
+  trackByAnswerId(index: number, answer: Answer<ClosedQuestionsTypes>) {
+    return answer.id;
   }
 }

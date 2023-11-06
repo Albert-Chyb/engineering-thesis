@@ -49,6 +49,30 @@
             <span question-subtitle role="heading" aria-level="3">
               {{ question.name }}
             </span>
+
+            <ng-container question-answers *ngIf="question.isClosedQuestion()">
+              <ul>
+                <li
+                  *ngFor="
+                    let answer of getAnswers(question);
+                    trackBy: trackByAnswerId
+                  "
+                  (click)="handleDeleteAnswer(question.id, answer.id)"
+                >
+                  ({{ answer.id }}) {{ answer.content }}
+                </li>
+              </ul>
+            </ng-container>
+
+            <ng-container question-actions *ngIf="question.isClosedQuestion()">
+              <button
+                mat-button
+                color="accent"
+                (click)="handleAddAnswer(question)"
+              >
+                <mat-icon>add</mat-icon> Dodaj odpowiedź
+              </button>
+            </ng-container>
           </app-question-wrapper>
         </ng-container>
       </div>
