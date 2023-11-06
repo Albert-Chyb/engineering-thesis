@@ -1,0 +1,11 @@
+<div class="answer-wrapper">
+  <ng-content select="[drag-handle]" />
+
+  <mat-form-field [formGroup]="answerForm">
+    <input matInput type="text" formControlName="content" />
+  </mat-form-field>
+
+  <button mat-icon-button (click)="emitAnswerDelete()">
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>

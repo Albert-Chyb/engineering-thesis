@@ -51,17 +51,19 @@
             </span>
 
             <ng-container question-answers *ngIf="question.isClosedQuestion()">
-              <ul>
-                <li
-                  *ngFor="
-                    let answer of getAnswers(question);
-                    trackBy: trackByAnswerId
-                  "
-                  (click)="handleDeleteAnswer(question.id, answer.id)"
-                >
-                  ({{ answer.id }}) {{ answer.content }}
-                </li>
-              </ul>
+              <app-answer-wrapper
+                *ngFor="
+                  let answer of getAnswers(question);
+                  trackBy: trackByAnswerId
+                "
+                (onAnswerDelete)="handleDeleteAnswer(question.id, answer.id)"
+                (onAnswerChange)="handleUpdateAnswer(question.id, $event)"
+                [answer]="answer"
+              >
+                <button mat-icon-button drag-handle>
+                  <mat-icon>drag_indicator</mat-icon>
+                </button>
+              </app-answer-wrapper>
             </ng-container>
 
             <ng-container question-actions *ngIf="question.isClosedQuestion()">

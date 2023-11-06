@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.answer-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  column-gap: 8px;
+}
