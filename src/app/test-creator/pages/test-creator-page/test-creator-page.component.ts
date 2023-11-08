@@ -125,6 +125,25 @@ export class TestCreatorPageComponent {
     this.store.deleteAnswerFromDb(payload);
   }
 
+  handleAnswersPositionsSwap(
+    question: Question<QuestionsTypes>,
+    $event: CdkDragDrop<
+      Answer<ClosedQuestionsTypes>[],
+      Answer<ClosedQuestionsTypes>[],
+      Answer<ClosedQuestionsTypes>
+    >
+  ) {
+    const prevIndex = $event.previousIndex;
+    const currentIndex = $event.currentIndex;
+    const answers = this.getAnswers(question);
+    const answer1 = answers[prevIndex];
+    const answer2 = answers[currentIndex];
+    const swap = { from: answer1, to: answer2, questionId: question.id };
+
+    this.store.swapAnswersOnDb(swap);
+    this.store.swapAnswers(swap);
+  }
+
   handleUpdateQuestion(updatedQuestion: Question<QuestionsTypes>) {
     this.store.updateQuestion(updatedQuestion);
     this.store.saveQuestion(updatedQuestion);

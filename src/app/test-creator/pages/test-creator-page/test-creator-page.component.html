@@ -50,7 +50,15 @@
               {{ question.name }}
             </span>
 
-            <ng-container question-answers *ngIf="question.isClosedQuestion()">
+            <div
+              question-answers
+              *ngIf="question.isClosedQuestion()"
+              cdkDropList
+              [cdkDropListData]="getAnswers(question)"
+              (cdkDropListDropped)="
+                handleAnswersPositionsSwap(question, $event)
+              "
+            >
               <app-answer-wrapper
                 *ngFor="
                   let answer of getAnswers(question);
@@ -59,12 +67,14 @@
                 (onAnswerDelete)="handleDeleteAnswer(question.id, answer.id)"
                 (onAnswerChange)="handleUpdateAnswer(question.id, $event)"
                 [answer]="answer"
+                cdkDrag
+                [cdkDragData]="answer"
               >
                 <button mat-icon-button drag-handle>
                   <mat-icon>drag_indicator</mat-icon>
                 </button>
               </app-answer-wrapper>
-            </ng-container>
+            </div>
 
             <ng-container question-actions *ngIf="question.isClosedQuestion()">
               <button
