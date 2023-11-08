@@ -23,7 +23,9 @@ export abstract class DocumentDirective<
   private readonly _document = signal<TDoc | null>(null);
   readonly document = this._document.asReadonly();
 
-  @Input({ required: true, alias: 'document' }) set documentSetter(doc: TDoc) {
+  @Input({ required: true, alias: 'document' }) set documentSetter(
+    doc: TDoc | null
+  ) {
     this._document.set(doc);
   }
 
