@@ -1,0 +1,8 @@
+<form [formGroup]="form">
+  <mat-form-field class="width-100">
+    <input type="text" matInput formControlName="name" />
+    <mat-label>Nazwa testu</mat-label>
+  </mat-form-field>
+
+  <ng-content />
+</form>

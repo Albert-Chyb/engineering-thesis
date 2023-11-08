@@ -31,5 +31,5 @@ export type QuestionFormGroup<TQuestionType extends QuestionsTypes> =
  * The test form group type.
  */
 export type TestForm = FormGroup<{
-  name: FormControl<string | null>;
+  name: FormControl<string>;
 }>;

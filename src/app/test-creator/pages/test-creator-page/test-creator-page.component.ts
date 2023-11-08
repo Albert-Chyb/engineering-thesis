@@ -13,12 +13,14 @@ import { ActivatedRoute } from '@angular/router';
 import { Question } from '@test-creator/classes/question';
 import { AnswerWrapperComponent } from '@test-creator/components/answer-wrapper/answer-wrapper.component';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
+import { TestCreatorFormComponent } from '@test-creator/components/test-creator-form/test-creator-form.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Answer } from '@test-creator/types/answer';
 import {
   ClosedQuestionsTypes,
   QuestionsTypes,
 } from '@test-creator/types/questions';
+import { Test } from '@test-creator/types/test';
 import { debounceTime, map, tap } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
 
@@ -37,6 +39,7 @@ import { TestCreatorPageStore } from './test-creator-page.store';
     QuestionWrapperComponent,
     DragDropModule,
     AnswerWrapperComponent,
+    TestCreatorFormComponent,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -93,6 +96,11 @@ export class TestCreatorPageComponent {
 
   getAnswers(question: Question<QuestionsTypes>) {
     return this.answers().get(question.id) ?? [];
+  }
+
+  handleUpdateTest(newTest: Test) {
+    this.store.updateTest(newTest);
+    this.store.saveTest(newTest);
   }
 
   handleUpdateAnswer(questionId: string, answer: Answer<ClosedQuestionsTypes>) {
