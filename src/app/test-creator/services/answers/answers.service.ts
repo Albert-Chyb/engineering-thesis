@@ -117,10 +117,7 @@ export class AnswersService {
   getController(
     testId: string,
     questionId: string
-  ): FirestoreCollectionController<
-    Answer<ClosedQuestionsTypes>,
-    RawAnswer<ClosedQuestionsTypes>
-  > {
+  ): AnswersCollectionController {
     const collectionRef$ = this.auth.uid$.pipe(
       map((uid) =>
         collection(
