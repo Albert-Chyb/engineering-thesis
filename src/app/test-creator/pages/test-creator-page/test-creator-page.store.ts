@@ -304,6 +304,46 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       )
   );
 
+  readonly swapAnswersOnDb = this.effect(
+    (
+      $: Observable<{
+        questionId: string;
+        from: Answer<ClosedQuestionsTypes>;
+        to: Answer<ClosedQuestionsTypes>;
+      }>
+    ) =>
+      $.pipe(
+        concatMap(({ questionId, from, to }) => {
+          const testId = this.test()?.id;
+
+          if (!testId) {
+            throw new Error(
+              'Tried to swap answers without previously loading the test.'
+            );
+          }
+
+          const answersService = this.answersService.getController(
+            testId,
+            questionId
+          );
+
+          return answersService.swapPositions(from, to).pipe(
+            catchError((error) => {
+              this.swapAnswers({ questionId, from: to, to: from });
+
+              return EMPTY;
+            })
+          );
+        }),
+        tapResponse(
+          () => {},
+          (error) => {
+            this.patchState({ error });
+          }
+        )
+      )
+  );
+
   readonly updateAnswer = this.updater(
     (
       state,
@@ -368,6 +408,33 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
     }
   );
 
+  readonly swapAnswers = this.updater(
+    (
+      state,
+      {
+        questionId,
+        from,
+        to,
+      }: {
+        questionId: string;
+        from: Answer<ClosedQuestionsTypes>;
+        to: Answer<ClosedQuestionsTypes>;
+      }
+    ) => {
+      return {
+        ...state,
+        answers: new Map(state.answers).set(
+          questionId,
+          this.swapPositionsById(
+            [...(state.answers.get(questionId) ?? [])],
+            [from.id, to.id],
+            (answer, newPosition) => ({ ...answer, position: newPosition })
+          )
+        ),
+      };
+    }
+  );
+
   readonly swapQuestions = this.updater(
     (
       state,
@@ -376,26 +443,14 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
         to,
       }: { from: Question<QuestionsTypes>; to: Question<QuestionsTypes> }
     ) => {
-      const questions = [...state.questions];
-      const fromIndex = questions.findIndex(
-        (question) => question.id === from.id
-      );
-      const toIndex = questions.findIndex((question) => question.id === to.id);
-
-      if (fromIndex === -1 || toIndex === -1) {
-        throw new Error('Tried to swap questions that do not exist');
-      }
-
-      if (fromIndex === toIndex) {
-        return state;
-      }
-
-      questions[fromIndex] = new Question({ ...to, position: to.position });
-      questions[toIndex] = new Question({ ...from, position: from.position });
-
       return {
         ...state,
-        questions,
+        questions: this.swapPositionsById(
+          [...state.questions],
+          [from.id, to.id],
+          (question, newPosition) =>
+            new Question({ ...question, position: newPosition })
+        ),
       };
     }
   );
@@ -451,4 +506,29 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       test,
     };
   });
+
+  private swapPositionsById<
+    T extends { id: string; position: number } & Record<string, any>
+  >(
+    array: T[],
+    ids: [string, string],
+    constructor: (item: T, newPosition: number) => T
+  ) {
+    const copyArray = [...array];
+    const [id1, id2] = ids;
+    const index1 = copyArray.findIndex((item) => item.id === id1);
+    const index2 = copyArray.findIndex((item) => item.id === id2);
+
+    if (index1 === -1 || index2 === -1) {
+      throw new Error('Tried to swap items that do not exist');
+    }
+
+    const item1 = copyArray[index1];
+    const item2 = copyArray[index2];
+
+    copyArray[index1] = constructor(item2, item1.position);
+    copyArray[index2] = constructor(item1, item2.position);
+
+    return copyArray;
+  }
 }
