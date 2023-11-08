@@ -23,6 +23,7 @@ import {
   forkJoin,
   map,
   switchMap,
+  take,
   throwError,
 } from 'rxjs';
 
@@ -90,7 +91,10 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
             this.answersService
               .getController(data.test.id, question.id)
               .list()
-              .pipe(map((answers) => [question.id, answers] as AnswerEntry))
+              .pipe(
+                take(1),
+                map((answers) => [question.id, answers] as AnswerEntry)
+              )
           )
         ).pipe(
           defaultIfEmpty([] as any),

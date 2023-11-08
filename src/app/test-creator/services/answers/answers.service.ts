@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import {
+  CollectionReference,
   DocumentData,
   Firestore,
   FirestoreDataConverter,
@@ -9,12 +10,13 @@ import {
   SnapshotOptions,
   WithFieldValue,
   collection,
+  orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
 import { Answer, RawAnswer } from '@test-creator/types/answer';
 import { ClosedQuestionsTypes } from '@test-creator/types/questions';
-import { map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 class DataConverter
   implements FirestoreDataConverter<Answer<ClosedQuestionsTypes>>
@@ -49,6 +51,24 @@ class DataConverter
   }
 }
 
+class AnswersCollectionController extends FirestoreCollectionController<
+  Answer<ClosedQuestionsTypes>,
+  RawAnswer<ClosedQuestionsTypes>
+> {
+  constructor(
+    firestore: Firestore,
+    collectionRef$: Observable<
+      CollectionReference<Answer<ClosedQuestionsTypes>>
+    >
+  ) {
+    super(firestore, collectionRef$);
+  }
+
+  override list(): Observable<Answer<ClosedQuestionsTypes>[]> {
+    return this.query(orderBy('position'));
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -71,6 +91,6 @@ export class AnswersService {
         ).withConverter(new DataConverter())
       )
     );
-    return new FirestoreCollectionController(this.firestore, collectionRef$);
+    return new AnswersCollectionController(this.firestore, collectionRef$);
   }
 }
