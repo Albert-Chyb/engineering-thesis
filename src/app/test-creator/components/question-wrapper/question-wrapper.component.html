@@ -12,12 +12,12 @@
       </mat-card-subtitle>
     </mat-card-title-group>
 
-    <button mat-icon-button (click)="onQuestionDelete.emit()">
+    <button mat-icon-button (click)="emitDocDelete()">
       <mat-icon>delete</mat-icon>
     </button>
   </mat-card-header>
 
-  <mat-card-content [formGroup]="questionForm">
+  <mat-card-content [formGroup]="form">
     <mat-form-field class="width-100">
       <input type="text" matInput formControlName="content" />
       <mat-label>Treść pytania</mat-label>

@@ -31,12 +31,11 @@
           "
         >
           <app-question-wrapper
-            [question]="question"
-            [index]="i"
+            [document]="question"
             cdkDrag
             [cdkDragData]="question"
-            (onQuestionDelete)="handleDeleteQuestion(question)"
-            (onQuestionUpdate)="handleUpdateQuestion($event)"
+            (onDocDelete)="handleDeleteQuestion(question)"
+            (onDocChange)="handleUpdateQuestion($event)"
           >
             <button mat-icon-button drag-handle cdkDragHandle>
               <mat-icon>drag_indicator</mat-icon>
@@ -64,9 +63,9 @@
                   let answer of getAnswers(question);
                   trackBy: trackByAnswerId
                 "
-                (onAnswerDelete)="handleDeleteAnswer(question.id, answer.id)"
-                (onAnswerChange)="handleUpdateAnswer(question.id, $event)"
-                [answer]="answer"
+                (onDocDelete)="handleDeleteAnswer(question.id, answer.id)"
+                (onDocChange)="handleUpdateAnswer(question.id, $event)"
+                [document]="answer"
                 cdkDrag
                 [cdkDragData]="answer"
               >
