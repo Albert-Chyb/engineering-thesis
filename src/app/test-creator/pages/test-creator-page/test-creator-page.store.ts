@@ -255,6 +255,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
           return answersService.create(
             {
               content: answer.content,
+              position: answer.position,
             },
             answer.id
           );
@@ -310,6 +311,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       const newAnswer: Answer<ClosedQuestionsTypes> = {
         id: answer.id,
         content: answer.content,
+        position: answer.position,
       };
 
       return {
@@ -349,6 +351,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       const newAnswer: Answer<ClosedQuestionsTypes> = {
         id: answer.id,
         content: answer.content,
+        position: answer.position,
       };
 
       return {

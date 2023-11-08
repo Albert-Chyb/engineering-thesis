@@ -31,6 +31,7 @@ class DataConverter
 
     return {
       content: model.content,
+      position: model.position,
     };
   }
 
@@ -43,6 +44,7 @@ class DataConverter
     return {
       id: snapshot.id,
       content: data.content,
+      position: data.position,
     };
   }
 }

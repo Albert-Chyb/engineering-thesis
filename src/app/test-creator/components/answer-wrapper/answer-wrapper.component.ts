@@ -96,6 +96,7 @@ export class AnswerWrapperComponent<
     return {
       id: this.answer.id,
       content: value.content ?? '',
+      position: this.answer.position,
     };
   }
 }

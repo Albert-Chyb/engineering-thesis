@@ -87,6 +87,10 @@ export class TestCreatorPageComponent {
     return (questions.at(-1)?.position ?? 0) + 1;
   }
 
+  getNewAnswerPosition(question: Question<QuestionsTypes>) {
+    return (this.getAnswers(question).at(-1)?.position ?? 0) + 1;
+  }
+
   getAnswers(question: Question<QuestionsTypes>) {
     return this.answers().get(question.id) ?? [];
   }
@@ -106,6 +110,7 @@ export class TestCreatorPageComponent {
     const answer: Answer<ClosedQuestionsTypes> = {
       content: 'Nowa odpowiedź',
       id: this.testsService.generateId(),
+      position: this.getNewAnswerPosition(question),
     };
     const payload = { questionId: question.id, answer };
 
