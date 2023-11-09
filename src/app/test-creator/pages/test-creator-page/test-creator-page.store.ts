@@ -116,7 +116,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
           }));
         },
         (error) => {
-          this.setState((state) => ({ ...state, error }));
+          this.patchState({ error });
         }
       )
     )
@@ -138,7 +138,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       tapResponse(
         () => {},
         (error) => {
-          this.setState((state) => ({ ...state, error }));
+          this.patchState({ error });
         }
       )
     )
@@ -167,7 +167,11 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
             },
             question.id
           );
-        })
+        }),
+        tapResponse(
+          () => {},
+          (error) => this.patchState({ error })
+        )
       )
   );
 
@@ -185,19 +189,12 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
 
           return this.questionsService
             .getController(testId)
-            .delete(question.id)
-            .pipe(
-              catchError((error) => {
-                this.addQuestion(question);
-
-                return EMPTY;
-              })
-            );
+            .delete(question.id);
         }),
         tapResponse(
           () => {},
           (error) => {
-            this.setState((state) => ({ ...state, error }));
+            this.patchState({ error });
           }
         )
       )
@@ -222,18 +219,12 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
 
           const questionsService = this.questionsService.getController(testId);
 
-          return questionsService.swapPositions(fromQuestion, toQuestion).pipe(
-            catchError((error) => {
-              this.swapQuestions({ from: toQuestion, to: fromQuestion });
-
-              return EMPTY;
-            })
-          );
+          return questionsService.swapPositions(fromQuestion, toQuestion);
         }),
         tapResponse(
           () => {},
           (error) => {
-            this.setState((state) => ({ ...state, error }));
+            this.patchState({ error });
           }
         )
       )
@@ -327,13 +318,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
             questionId
           );
 
-          return answersService.swapPositions(from, to).pipe(
-            catchError((error) => {
-              this.swapAnswers({ questionId, from: to, to: from });
-
-              return EMPTY;
-            })
-          );
+          return answersService.swapPositions(from, to);
         }),
         tapResponse(
           () => {},
