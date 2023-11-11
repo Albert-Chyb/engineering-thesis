@@ -26,7 +26,8 @@
       "@presenting-errors/*": ["src/app/presenting-errors/*"],
       "@test-creator/*": ["src/app/test-creator/*"],
       "@reactive-forms-sync/*": ["src/app/reactive-forms-sync/*"],
-      "@db-auto-sync/*": ["src/app/db-auto-sync/*"]
+      "@db-auto-sync/*": ["src/app/db-auto-sync/*"],
+      "@loading-indicator/*": ["src/app/loading-indicator/*"]
     }
   },
   "angularCompilerOptions": {
