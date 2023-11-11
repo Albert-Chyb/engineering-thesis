@@ -1,4 +1,8 @@
-import { ApplicationConfig, ErrorHandler, importProvidersFrom } from '@angular/core';
+import {
+  ApplicationConfig,
+  ErrorHandler,
+  importProvidersFrom,
+} from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
 import {
@@ -16,14 +20,16 @@ import {
   getStorage,
   provideStorage,
 } from '@angular/fire/storage';
+import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
+import { AppErrorHandler } from '@common/classes/AppErrorHandler';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
-import { AppErrorHandler } from '@common/classes/AppErrorHandler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    MatDialogModule,
     provideRouter(routes),
     importProvidersFrom([
       provideFirebaseApp(() => initializeApp(environment.firebase)),
@@ -89,7 +95,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     {
       provide: ErrorHandler,
-      useClass: AppErrorHandler
-    }
+      useClass: AppErrorHandler,
+    },
   ],
 };

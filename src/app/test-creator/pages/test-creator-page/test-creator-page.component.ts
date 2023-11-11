@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
+import { HasPendingTasks } from '@loading-indicator/guards/has-pending-tasks.guard';
 import { Question } from '@test-creator/classes/question';
 import { AnswerWrapperComponent } from '@test-creator/components/answer-wrapper/answer-wrapper.component';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
@@ -47,7 +48,7 @@ import { TestCreatorPageStore } from './test-creator-page.store';
   styleUrls: ['./test-creator-page.component.scss'],
   providers: [TestCreatorPageStore],
 })
-export class TestCreatorPageComponent {
+export class TestCreatorPageComponent implements HasPendingTasks {
   private readonly testsService = inject(UserTestsService);
   private readonly store = inject(TestCreatorPageStore);
   private readonly route = inject(ActivatedRoute);
@@ -57,11 +58,16 @@ export class TestCreatorPageComponent {
   readonly questionsMetadata = this.store.questionsMetadata;
   readonly answers = this.store.answers;
   readonly isLoading = this.store.isLoading;
+  readonly isPending = this.store.isPending;
 
   constructor() {
     this.store.loadTestData(
       this.route.params.pipe(map((params) => params['id']))
     );
+  }
+
+  hasPendingTasks() {
+    return this.isPending();
   }
 
   getNewQuestionPosition(questions: Question<QuestionsTypes>[]) {

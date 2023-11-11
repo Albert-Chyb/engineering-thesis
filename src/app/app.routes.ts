@@ -10,6 +10,7 @@ import { SignupComponent } from '@authentication/pages/signup/signup.component';
 import { requireSilentNavigationGuard } from '@common/route-guards/require-silent-navigation/require-silent-navigation.guard';
 import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
 import { TestCreatorPageComponent } from './test-creator/pages/test-creator-page/test-creator-page.component';
+import { hasPendingTasksGuard } from '@loading-indicator/guards/has-pending-tasks.guard';
 
 function redirectLoggedInToHome() {
   return redirectLoggedInTo('/');
@@ -49,6 +50,7 @@ export const routes: Routes = [
     data: {
       authGuardPipe: redirectLoggedOutToLogin,
     },
+    canDeactivate: [hasPendingTasksGuard]
   },
   {
     path: 'error',
