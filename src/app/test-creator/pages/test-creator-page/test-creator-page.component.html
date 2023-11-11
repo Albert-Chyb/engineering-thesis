@@ -1,3 +1,6 @@
+@if (isLoading()) {
+<app-loading-indicator> Ładuję test... </app-loading-indicator>
+} @else {
 <mat-card>
   <mat-card-header>
     <h1 mat-card-title>Kreator testu</h1>
@@ -110,3 +113,4 @@
     </mat-menu>
   </mat-card-actions>
 </mat-card>
+}

@@ -23,6 +23,7 @@ import {
 import { Test } from '@test-creator/types/test';
 import { debounceTime, map, tap } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
+import { LoadingIndicatorComponent } from '@common/components/loading-indicator/loading-indicator.component';
 
 @Component({
   standalone: true,
@@ -40,6 +41,7 @@ import { TestCreatorPageStore } from './test-creator-page.store';
     DragDropModule,
     AnswerWrapperComponent,
     TestCreatorFormComponent,
+    LoadingIndicatorComponent
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -54,6 +56,7 @@ export class TestCreatorPageComponent {
   readonly questions = this.store.questions;
   readonly questionsMetadata = this.store.questionsMetadata;
   readonly answers = this.store.answers;
+  readonly isLoading = this.store.isLoading;
 
   readonly testForm = new FormGroup({
     name: new FormControl(''),

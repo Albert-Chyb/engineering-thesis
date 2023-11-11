@@ -15,15 +15,15 @@ import {
 } from '@test-creator/types/questions';
 import { Test } from '@test-creator/types/test';
 import {
-  EMPTY,
   Observable,
-  catchError,
   concatMap,
   defaultIfEmpty,
+  delay,
   forkJoin,
   map,
   switchMap,
   take,
+  tap,
   throwError,
 } from 'rxjs';
 
@@ -42,6 +42,7 @@ interface TestCreatorPageState {
   questionsMetadata: QuestionMetadata<QuestionsTypes>[];
   answers: Map<AnswerEntryKey, AnswerEntryValue>;
   error: any | null;
+  isLoading: boolean;
 }
 
 const INITIAL_STATE: TestCreatorPageState = {
@@ -50,6 +51,7 @@ const INITIAL_STATE: TestCreatorPageState = {
   answers: new Map(),
   error: null,
   questionsMetadata: questionsMetadata.getMetadataForAllTypes(),
+  isLoading: true,
 };
 
 @Injectable()
@@ -68,12 +70,14 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
     (state) => state.questionsMetadata
   );
   readonly answers = this.selectSignal((state) => state.answers);
+  readonly isLoading = this.selectSignal((state) => state.isLoading);
 
   /**
    * Loads the test, questions and answers from the database.
    */
   readonly loadTestData = this.effect((id$: Observable<string>) =>
     id$.pipe(
+      tap(() => this.patchState({ isLoading: true })),
       switchMap((id) => this.testsService.read(id)),
       switchMap((test) => {
         if (!test) {
@@ -103,7 +107,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
               ...data,
               answers: new Map(answersForEachQuestion),
             };
-          })
+          }),
         )
       ),
       tapResponse(
@@ -113,11 +117,13 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
             test: data.test,
             questions: data.questions,
             answers: data.answers,
+            isLoading: false,
           }));
         },
         (error) => {
-          this.patchState({ error });
-        }
+          this.patchState({ error, isLoading: false });
+        },
+        () => this.patchState({ isLoading: false })
       )
     )
   );
