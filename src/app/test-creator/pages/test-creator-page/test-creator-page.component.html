@@ -21,46 +21,37 @@
         [cdkDropListData]="questions()"
         (cdkDropListDropped)="handleQuestionsPositionsSwap($event)"
       >
-        <ng-container
-          *ngFor="
-            let question of questions();
-            let i = index;
-            trackBy: trackByQuestionId
-          "
+        @for (question of questions(); track question.id; let i = $index) {
+        <app-question-wrapper
+          [document]="question"
+          cdkDrag
+          [cdkDragData]="question"
+          (onDocDelete)="handleDeleteQuestion(question)"
+          (onDocChange)="handleUpdateQuestion($event)"
         >
-          <app-question-wrapper
-            [document]="question"
-            cdkDrag
-            [cdkDragData]="question"
-            (onDocDelete)="handleDeleteQuestion(question)"
-            (onDocChange)="handleUpdateQuestion($event)"
-          >
-            <button mat-icon-button drag-handle cdkDragHandle>
-              <mat-icon>drag_indicator</mat-icon>
-            </button>
+          <button mat-icon-button drag-handle cdkDragHandle>
+            <mat-icon>drag_indicator</mat-icon>
+          </button>
 
-            <span question-title role="heading" aria-level="2">
-              Pytanie {{ i + 1 }}
-            </span>
+          <span question-title role="heading" aria-level="2">
+            Pytanie {{ i + 1 }}
+          </span>
 
-            <span question-subtitle role="heading" aria-level="3">
-              {{ question.name }}
-            </span>
+          <span question-subtitle role="heading" aria-level="3">
+            {{ question.name }}
+          </span>
 
+          <ng-container question-answers>
+            @if (question.isClosedQuestion()) {
             <div
-              question-answers
-              *ngIf="question.isClosedQuestion()"
               cdkDropList
               [cdkDropListData]="getAnswers(question)"
               (cdkDropListDropped)="
                 handleAnswersPositionsSwap(question, $event)
               "
             >
+              @for (answer of getAnswers(question); track answer.id) {
               <app-answer-wrapper
-                *ngFor="
-                  let answer of getAnswers(question);
-                  trackBy: trackByAnswerId
-                "
                 (onDocDelete)="handleDeleteAnswer(question.id, answer.id)"
                 (onDocChange)="handleUpdateAnswer(question.id, $event)"
                 [document]="answer"
@@ -71,19 +62,24 @@
                   <mat-icon>drag_indicator</mat-icon>
                 </button>
               </app-answer-wrapper>
+              }
             </div>
+            }
+          </ng-container>
 
-            <ng-container question-actions *ngIf="question.isClosedQuestion()">
-              <button
-                mat-button
-                color="accent"
-                (click)="handleAddAnswer(question)"
-              >
-                <mat-icon>add</mat-icon> Dodaj odpowiedź
-              </button>
-            </ng-container>
-          </app-question-wrapper>
-        </ng-container>
+          <ng-container question-actions>
+            @if (question.isClosedQuestion()) {
+            <button
+              mat-button
+              color="accent"
+              (click)="handleAddAnswer(question)"
+            >
+              <mat-icon>add</mat-icon> Dodaj odpowiedź
+            </button>
+            }
+          </ng-container>
+        </app-question-wrapper>
+        }
       </div>
     </app-test-creator-form>
   </mat-card-content>
@@ -100,9 +96,9 @@
     </button>
 
     <mat-menu #addQuestionMenu>
+      @for (qMetadata of questionsMetadata(); track qMetadata.type) {
       <button
         mat-menu-item
-        *ngFor="let qMetadata of questionsMetadata()"
         (click)="
           handleAddQuestion(qMetadata.type, getNewQuestionPosition(questions()))
         "
@@ -110,6 +106,7 @@
         <mat-icon>{{ qMetadata.icon }}</mat-icon>
         {{ qMetadata.shortName }}
       </button>
+      }
     </mat-menu>
   </mat-card-actions>
 </mat-card>

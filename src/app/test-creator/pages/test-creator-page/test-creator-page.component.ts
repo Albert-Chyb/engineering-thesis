@@ -194,12 +194,4 @@ export class TestCreatorPageComponent {
     this.store.swapQuestionsOnDb(swap);
     this.store.swapQuestions(swap);
   }
-
-  trackByQuestionId(index: number, question: Question<QuestionsTypes>) {
-    return question.id;
-  }
-
-  trackByAnswerId(index: number, answer: Answer<ClosedQuestionsTypes>) {
-    return answer.id;
-  }
 }
