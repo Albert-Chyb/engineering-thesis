@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
-import { LoadingIndicatorComponent } from '@common/components/loading-indicator/loading-indicator.component';
+import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { Question } from '@test-creator/classes/question';
 import { AnswerWrapperComponent } from '@test-creator/components/answer-wrapper/answer-wrapper.component';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
