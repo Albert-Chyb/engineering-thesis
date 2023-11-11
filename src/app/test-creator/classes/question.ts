@@ -58,6 +58,16 @@ export class Question<TQuestionType extends QuestionsTypes>
     }
   }
 
+  /** Returns the question document. */
+  toDoc(): QuestionDoc<TQuestionType> {
+    return {
+      id: this.id,
+      type: this.type,
+      content: this.content,
+      position: this.position,
+    };
+  }
+
   /** Returns all question types */
   static getQuestionsTypes(): QuestionsTypes[] {
     return ['multi-choice', 'single-choice', 'text-answer'];
