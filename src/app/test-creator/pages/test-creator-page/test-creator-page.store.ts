@@ -1,4 +1,6 @@
 import { Injectable, inject } from '@angular/core';
+import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
+import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { Question } from '@test-creator/classes/question';
 import {
@@ -26,6 +28,9 @@ import {
   throwError,
 } from 'rxjs';
 
+const loadingStateAdapter = new LoadingStateAdapter();
+const { isLoading, isPending, tasksCount } = loadingStateAdapter.getSelectors();
+
 type AnswerActionPayload = {
   questionId: string;
   answer: Answer<ClosedQuestionsTypes>;
@@ -36,12 +41,12 @@ type AnswerEntryValue = Answer<ClosedQuestionsTypes>[];
 type AnswerEntry = [AnswerEntryKey, AnswerEntryValue];
 
 interface TestCreatorPageState {
+  loadingState: LoadingState;
   test: Test | null;
   questions: Question<QuestionsTypes>[];
   questionsMetadata: QuestionMetadata<QuestionsTypes>[];
   answers: Map<AnswerEntryKey, AnswerEntryValue>;
   error: any | null;
-  isLoading: boolean;
 }
 
 const INITIAL_STATE: TestCreatorPageState = {
@@ -50,7 +55,7 @@ const INITIAL_STATE: TestCreatorPageState = {
   answers: new Map(),
   error: null,
   questionsMetadata: questionsMetadata.getMetadataForAllTypes(),
-  isLoading: true,
+  loadingState: loadingStateAdapter.getInitialState(),
 };
 
 @Injectable()
@@ -69,14 +74,27 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
     (state) => state.questionsMetadata
   );
   readonly answers = this.selectSignal((state) => state.answers);
-  readonly isLoading = this.selectSignal((state) => state.isLoading);
+
+  readonly isLoading = this.selectSignal((state) =>
+    isLoading(state.loadingState)
+  );
+  readonly isPending = this.selectSignal((state) =>
+    isPending(state.loadingState)
+  );
+  readonly tasksCount = this.selectSignal((state) =>
+    tasksCount(state.loadingState)
+  );
 
   /**
    * Loads the test, questions and answers from the database.
    */
   readonly loadTestData = this.effect((id$: Observable<string>) =>
     id$.pipe(
-      tap(() => this.patchState({ isLoading: true })),
+      tap(() =>
+        this.patchState((oldState) => ({
+          loadingState: loadingStateAdapter.startLoading(oldState.loadingState),
+        }))
+      ),
       switchMap((id) => this.testsService.read(id)),
       switchMap((test) => {
         if (!test) {
@@ -111,18 +129,23 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       ),
       tapResponse(
         (data) => {
-          this.setState((state) => ({
-            ...state,
+          this.setState((oldState) => ({
+            ...oldState,
             test: data.test,
             questions: data.questions,
             answers: data.answers,
-            isLoading: false,
+            loadingState: loadingStateAdapter.finishLoading(
+              oldState.loadingState
+            ),
           }));
         },
-        (error) => {
-          this.patchState({ error, isLoading: false });
-        },
-        () => this.patchState({ isLoading: false })
+        (error) =>
+          this.patchState((oldState) => ({
+            error,
+            loadingState: loadingStateAdapter.finishLoading(
+              oldState.loadingState
+            ),
+          }))
       )
     )
   );
@@ -132,6 +155,11 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
    */
   readonly saveTest = this.effect((test$: Observable<Test>) =>
     test$.pipe(
+      tap(() =>
+        this.patchState(({ loadingState }) => ({
+          loadingState: loadingStateAdapter.taskStarted(loadingState),
+        }))
+      ),
       concatMap((newTest) =>
         this.testsService.create(
           {
@@ -141,9 +169,16 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
         )
       ),
       tapResponse(
-        () => {},
+        () => {
+          this.patchState(({ loadingState }) => ({
+            loadingState: loadingStateAdapter.taskFinished(loadingState),
+          }));
+        },
         (error) => {
-          this.patchState({ error });
+          this.patchState(({ loadingState }) => ({
+            error,
+            loadingState: loadingStateAdapter.taskFinished(loadingState),
+          }));
         }
       )
     )
@@ -155,6 +190,11 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   readonly saveQuestion = this.effect(
     (question$: Observable<Question<QuestionsTypes>>) =>
       question$.pipe(
+        tap(() =>
+          this.patchState(({ loadingState }) => ({
+            loadingState: loadingStateAdapter.taskStarted(loadingState),
+          }))
+        ),
         concatMap((question) => {
           const testId = this.test()?.id ?? '';
 
@@ -174,8 +214,17 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
           );
         }),
         tapResponse(
-          () => {},
-          (error) => this.patchState({ error })
+          () => {
+            this.patchState(({ loadingState }) => ({
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
+          },
+          (error) => {
+            this.patchState(({ loadingState }) => ({
+              error,
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
+          }
         )
       )
   );
@@ -183,6 +232,11 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   readonly deleteQuestionFromDb = this.effect(
     (question$: Observable<Question<QuestionsTypes>>) =>
       question$.pipe(
+        tap(() =>
+          this.patchState(({ loadingState }) => ({
+            loadingState: loadingStateAdapter.taskStarted(loadingState),
+          }))
+        ),
         concatMap((question) => {
           const testId = this.test()?.id;
 
@@ -197,9 +251,16 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
             .delete(question.id);
         }),
         tapResponse(
-          () => {},
+          () => {
+            this.patchState(({ loadingState }) => ({
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
+          },
           (error) => {
-            this.patchState({ error });
+            this.patchState(({ loadingState }) => ({
+              error,
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
           }
         )
       )
@@ -213,6 +274,11 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       }>
     ) =>
       $.pipe(
+        tap(() =>
+          this.patchState(({ loadingState }) => ({
+            loadingState: loadingStateAdapter.taskStarted(loadingState),
+          }))
+        ),
         concatMap(({ from: fromQuestion, to: toQuestion }) => {
           const testId = this.test()?.id;
 
@@ -227,9 +293,16 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
           return questionsService.swapPositions(fromQuestion, toQuestion);
         }),
         tapResponse(
-          () => {},
+          () => {
+            this.patchState(({ loadingState }) => ({
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
+          },
           (error) => {
-            this.patchState({ error });
+            this.patchState(({ loadingState }) => ({
+              error,
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
           }
         )
       )
@@ -238,6 +311,11 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   readonly saveAnswerOnDb = this.effect(
     (payload$: Observable<AnswerActionPayload>) =>
       payload$.pipe(
+        tap(() =>
+          this.patchState(({ loadingState }) => ({
+            loadingState: loadingStateAdapter.taskStarted(loadingState),
+          }))
+        ),
         concatMap(({ questionId, answer }) => {
           const testId = this.test()?.id;
 
@@ -261,9 +339,16 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
           );
         }),
         tapResponse(
-          () => {},
+          () => {
+            this.patchState(({ loadingState }) => ({
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
+          },
           (error) => {
-            this.patchState({ error });
+            this.patchState(({ loadingState }) => ({
+              error,
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
           }
         )
       )
@@ -272,6 +357,11 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
   readonly deleteAnswerFromDb = this.effect(
     (payload$: Observable<{ questionId: string; answerId: string }>) =>
       payload$.pipe(
+        tap(() =>
+          this.patchState(({ loadingState }) => ({
+            loadingState: loadingStateAdapter.taskStarted(loadingState),
+          }))
+        ),
         concatMap(({ questionId, answerId }) => {
           const testId = this.test()?.id;
 
@@ -292,9 +382,16 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
           return answersService.delete(answerId);
         }),
         tapResponse(
-          () => {},
+          () => {
+            this.patchState(({ loadingState }) => ({
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
+          },
           (error) => {
-            this.patchState({ error });
+            this.patchState(({ loadingState }) => ({
+              error,
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
           }
         )
       )
@@ -309,6 +406,11 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
       }>
     ) =>
       $.pipe(
+        tap(() =>
+          this.patchState(({ loadingState }) => ({
+            loadingState: loadingStateAdapter.taskStarted(loadingState),
+          }))
+        ),
         concatMap(({ questionId, from, to }) => {
           const testId = this.test()?.id;
 
@@ -326,9 +428,16 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
           return answersService.swapPositions(from, to);
         }),
         tapResponse(
-          () => {},
+          () => {
+            this.patchState(({ loadingState }) => ({
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
+          },
           (error) => {
-            this.patchState({ error });
+            this.patchState(({ loadingState }) => ({
+              error,
+              loadingState: loadingStateAdapter.taskFinished(loadingState),
+            }));
           }
         )
       )
