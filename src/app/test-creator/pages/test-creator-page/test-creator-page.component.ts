@@ -1,7 +1,7 @@
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
+import { LoadingIndicatorComponent } from '@common/components/loading-indicator/loading-indicator.component';
 import { Question } from '@test-creator/classes/question';
 import { AnswerWrapperComponent } from '@test-creator/components/answer-wrapper/answer-wrapper.component';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
@@ -21,9 +22,8 @@ import {
   QuestionsTypes,
 } from '@test-creator/types/questions';
 import { Test } from '@test-creator/types/test';
-import { debounceTime, map, tap } from 'rxjs';
+import { map } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
-import { LoadingIndicatorComponent } from '@common/components/loading-indicator/loading-indicator.component';
 
 @Component({
   standalone: true,
@@ -41,7 +41,7 @@ import { LoadingIndicatorComponent } from '@common/components/loading-indicator/
     DragDropModule,
     AnswerWrapperComponent,
     TestCreatorFormComponent,
-    LoadingIndicatorComponent
+    LoadingIndicatorComponent,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -58,34 +58,9 @@ export class TestCreatorPageComponent {
   readonly answers = this.store.answers;
   readonly isLoading = this.store.isLoading;
 
-  readonly testForm = new FormGroup({
-    name: new FormControl(''),
-  });
-
-  private readonly syncStoreWithForm = effect(() => {
-    const test = this.store.test();
-
-    if (!test) {
-      return;
-    }
-
-    this.testForm.patchValue(test, { emitEvent: false });
-  });
-
   constructor() {
     this.store.loadTestData(
       this.route.params.pipe(map((params) => params['id']))
-    );
-
-    this.store.saveTest(
-      this.testForm.valueChanges.pipe(
-        map((value) => ({
-          id: this.test()?.id ?? '',
-          name: value.name ?? '',
-        })),
-        tap((value) => this.store.updateTest(value)),
-        debounceTime(500)
-      )
     );
   }
 

@@ -18,7 +18,6 @@ import {
   Observable,
   concatMap,
   defaultIfEmpty,
-  delay,
   forkJoin,
   map,
   switchMap,
@@ -107,7 +106,7 @@ export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
               ...data,
               answers: new Map(answersForEachQuestion),
             };
-          }),
+          })
         )
       ),
       tapResponse(
