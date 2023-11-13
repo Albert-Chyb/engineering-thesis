@@ -10,3 +10,21 @@
 .cdk-drag-animating {
   transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
 }
+
+mat-card-title-group {
+  align-items: center;
+  column-gap: 8px;
+  justify-content: space-between;
+}
+
+.test-creator {
+  &__pending-indicator {
+    &--has-pending-tasks {
+      visibility: visible;
+    }
+
+    &--no-pending-tasks {
+      visibility: hidden;
+    }
+  }
+}

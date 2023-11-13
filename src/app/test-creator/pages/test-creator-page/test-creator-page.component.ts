@@ -1,6 +1,7 @@
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { HasPendingTasks } from '@loading-indicator/guards/has-pending-tasks.guard';
@@ -23,8 +25,13 @@ import {
   QuestionsTypes,
 } from '@test-creator/types/questions';
 import { Test } from '@test-creator/types/test';
-import { map } from 'rxjs';
+import { debounceTime, map } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
+
+/**
+ * Number of milliseconds to debounce pending tasks signal in order to prevent the unnecessary showing of the loading indicator.
+ */
+const QUICK_ASYNC_TASKS_DEBOUNCE_TIME = 40 as const;
 
 @Component({
   standalone: true,
@@ -43,6 +50,7 @@ import { TestCreatorPageStore } from './test-creator-page.store';
     AnswerWrapperComponent,
     TestCreatorFormComponent,
     LoadingIndicatorComponent,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
@@ -58,7 +66,11 @@ export class TestCreatorPageComponent implements HasPendingTasks {
   readonly questionsMetadata = this.store.questionsMetadata;
   readonly answers = this.store.answers;
   readonly isLoading = this.store.isLoading;
-  readonly isPending = this.store.isPending;
+  readonly isPending = toSignal(
+    toObservable(this.store.isPending).pipe(
+      debounceTime(QUICK_ASYNC_TASKS_DEBOUNCE_TIME)
+    )
+  );
 
   constructor() {
     this.store.loadTestData(
@@ -67,7 +79,7 @@ export class TestCreatorPageComponent implements HasPendingTasks {
   }
 
   hasPendingTasks() {
-    return this.isPending();
+    return this.isPending() ?? false;
   }
 
   getNewQuestionPosition(questions: Question<QuestionsTypes>[]) {

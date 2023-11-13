@@ -1,14 +1,21 @@
 @if (isLoading()) {
 <app-loading-indicator> Ładuję test... </app-loading-indicator>
 } @else {
-<mat-card>
+<mat-card class="test-creator">
   <mat-card-header>
-    <h1 mat-card-title>Kreator testu</h1>
-    <p mat-card-subtitle>
-      Skonfiguruj swój test. Dodaj pytania oraz co najmniej po 2 odpowiedzi do
-      pytań zamkniętych. Każde pytanie zamknięte musi mieć przynajmniej 1
-      poprawną odpowiedź. Twój test zapisze się automatycznie po każdej zmianie.
-    </p>
+    <mat-card-title-group>
+      <h1 mat-card-title>Kreator testu</h1>
+
+      <div
+        class="test-creator__pending-indicator"
+        [ngClass]="{
+          'test-creator__pending-indicator--has-pending-tasks': isPending(),
+          'test-creator__pending-indicator--no-pending-tasks': !isPending()
+        }"
+      >
+        <mat-spinner diameter="32" />
+      </div>
+    </mat-card-title-group>
   </mat-card-header>
 
   <mat-divider></mat-divider>
