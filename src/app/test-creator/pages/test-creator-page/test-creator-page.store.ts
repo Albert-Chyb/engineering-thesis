@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
+import { QueuedComponentStore } from '@common/ngrx/queued-component-store';
 import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
-import { ComponentStore, tapResponse } from '@ngrx/component-store';
+import { tapResponse } from '@ngrx/component-store';
 import { Question } from '@test-creator/classes/question';
 import {
   QuestionMetadata,
@@ -59,7 +60,7 @@ const INITIAL_STATE: TestCreatorPageState = {
 };
 
 @Injectable()
-export class TestCreatorPageStore extends ComponentStore<TestCreatorPageState> {
+export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageState> {
   private readonly testsService = inject(UserTestsService);
   private readonly questionsService = inject(QuestionsService);
   private readonly answersService = inject(AnswersService);
