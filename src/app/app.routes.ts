@@ -8,9 +8,10 @@ import { LoginComponent } from '@authentication/pages/login/login.component';
 import { PasswordRecoveryComponent } from '@authentication/pages/password-recovery/password-recovery.component';
 import { SignupComponent } from '@authentication/pages/signup/signup.component';
 import { requireSilentNavigationGuard } from '@common/route-guards/require-silent-navigation/require-silent-navigation.guard';
-import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
-import { TestCreatorPageComponent } from './test-creator/pages/test-creator-page/test-creator-page.component';
 import { hasPendingTasksGuard } from '@loading-indicator/guards/has-pending-tasks.guard';
+import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
+import { UserTestsComponent } from '@test-creator/pages/user-tests/user-tests.component';
+import { TestCreatorPageComponent } from './test-creator/pages/test-creator-page/test-creator-page.component';
 
 function redirectLoggedInToHome() {
   return redirectLoggedInTo('/');
@@ -44,13 +45,21 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'my-tests',
+    component: UserTestsComponent,
+    canActivate: [AuthGuard],
+    data: {
+      authGuardPipe: redirectLoggedOutToLogin,
+    },
+  },
+  {
     path: 'test-creator/:id',
     component: TestCreatorPageComponent,
     canActivate: [AuthGuard],
     data: {
       authGuardPipe: redirectLoggedOutToLogin,
     },
-    canDeactivate: [hasPendingTasksGuard]
+    canDeactivate: [hasPendingTasksGuard],
   },
   {
     path: 'error',
