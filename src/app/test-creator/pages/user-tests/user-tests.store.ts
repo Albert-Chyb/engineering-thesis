@@ -1,4 +1,4 @@
-import { Inject, Injectable, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
@@ -41,15 +41,16 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
       tap(() => this.patchState((state) => loadingAdapter.startLoading(state))),
       switchMap(() => this.userTests.list().pipe()),
       tapResponse(
-        (tests) =>
-          this.patchState((state) => ({
-            tests,
+        (tests) => {
+          return this.patchState((state) => ({
             ...loadingAdapter.finishLoading(state),
-          })),
+            tests,
+          }));
+        },
         (error) =>
           this.patchState((state) => ({
-            error,
             ...loadingAdapter.finishLoading(state),
+            error,
           }))
       )
     )
@@ -79,8 +80,8 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
               this._add(test);
 
               this.patchState((state) => ({
-                error,
                 ...loadingAdapter.taskFinished(state),
+                error,
               }));
             }
           )
@@ -105,8 +106,8 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
               this._delete(test.id);
 
               this.patchState((state) => ({
-                error,
                 ...loadingAdapter.taskFinished(state),
+                error,
               }));
             }
           )
