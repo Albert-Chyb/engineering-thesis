@@ -197,7 +197,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           }))
         ),
         concatMap((question) => {
-          const testId = this.test()?.id ?? '';
+          const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
@@ -239,7 +239,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           }))
         ),
         concatMap((question) => {
-          const testId = this.test()?.id;
+          const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
@@ -281,7 +281,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           }))
         ),
         concatMap(({ from: fromQuestion, to: toQuestion }) => {
-          const testId = this.test()?.id;
+          const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
@@ -318,7 +318,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           }))
         ),
         concatMap(({ questionId, answer }) => {
-          const testId = this.test()?.id;
+          const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
@@ -364,7 +364,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           }))
         ),
         concatMap(({ questionId, answerId }) => {
-          const testId = this.test()?.id;
+          const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
@@ -413,7 +413,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           }))
         ),
         concatMap(({ questionId, from, to }) => {
-          const testId = this.test()?.id;
+          const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
