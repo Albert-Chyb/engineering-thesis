@@ -1,0 +1,9 @@
+<mat-action-list>
+  @for (action of actions; track action.action) {
+  <button mat-list-item (click)="handleActionClick(action.action)">
+    <mat-icon matListItemIcon>{{ action.icon }}</mat-icon>
+    <h2 matListItemTitle>{{ action.label }}</h2>
+    <p matListItemLine>{{ action.description }}</p>
+  </button>
+  }
+</mat-action-list>
