@@ -72,6 +72,16 @@
                   <mat-icon>drag_indicator</mat-icon>
                 </button>
               </app-answer-wrapper>
+              } @empty {
+              <app-no-data-info>
+                <ng-container no-data-info-icon>
+                  <img src="assets/icons/insert.svg" alt="" />
+                </ng-container>
+
+                <ng-container no-data-info-message>
+                  <p>Dodaj odpowiedzi do pytania</p>
+                </ng-container>
+              </app-no-data-info>
               }
             </div>
             }
@@ -89,6 +99,16 @@
             }
           </ng-container>
         </app-question-wrapper>
+        } @empty {
+        <app-no-data-info>
+          <ng-container no-data-info-icon>
+            <img src="assets/icons/questions.svg" alt="" />
+          </ng-container>
+
+          <ng-container no-data-info-message>
+            <p>Dodaj pytanie do testu</p>
+          </ng-container>
+        </app-no-data-info>
         }
       </div>
     </app-test-creator-form>

@@ -23,6 +23,16 @@
         <mat-icon matListItemIcon>description</mat-icon>
         <h2 matListItemTitle>{{ test.name }}</h2>
       </button>
+      } @empty {
+      <app-no-data-info>
+        <ng-container no-data-info-icon>
+          <img src="assets/icons/no-data.svg" alt="" />
+        </ng-container>
+
+        <ng-container no-data-info-message>
+          <p>Brak testów</p>
+        </ng-container>
+      </app-no-data-info>
       }
     </mat-action-list>
   </mat-card-content>

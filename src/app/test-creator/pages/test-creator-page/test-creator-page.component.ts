@@ -27,6 +27,7 @@ import {
 import { Test } from '@test-creator/types/test';
 import { debounceTime, map } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
+import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 
 /**
  * Number of milliseconds to debounce pending tasks signal in order to prevent the unnecessary showing of the loading indicator.
@@ -51,6 +52,7 @@ const QUICK_ASYNC_TASKS_DEBOUNCE_TIME = 40 as const;
     TestCreatorFormComponent,
     LoadingIndicatorComponent,
     MatProgressSpinnerModule,
+    NoDataInfoComponent
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
