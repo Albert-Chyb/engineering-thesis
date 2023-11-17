@@ -59,15 +59,16 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
   readonly delete = this.effect((testId$: Observable<string>) =>
     testId$.pipe(
       tap(() => this.patchState((state) => loadingAdapter.taskStarted(state))),
-      tap((testId) => this._delete(testId)),
       mergeMap((testId) => {
-        const test = this.get((state) =>
-          state.tests.find((t) => t.id === testId)
-        );
+        const test = this.get((state) => {
+          return state.tests.find((t) => t.id === testId);
+        });
 
         if (!test) {
           throw new Error('Test not found');
         }
+
+        this._delete(testId);
 
         return this.userTests.delete(testId).pipe(
           tapResponse(
