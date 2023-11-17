@@ -5,9 +5,4 @@
     <button (click)="auth.signOut()" *ngIf="isLoggedIn()">Wyloguj się</button>
     <a routerLink="/signup" *ngIf="!isLoggedIn()">Załóż konto</a>
   </div>
-
-  @if (isLoggedIn()) {
-  <!-- ! Delete this once the app supports creating tests -->
-  <button (click)="createDummyTest()">Stwórz test</button>
-  }
 </main>
