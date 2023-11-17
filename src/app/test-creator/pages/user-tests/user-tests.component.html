@@ -4,7 +4,14 @@
       <h1 mat-card-title>Testy</h1>
     </mat-card-title-group>
 
-    <button type="button" mat-icon-button color="accent">
+    <button
+      type="button"
+      mat-icon-button
+      color="accent"
+      (click)="showNewTestPrompt()"
+      aria-label="Dodaj nowy test"
+      matTooltip="Dodaj nowy test"
+    >
       <mat-icon>add</mat-icon>
     </button>
   </mat-card-header>

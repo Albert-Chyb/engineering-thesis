@@ -9,12 +9,18 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
+import {
+  NewTestPromptComponent,
+  NewTestPromptResult,
+} from '@test-creator/components/new-test-prompt/new-test-prompt.component';
 import {
   TestActionsBottomSheetComponent,
   TestActionsBottomSheetResult,
 } from '@test-creator/components/test-actions-bottom-sheet/test-actions-bottom-sheet.component';
-import { take } from 'rxjs';
+import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
+import { filter, map, take } from 'rxjs';
 import { UserTestsStore } from './user-tests.store';
 
 @Component({
@@ -27,6 +33,7 @@ import { UserTestsStore } from './user-tests.store';
     MatBottomSheetModule,
     MatIconModule,
     MatDialogModule,
+    MatTooltipModule,
   ],
   templateUrl: './user-tests.component.html',
   styleUrl: './user-tests.component.scss',
@@ -37,6 +44,7 @@ export class UserTestsComponent {
   private readonly bottomSheets = inject(MatBottomSheet);
   private readonly dialogs = inject(MatDialog);
   private readonly router = inject(Router);
+  private readonly userTests = inject(UserTestsService);
 
   readonly tests = this.store.tests;
 
@@ -70,5 +78,28 @@ export class UserTestsComponent {
       });
   }
 
-  showTestNamePrompt() {}
+  showNewTestPrompt() {
+    const dialogRef = this.dialogs.open<
+      NewTestPromptComponent,
+      void,
+      NewTestPromptResult
+    >(NewTestPromptComponent);
+
+    this.store.create(
+      dialogRef.afterClosed().pipe(
+        take(1),
+        map((initialTest) => {
+          if (!initialTest) {
+            return null as any;
+          }
+
+          return {
+            id: this.userTests.generateId(),
+            name: initialTest.name,
+          };
+        }),
+        filter((test) => test !== null)
+      )
+    );
+  }
 }
