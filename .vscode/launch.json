@@ -3,12 +3,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Chrome",
+      "name": "(MacOS) Launch Brave",
       "request": "launch",
       "type": "chrome",
       "url": "http://127.0.0.1:4200",
       "webRoot": "${workspaceFolder}",
-      "preLaunchTask": "npm: start"
+      "preLaunchTask": "npm: start",
+      "runtimeExecutable": "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+      "runtimeArgs": ["--remote-debugging-port=9222", "--incognito"]
     },
     {
       "name": "ng test",
