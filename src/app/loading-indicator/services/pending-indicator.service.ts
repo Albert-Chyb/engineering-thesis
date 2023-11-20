@@ -16,8 +16,7 @@ const NOOP_INDICATOR: PendingIndicator = {
 
 const NOOP_STATE_CHANGES: PendingStateChanges = {
   onPendingChange$: of({
-    isPending: false,
-    tasksCount: 0,
+    isPending: false
   }),
 } as const;
 
@@ -25,7 +24,6 @@ const QUICK_TASK_THRESHOLD = 40;
 
 export interface PendingState {
   isPending: boolean;
-  tasksCount: number;
 }
 
 export interface PendingStateChanges {

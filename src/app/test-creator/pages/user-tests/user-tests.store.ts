@@ -37,7 +37,6 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
 
   readonly pendingState$ = this.select({
     isPending: this.select(loadingAdapter.getSelectors().isPending),
-    tasksCount: this.select(loadingAdapter.getSelectors().tasksCount),
   });
 
   constructor() {

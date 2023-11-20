@@ -87,7 +87,6 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   );
   readonly pendingState$ = this.select({
     isPending: this.select((state) => isPending(state.loadingState)),
-    tasksCount: this.select((state) => tasksCount(state.loadingState)),
   });
 
   /**
