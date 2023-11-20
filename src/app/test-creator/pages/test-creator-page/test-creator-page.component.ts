@@ -1,6 +1,6 @@
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,8 +12,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
+import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { HasPendingTasks } from '@loading-indicator/guards/has-pending-tasks.guard';
+import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import { Question } from '@test-creator/classes/question';
 import { AnswerWrapperComponent } from '@test-creator/components/answer-wrapper/answer-wrapper.component';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
@@ -27,7 +29,6 @@ import {
 import { Test } from '@test-creator/types/test';
 import { debounceTime, map } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
-import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 
 /**
  * Number of milliseconds to debounce pending tasks signal in order to prevent the unnecessary showing of the loading indicator.
@@ -52,16 +53,17 @@ const QUICK_ASYNC_TASKS_DEBOUNCE_TIME = 40 as const;
     TestCreatorFormComponent,
     LoadingIndicatorComponent,
     MatProgressSpinnerModule,
-    NoDataInfoComponent
+    NoDataInfoComponent,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
   providers: [TestCreatorPageStore],
 })
-export class TestCreatorPageComponent implements HasPendingTasks {
+export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
   private readonly testsService = inject(UserTestsService);
   private readonly store = inject(TestCreatorPageStore);
   private readonly route = inject(ActivatedRoute);
+  private readonly pendingIndicatorService = inject(PendingIndicatorService);
 
   readonly test = this.store.test;
   readonly questions = this.store.questions;
@@ -75,9 +77,17 @@ export class TestCreatorPageComponent implements HasPendingTasks {
   );
 
   constructor() {
+    this.pendingIndicatorService.connectStateChanges({
+      onPendingChange$: this.store.pendingState$,
+    });
+
     this.store.loadTestData(
       this.route.params.pipe(map((params) => params['id']))
     );
+  }
+
+  ngOnDestroy(): void {
+    this.pendingIndicatorService.disconnectStateChanges();
   }
 
   hasPendingTasks() {

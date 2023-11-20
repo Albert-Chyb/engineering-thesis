@@ -85,6 +85,10 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   readonly tasksCount = this.selectSignal((state) =>
     tasksCount(state.loadingState)
   );
+  readonly pendingState$ = this.select({
+    isPending: this.select((state) => isPending(state.loadingState)),
+    tasksCount: this.select((state) => tasksCount(state.loadingState)),
+  });
 
   /**
    * Loads the test, questions and answers from the database.

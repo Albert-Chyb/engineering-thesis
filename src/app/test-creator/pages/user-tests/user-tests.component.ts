@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import {
   MatBottomSheet,
   MatBottomSheetModule,
@@ -12,6 +12,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
+import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import {
   NewTestPromptComponent,
   NewTestPromptResult,
@@ -41,17 +42,26 @@ import { UserTestsStore } from './user-tests.store';
   styleUrl: './user-tests.component.scss',
   providers: [UserTestsStore],
 })
-export class UserTestsComponent {
+export class UserTestsComponent implements OnDestroy {
   private readonly store = inject(UserTestsStore);
   private readonly bottomSheets = inject(MatBottomSheet);
   private readonly dialogs = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly userTests = inject(UserTestsService);
+  private readonly pendingIndicatorService = inject(PendingIndicatorService);
 
   readonly tests = this.store.tests;
 
   constructor() {
+    this.pendingIndicatorService.connectStateChanges({
+      onPendingChange$: this.store.pendingState$,
+    });
+
     this.store.load();
+  }
+
+  ngOnDestroy(): void {
+    this.pendingIndicatorService.disconnectStateChanges();
   }
 
   showTestActions(testId: string) {

@@ -16,15 +16,3 @@ mat-card-title-group {
   column-gap: 8px;
   justify-content: space-between;
 }
-
-.test-creator {
-  &__pending-indicator {
-    &--has-pending-tasks {
-      visibility: visible;
-    }
-
-    &--no-pending-tasks {
-      visibility: hidden;
-    }
-  }
-}

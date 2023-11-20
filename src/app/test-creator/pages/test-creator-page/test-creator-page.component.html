@@ -1,21 +1,9 @@
 @if (isLoading()) {
 <app-loading-indicator> Ładuję test... </app-loading-indicator>
 } @else {
-<mat-card class="test-creator">
+<mat-card>
   <mat-card-header>
-    <mat-card-title-group>
-      <h1 mat-card-title>Kreator testu</h1>
-
-      <div
-        class="test-creator__pending-indicator"
-        [ngClass]="{
-          'test-creator__pending-indicator--has-pending-tasks': isPending(),
-          'test-creator__pending-indicator--no-pending-tasks': !isPending()
-        }"
-      >
-        <mat-spinner diameter="32" />
-      </div>
-    </mat-card-title-group>
+    <h1 mat-card-title>Kreator testu</h1>
   </mat-card-header>
 
   <mat-divider></mat-divider>
