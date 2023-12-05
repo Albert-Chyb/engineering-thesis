@@ -2,8 +2,81 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+    match /users/{userId}/tests/{testId} {
+      allow read, delete: if 
+        isLoggedIn() && 
+        isUser(userId);
+
+      allow create, update: if 
+        isLoggedIn() &&
+        isUser(userId) && 
+        schemaCreatorTest();
+    }
+
+    match /users/{userId}/tests/{testId}/questions/{questionId} {
+      allow read, delete: if 
+        isLoggedIn() && 
+        isUser(userId);
+
+      allow create, update: if 
+        isLoggedIn() &&
+        isUser(userId) &&
+        schemaCreatorQuestion();
+    }
+
+    match /users/{userId}/tests/{testId}/questions/{questionId}/answers/{answerId} {
+      allow read, delete: if 
+        isLoggedIn() && 
+        isUser(userId);
+
+      allow create, update: if 
+        isLoggedIn() &&
+        isUser(userId) && 
+        get(/databases/$(database)/documents/users/$(userId)/tests/$(testId)/questions/$(questionId)).data.type in getClosedQuestionsTypes() &&
+        schemaCreatorAnswer();
     }
   }
+}
+
+function isLoggedIn() {
+  return request.auth != null;
+}
+
+function isUser(userId) {
+  return request.auth.uid == userId;
+}
+
+function schemaCreatorTest() {
+  return 
+    request.resource.data.keys().hasOnly(['name']) &&
+    request.resource.data.name is string;
+}
+
+function getQuestionsTypes() {
+  return ['single-choice', 'multi-choice', 'text-answer'];
+}
+
+function getClosedQuestionsTypes() {
+  return ['single-choice', 'multi-choice'];
+}
+
+function schemaCreatorQuestion() {
+  return 
+    request.resource.data.keys().hasOnly(['content', 'type', 'position']) &&
+    request.resource.data.content is string &&
+
+    request.resource.data.type is string &&
+    request.resource.data.type in getQuestionsTypes() &&
+
+    request.resource.data.position is int &&
+    request.resource.data.position > 0;
+}
+
+function schemaCreatorAnswer() {
+  return 
+    request.resource.data.keys().hasOnly(['content', 'position']) &&
+    request.resource.data.content is string &&
+
+    request.resource.data.position is int &&
+    request.resource.data.position > 0;
 }
