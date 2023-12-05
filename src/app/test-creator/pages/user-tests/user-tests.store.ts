@@ -103,7 +103,7 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
       tap(() => this.patchState((state) => loadingAdapter.taskStarted(state))),
       tap((test) => this._add(test)),
       mergeMap((test) =>
-        this.userTests.create(test, test.id).pipe(
+        this.userTests.create({ name: test.name }, test.id).pipe(
           tapResponse(
             () => {
               this.patchState((state) => ({
