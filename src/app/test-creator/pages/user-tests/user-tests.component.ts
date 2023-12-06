@@ -84,6 +84,10 @@ export class UserTestsComponent implements OnDestroy {
             this.store.delete(testId);
             break;
 
+          case 'share':
+            this.store.shareTest(testId);
+            break;
+
           default:
             break;
         }

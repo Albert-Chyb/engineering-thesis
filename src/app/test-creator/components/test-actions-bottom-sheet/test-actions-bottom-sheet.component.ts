@@ -4,7 +4,7 @@ import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 
-type TestActionsBottomSheetAction = 'edit' | 'delete';
+type TestActionsBottomSheetAction = 'edit' | 'delete' | 'share';
 
 export interface TestActionsBottomSheetResult {
   action: TestActionsBottomSheetAction;
@@ -34,6 +34,12 @@ export class TestActionsBottomSheetComponent {
       label: 'Usuń',
       description: 'Usuń test',
       icon: 'delete',
+    },
+    {
+      action: 'share',
+      label: 'Udostępnij',
+      description: 'Udostępnij test',
+      icon: 'share',
     },
   ] as const;
 

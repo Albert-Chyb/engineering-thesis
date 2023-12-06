@@ -4,6 +4,7 @@ import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Test } from '@test-creator/types/test';
+import { SharedTestsService } from '@tests-sharing/services/shared-tests.service';
 import { Observable, mergeMap, switchMap, tap } from 'rxjs';
 
 const loadingAdapter = new LoadingStateAdapter();
@@ -22,6 +23,7 @@ const INITIAL_STATE: UserTestsState = {
 @Injectable()
 export class UserTestsStore extends ComponentStore<UserTestsState> {
   private readonly userTests = inject(UserTestsService);
+  private readonly sharedTests = inject(SharedTestsService);
 
   readonly tests = this.selectSignal((state) => state.tests);
   readonly error = this.selectSignal((state) => state.error);
@@ -60,6 +62,29 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
             error,
           }))
       )
+    )
+  );
+
+  readonly shareTest = this.effect((testId$: Observable<string>) =>
+    testId$.pipe(
+      tap(() => this.patchState((state) => loadingAdapter.taskStarted(state))),
+      mergeMap((testId) => {
+        return this.sharedTests.shareTest(testId).pipe(
+          tapResponse(
+            () => {
+              this.patchState((state) => ({
+                ...loadingAdapter.taskFinished(state),
+              }));
+            },
+            (error) => {
+              this.patchState((state) => ({
+                ...loadingAdapter.taskFinished(state),
+                error,
+              }));
+            }
+          )
+        );
+      })
     )
   );
 
