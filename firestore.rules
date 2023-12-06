@@ -35,6 +35,16 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(userId)/tests/$(testId)/questions/$(questionId)).data.type in getClosedQuestionsTypes() &&
         schemaCreatorAnswer();
     }
+
+    match /shared-tests/{testId} {
+      allow read: if true;
+
+      allow delete: if 
+        isLoggedIn() &&
+        isUser(resource.data.author);
+
+      allow create, update: if false;
+    }
   }
 }
 
