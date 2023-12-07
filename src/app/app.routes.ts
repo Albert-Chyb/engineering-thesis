@@ -11,6 +11,7 @@ import { requireSilentNavigationGuard } from '@common/route-guards/require-silen
 import { hasPendingTasksGuard } from '@loading-indicator/guards/has-pending-tasks.guard';
 import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
 import { UserTestsComponent } from '@test-creator/pages/user-tests/user-tests.component';
+import { SharedTestsPageComponent } from '@tests-sharing/pages/shared-tests-page/shared-tests-page.component';
 import { TestCreatorPageComponent } from './test-creator/pages/test-creator-page/test-creator-page.component';
 
 function redirectLoggedInToHome() {
@@ -60,6 +61,14 @@ export const routes: Routes = [
       authGuardPipe: redirectLoggedOutToLogin,
     },
     canDeactivate: [hasPendingTasksGuard],
+  },
+  {
+    path: 'shared-tests',
+    component: SharedTestsPageComponent,
+    canActivate: [AuthGuard],
+    data: {
+      authGuardPipe: redirectLoggedOutToLogin,
+    },
   },
   {
     path: 'error',
