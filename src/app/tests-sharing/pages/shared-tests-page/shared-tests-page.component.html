@@ -1,1 +1,5 @@
-<p>shared-tests-page works!</p>
+@if(isLoading()) {
+<app-loading-indicator> Ładuję testy ... </app-loading-indicator>
+} @else {
+<p>shared-tests-page works !</p>
+}
