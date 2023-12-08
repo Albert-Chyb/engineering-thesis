@@ -1,3 +1,4 @@
+import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
@@ -6,9 +7,15 @@ import {
 } from '@angular/material/bottom-sheet';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
-import { SharedTestsActionsBottomSheetComponent } from '@tests-sharing/components/shared-tests-actions-bottom-sheet/shared-tests-actions-bottom-sheet.component';
+import {
+  SharedTestsActions,
+  SharedTestsActionsBottomSheetComponent,
+} from '@tests-sharing/components/shared-tests-actions-bottom-sheet/shared-tests-actions-bottom-sheet.component';
+import { SharedTestsService } from '@tests-sharing/services/shared-tests.service';
+import { take } from 'rxjs';
 import { SharedTestsPageStore } from './shared-tests-page.store';
 
 @Component({
@@ -20,6 +27,8 @@ import { SharedTestsPageStore } from './shared-tests-page.store';
     MatListModule,
     MatCardModule,
     MatBottomSheetModule,
+    ClipboardModule,
+    MatSnackBarModule,
   ],
   templateUrl: './shared-tests-page.component.html',
   styleUrl: './shared-tests-page.component.scss',
@@ -29,6 +38,9 @@ export class SharedTestsPageComponent {
   private readonly store = inject(SharedTestsPageStore);
   private readonly pendingIndicator = inject(PendingIndicatorService);
   private readonly bottomSheets = inject(MatBottomSheet);
+  private readonly clipboard = inject(Clipboard);
+  private readonly snackBars = inject(MatSnackBar);
+  private readonly sharedTests = inject(SharedTestsService);
 
   readonly isLoading = this.store.isLoading$;
   readonly tests = this.store.tests;
@@ -42,6 +54,28 @@ export class SharedTestsPageComponent {
   }
 
   showTestsActions(id: string) {
-    this.bottomSheets.open(SharedTestsActionsBottomSheetComponent);
+    const bottomSheetRef = this.bottomSheets.open<
+      SharedTestsActionsBottomSheetComponent,
+      void,
+      SharedTestsActions
+    >(SharedTestsActionsBottomSheetComponent);
+
+    bottomSheetRef
+      .afterDismissed()
+      .pipe(take(1))
+      .subscribe((action) => {
+        switch (action) {
+          case 'copy-link':
+            const link = this.sharedTests.generateLink(id);
+
+            this.copyToClipboard(link);
+            this.snackBars.open('Skopiowano link do schowka', 'Zamknij');
+            break;
+        }
+      });
+  }
+
+  private copyToClipboard(text: string): void {
+    this.clipboard.copy(text);
   }
 }

@@ -1,3 +1,4 @@
+import { DOCUMENT, Location } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import {
   DocumentData,
@@ -42,6 +43,8 @@ export class SharedTestsService {
   private readonly functions = inject(Functions);
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly location = inject(Location);
+  private readonly document = inject(DOCUMENT);
 
   shareTest(testId: string) {
     return from(
@@ -63,6 +66,14 @@ export class SharedTestsService {
         snapshots.docs.map((snapshot) => snapshot.data() as SharedTest)
       )
     );
+  }
+
+  generateLink(id: string) {
+    const routePath = `/take-test/${id}`;
+    const origin = this.document.location.origin;
+    const absolutePath = this.location.normalize(origin + routePath);
+
+    return absolutePath;
   }
 
   private getCollectionRef() {
