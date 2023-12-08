@@ -1,5 +1,22 @@
 @if(isLoading()) {
 <app-loading-indicator> Ładuję testy ... </app-loading-indicator>
 } @else {
-<p>shared-tests-page works !</p>
+<mat-card>
+  <mat-card-header>
+    <h1 mat-card-title>Udostępnione testy</h1>
+    <p mat-card-subtitle>
+      Poniżej znajduje się lista z testami, które zostały udostępnione
+      publicznie.
+    </p>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-action-list>
+      @for (test of tests(); track test.id) {
+      <button mat-list-item (click)="showTestsActions(test.id)">
+        {{ test.name }}
+      </button>
+      }
+    </mat-action-list>
+  </mat-card-content>
+</mat-card>
 }

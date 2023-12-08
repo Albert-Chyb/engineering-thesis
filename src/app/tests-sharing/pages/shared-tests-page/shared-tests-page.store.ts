@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
-import { ComponentStore } from '@ngrx/component-store';
+import { ComponentStore, tapResponse } from '@ngrx/component-store';
+import { SharedTestsService } from '@tests-sharing/services/shared-tests.service';
 import { SharedTest } from '@tests-sharing/types/shared-test';
+import { switchMap, tap } from 'rxjs';
 
 const loadingStateAdapter = new LoadingStateAdapter();
 
@@ -20,6 +22,8 @@ const INITIAL_STATE: SharedTestsPageState = {
 
 @Injectable()
 export class SharedTestsPageStore extends ComponentStore<SharedTestsPageState> {
+  private readonly sharedTests = inject(SharedTestsService);
+
   constructor() {
     super(INITIAL_STATE);
   }
@@ -33,4 +37,36 @@ export class SharedTestsPageStore extends ComponentStore<SharedTestsPageState> {
       loadingStateAdapter.getSelectors().isPending(state.loadingState)
     ),
   });
+
+  readonly tests = this.selectSignal((state) => state.tests);
+
+  readonly load = this.effect(($) =>
+    $.pipe(
+      tap(() =>
+        this.patchState((state) => ({
+          loadingState: loadingStateAdapter.startLoading(state.loadingState),
+        }))
+      ),
+      switchMap(() => this.sharedTests.getSharedTests()),
+      tapResponse(
+        (tests) => {
+          this.setTests(tests);
+          this.patchState((state) => ({
+            loadingState: loadingStateAdapter.finishLoading(state.loadingState),
+          }));
+        },
+        (error) => {
+          this.patchState((state) => ({
+            loadingState: loadingStateAdapter.finishLoading(state.loadingState),
+            error,
+          }));
+        }
+      )
+    )
+  );
+
+  private readonly setTests = this.updater((state, tests: SharedTest[]) => ({
+    ...state,
+    tests,
+  }));
 }
