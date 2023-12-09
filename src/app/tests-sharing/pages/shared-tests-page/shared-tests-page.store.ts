@@ -3,13 +3,13 @@ import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { SharedTestsService } from '@tests-sharing/services/shared-tests.service';
-import { SharedTest } from '@tests-sharing/types/shared-test';
+import { SharedTestMetadata } from '@tests-sharing/types/shared-test';
 import { switchMap, tap } from 'rxjs';
 
 const loadingStateAdapter = new LoadingStateAdapter();
 
 export interface SharedTestsPageState {
-  tests: SharedTest[];
+  tests: SharedTestMetadata[];
   error: any;
   loadingState: LoadingState;
 }
@@ -65,8 +65,10 @@ export class SharedTestsPageStore extends ComponentStore<SharedTestsPageState> {
     )
   );
 
-  private readonly setTests = this.updater((state, tests: SharedTest[]) => ({
-    ...state,
-    tests,
-  }));
+  private readonly setTests = this.updater(
+    (state, tests: SharedTestMetadata[]) => ({
+      ...state,
+      tests,
+    })
+  );
 }

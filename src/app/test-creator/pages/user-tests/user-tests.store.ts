@@ -5,6 +5,7 @@ import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Test } from '@test-creator/types/test';
 import { SharedTestsService } from '@tests-sharing/services/shared-tests.service';
+import { ShareTestCloudFnPayload } from '@tests-sharing/types/share-test-cloud-fn';
 import { Observable, mergeMap, switchMap, tap } from 'rxjs';
 
 const loadingAdapter = new LoadingStateAdapter();
@@ -65,27 +66,30 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
     )
   );
 
-  readonly shareTest = this.effect((testId$: Observable<string>) =>
-    testId$.pipe(
-      tap(() => this.patchState((state) => loadingAdapter.taskStarted(state))),
-      mergeMap((testId) => {
-        return this.sharedTests.shareTest(testId).pipe(
-          tapResponse(
-            () => {
-              this.patchState((state) => ({
-                ...loadingAdapter.taskFinished(state),
-              }));
-            },
-            (error) => {
-              this.patchState((state) => ({
-                ...loadingAdapter.taskFinished(state),
-                error,
-              }));
-            }
-          )
-        );
-      })
-    )
+  readonly shareTest = this.effect(
+    (testId$: Observable<ShareTestCloudFnPayload>) =>
+      testId$.pipe(
+        tap(() =>
+          this.patchState((state) => loadingAdapter.taskStarted(state))
+        ),
+        mergeMap((testId) => {
+          return this.sharedTests.shareTest(testId).pipe(
+            tapResponse(
+              () => {
+                this.patchState((state) => ({
+                  ...loadingAdapter.taskFinished(state),
+                }));
+              },
+              (error) => {
+                this.patchState((state) => ({
+                  ...loadingAdapter.taskFinished(state),
+                  error,
+                }));
+              }
+            )
+          );
+        })
+      )
   );
 
   readonly delete = this.effect((testId$: Observable<string>) =>

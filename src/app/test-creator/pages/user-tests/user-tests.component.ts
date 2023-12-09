@@ -22,6 +22,10 @@ import {
   TestActionsBottomSheetResult,
 } from '@test-creator/components/test-actions-bottom-sheet/test-actions-bottom-sheet.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
+import {
+  SharedTestMetadataDialogComponent,
+  SharedTestMetadataDialogResult,
+} from '@tests-sharing/components/shared-test-metadata-dialog/shared-test-metadata-dialog.component';
 import { filter, map, take } from 'rxjs';
 import { UserTestsStore } from './user-tests.store';
 
@@ -85,12 +89,34 @@ export class UserTestsComponent implements OnDestroy {
             break;
 
           case 'share':
-            this.store.shareTest(testId);
+            this.showSharedTestMetadataPrompt(testId);
             break;
 
           default:
             break;
         }
+      });
+  }
+
+  showSharedTestMetadataPrompt(testId: string) {
+    const dialogRef = this.dialogs.open<
+      SharedTestMetadataDialogComponent,
+      void,
+      SharedTestMetadataDialogResult
+    >(SharedTestMetadataDialogComponent);
+
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((result) => {
+        if (!result) {
+          return;
+        }
+
+        this.store.shareTest({
+          testId,
+          name: result.name,
+        });
       });
   }
 

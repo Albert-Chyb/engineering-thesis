@@ -15,23 +15,30 @@ import {
 } from '@angular/fire/firestore';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { AuthService } from '@authentication/services/auth.service';
-import { RawSharedTest, SharedTest } from '@tests-sharing/types/shared-test';
+import { ShareTestCloudFnPayload } from '@tests-sharing/types/share-test-cloud-fn';
+import {
+  RawSharedTestMetadata,
+  SharedTestMetadata,
+} from '@tests-sharing/types/shared-test';
 import { Observable, from, map, switchMap } from 'rxjs';
 
-class DataConverter implements FirestoreDataConverter<SharedTest> {
-  toFirestore(modelObject: WithFieldValue<SharedTest>): DocumentData;
+class DataConverter implements FirestoreDataConverter<SharedTestMetadata> {
+  toFirestore(modelObject: WithFieldValue<SharedTestMetadata>): DocumentData;
   toFirestore(
-    modelObject: PartialWithFieldValue<SharedTest>,
+    modelObject: PartialWithFieldValue<SharedTestMetadata>,
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
     return {};
   }
 
-  fromFirestore(snapshot: QueryDocumentSnapshot<RawSharedTest>): SharedTest {
+  fromFirestore(
+    snapshot: QueryDocumentSnapshot<RawSharedTestMetadata>
+  ): SharedTestMetadata {
     return {
       ...snapshot.data(),
       id: snapshot.id,
+      sharedDate: snapshot.data().sharedDate.toDate(),
     };
   }
 }
@@ -46,25 +53,25 @@ export class SharedTestsService {
   private readonly location = inject(Location);
   private readonly document = inject(DOCUMENT);
 
-  shareTest(testId: string) {
+  shareTest(data: ShareTestCloudFnPayload): Observable<string> {
     return from(
-      httpsCallable<{ testId: string }, string>(
+      httpsCallable<ShareTestCloudFnPayload, string>(
         this.functions,
         'shareTest'
-      )({ testId })
+      )(data)
     ).pipe(map((res) => res.data));
   }
 
-  getSharedTests(): Observable<SharedTest[]> {
+  getSharedTests(): Observable<SharedTestMetadata[]> {
     return this.auth.uid$.pipe(
       switchMap((uid) =>
         from(
-          getDocs(query(this.getCollectionRef(), where('author', '==', uid)))
+          getDocs(
+            query(this.getMetadataCollectionRef(), where('author', '==', uid))
+          )
         )
       ),
-      map((snapshots) =>
-        snapshots.docs.map((snapshot) => snapshot.data() as SharedTest)
-      )
+      map((snapshots) => snapshots.docs.map((snapshot) => snapshot.data()))
     );
   }
 
@@ -76,8 +83,8 @@ export class SharedTestsService {
     return absolutePath;
   }
 
-  private getCollectionRef() {
-    return collection(this.firestore, 'shared-tests').withConverter(
+  private getMetadataCollectionRef() {
+    return collection(this.firestore, 'shared-tests-metadata').withConverter(
       new DataConverter()
     );
   }

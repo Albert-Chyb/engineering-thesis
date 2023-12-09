@@ -45,6 +45,16 @@ service cloud.firestore {
 
       allow create, update: if false;
     }
+
+    match /shared-tests-metadata/{metadataId} {
+      allow read: if true;
+
+      allow delete: if 
+        isLoggedIn() &&
+        isUser(resource.data.author);
+
+      allow create, update: if false;
+    }
   }
 }
 
