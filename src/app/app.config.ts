@@ -1,6 +1,7 @@
 import {
   ApplicationConfig,
   ErrorHandler,
+  LOCALE_ID,
   importProvidersFrom,
 } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
@@ -96,6 +97,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: ErrorHandler,
       useClass: AppErrorHandler,
+    },
+    {
+      provide: LOCALE_ID,
+      useValue: 'pl-PL',
     },
   ],
 };
