@@ -8,14 +8,24 @@ import {
 } from 'firebase-admin/firestore';
 import { AuthData } from 'firebase-functions/lib/common/providers/tasks';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
+import { z } from 'zod';
 import {
   getQuestionAnswers,
   getQuestions,
   getTest,
 } from '../data-access/created-tests';
 import { generateId } from '../helpers/generateId';
+import { sharedTestSchema } from '../models/shared-test';
+import { sharedTestMetadataSchema } from '../models/shared-test-metadata';
 
 const db = getFirestore();
+
+const dataSchema = z.object({
+  testId: z.string(),
+  name: z.string(),
+});
+
+type ParamsSchema = z.infer<typeof dataSchema>;
 
 function createSharedTestMetadata(
   metadata: { name: string },
@@ -24,7 +34,7 @@ function createSharedTestMetadata(
   return {
     name: metadata.name,
     author: auth.uid,
-    sharedDate: FieldValue.serverTimestamp() as any,
+    sharedDate: FieldValue.serverTimestamp(),
   };
 }
 
@@ -48,12 +58,8 @@ function createSharedTest(
   };
 }
 
-export const shareTest = onCall<
-  { testId: string; name: string },
-  Promise<string>
->((request) => {
+export const shareTest = onCall<ParamsSchema, Promise<string>>((request) => {
   return db.runTransaction<string>(async (transaction: Transaction) => {
-    // Check if user is authenticated
     if (!request.auth) {
       throw new HttpsError(
         'unauthenticated',
@@ -61,7 +67,17 @@ export const shareTest = onCall<
       );
     }
 
-    const { testId } = request.data;
+    const dataValidation = dataSchema.safeParse(request.data);
+
+    if (!dataValidation.success) {
+      throw new HttpsError(
+        'invalid-argument',
+        `Invalid cloud function params`,
+        dataValidation.error
+      );
+    }
+
+    const { testId } = dataValidation.data;
     const testRef = getTest(testId, request.auth);
     const test = await transaction.get(testRef);
 
@@ -84,17 +100,38 @@ export const shareTest = onCall<
     );
 
     const id = generateId(db);
-
     const sharedTestMetadata = createSharedTestMetadata(
       request.data,
       request.auth
     );
-
     const sharedTest = createSharedTest(test, questions, answers);
+    const sharedTestValidation = sharedTestSchema.safeParse(sharedTest);
+
+    if (!sharedTestValidation.success) {
+      throw new HttpsError(
+        'failed-precondition',
+        `Created test is not in the valid shape`,
+        sharedTestValidation
+      );
+    }
+
+    const sharedTestMetadataValidation =
+      sharedTestMetadataSchema.safeParse(sharedTestMetadata);
+
+    if (!sharedTestMetadataValidation.success) {
+      throw new HttpsError(
+        'internal',
+        `Could not create shared test metadata`,
+        sharedTestMetadataValidation
+      );
+    }
 
     transaction
-      .create(db.doc(`shared-tests-metadata/${id}`), sharedTestMetadata)
-      .create(db.doc(`shared-tests/${id}`), sharedTest);
+      .create(
+        db.doc(`shared-tests-metadata/${id}`),
+        sharedTestMetadataValidation.data
+      )
+      .create(db.doc(`shared-tests/${id}`), sharedTestValidation.data);
 
     return id;
   });
