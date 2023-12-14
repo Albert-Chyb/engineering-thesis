@@ -13,7 +13,8 @@
     <mat-action-list>
       @for (test of tests(); track test.id) {
       <button mat-list-item (click)="showTestsActions(test.id)">
-        {{ test.name }}
+        <span matListItemTitle>{{ test.name }}</span>
+        <span matListItemLine>Udostępniono: {{ test.sharedDate | date: 'short' }}</span>
       </button>
       }
     </mat-action-list>
