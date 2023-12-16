@@ -16,7 +16,12 @@ import {
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
-import { Answer, RawAnswer } from '@test-creator/types/answer';
+import {
+  Answer,
+  AnswerSchema,
+  RawAnswer,
+  RawAnswerSchema,
+} from '@test-creator/types/answer';
 import { Observable, from, map, switchMap, take } from 'rxjs';
 
 class DataConverter implements FirestoreDataConverter<Answer> {
@@ -26,25 +31,17 @@ class DataConverter implements FirestoreDataConverter<Answer> {
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
-    const model = modelObject as Answer;
-
-    return {
-      content: model.content,
-      position: model.position,
-    };
+    return RawAnswerSchema.parse(modelObject);
   }
 
   fromFirestore(
     snapshot: QueryDocumentSnapshot<RawAnswer>,
     options?: SnapshotOptions | undefined
   ): Answer {
-    const data = snapshot.data() as Answer;
-
-    return {
+    return AnswerSchema.parse({
       id: snapshot.id,
-      content: data.content,
-      position: data.position,
-    };
+      ...snapshot.data(options),
+    });
   }
 }
 

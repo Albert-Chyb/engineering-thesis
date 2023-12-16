@@ -1,20 +1,13 @@
 import { Timestamp } from '@angular/fire/firestore';
-import { AssembledTest } from '@test-creator/types/assembled-test';
+import { z } from 'zod';
 
-export type SharedTestMetadata = {
-  id: string;
-  name: string;
-  author: string;
-  sharedDate: Date;
-};
+export const SharedTestMetadataSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  author: z.string(),
+  sharedDate: z.instanceof(Timestamp).transform((t) => t.toDate()),
+});
 
-export type RawSharedTestMetadata = Omit<
-  SharedTestMetadata,
-  'id' | 'sharedDate'
-> & {
-  sharedDate: Timestamp;
-};
+export type SharedTestMetadata = z.infer<typeof SharedTestMetadataSchema>;
 
-export type SharedTest = AssembledTest;
-
-export type RawSharedTest = Omit<SharedTest, 'id'>;
+export type RawSharedTestMetadata = z.infer<typeof SharedTestMetadataSchema>;

@@ -1,27 +1,25 @@
-interface QuestionBase {
-  content: string;
-  position: number;
-}
+import { z } from 'zod';
 
-export interface SingleChoiceQuestion extends QuestionBase {
-  type: 'single-choice';
-}
+export const QuestionsTypesEnum = z.enum([
+  'single-choice',
+  'multi-choice',
+  'text-answer',
+]);
 
-export interface MultiChoiceQuestion extends QuestionBase {
-  type: 'multi-choice';
-}
+export const RawQuestionSchema = z.object({
+  content: z.string(),
+  position: z.number().positive().int(),
+  type: QuestionsTypesEnum,
+});
 
-export interface TextAnswerQuestion extends QuestionBase {
-  type: 'text-answer';
-}
+export const QuestionSchema = RawQuestionSchema.extend({
+  id: z.string(),
+});
 
-export type RawQuestion =
-  | SingleChoiceQuestion
-  | MultiChoiceQuestion
-  | TextAnswerQuestion;
+export type RawQuestion = z.infer<typeof RawQuestionSchema>;
 
-export type QuestionDoc = RawQuestion & { id: string };
+export type QuestionDoc = z.infer<typeof QuestionSchema>;
 
-export type QuestionsTypes = RawQuestion['type'];
+export type QuestionsTypes = z.infer<typeof QuestionsTypesEnum>;
 export type ClosedQuestionsTypes = Exclude<QuestionsTypes, 'text-answer'>;
 export type OpenQuestionsTypes = Exclude<QuestionsTypes, ClosedQuestionsTypes>;

@@ -16,7 +16,12 @@ import {
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
 import { Question } from '@test-creator/classes/question';
-import { QuestionDoc, RawQuestion } from '@test-creator/types/question';
+import {
+  QuestionDoc,
+  QuestionSchema,
+  RawQuestion,
+  RawQuestionSchema,
+} from '@test-creator/types/question';
 import { Observable, from, map, switchMap, take } from 'rxjs';
 
 class Converter implements FirestoreDataConverter<Question> {
@@ -26,31 +31,19 @@ class Converter implements FirestoreDataConverter<Question> {
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
-    if (modelObject instanceof Object) {
-      const obj: Record<string, any> = modelObject;
-
-      return {
-        type: obj['type'],
-        content: obj['content'],
-        position: obj['position'],
-      };
-    } else {
-      return {};
-    }
+    return RawQuestionSchema.parse(modelObject);
   }
 
   fromFirestore(
     snapshot: QueryDocumentSnapshot<RawQuestion>,
     options?: SnapshotOptions | undefined
   ): Question {
-    const data = snapshot.data();
-
-    return new Question({
+    const doc = QuestionSchema.parse({
+      ...snapshot.data(options),
       id: snapshot.id,
-      type: data.type,
-      content: data.content,
-      position: data.position,
     });
+
+    return new Question(doc);
   }
 }
 

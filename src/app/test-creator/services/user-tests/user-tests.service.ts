@@ -12,7 +12,12 @@ import {
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
-import { RawTest, Test } from '@test-creator/types/test';
+import {
+  RawTest,
+  RawTestSchema,
+  Test,
+  TestSchema,
+} from '@test-creator/types/test';
 import { map } from 'rxjs';
 
 class DataConverter implements FirestoreDataConverter<Test> {
@@ -22,20 +27,17 @@ class DataConverter implements FirestoreDataConverter<Test> {
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
-    return modelObject as any;
+    return RawTestSchema.parse(modelObject);
   }
 
   fromFirestore(
     snapshot: QueryDocumentSnapshot<RawTest>,
     options?: SnapshotOptions | undefined
   ): Test {
-    const data = snapshot.data();
-    const { name } = data;
-
-    return {
+    return TestSchema.parse({
+      ...snapshot.data(options),
       id: snapshot.id,
-      name,
-    };
+    });
   }
 }
 

@@ -19,6 +19,7 @@ import { ShareTestCloudFnPayload } from '@tests-sharing/types/share-test-cloud-f
 import {
   RawSharedTestMetadata,
   SharedTestMetadata,
+  SharedTestMetadataSchema,
 } from '@tests-sharing/types/shared-test';
 import { Observable, from, map, switchMap } from 'rxjs';
 
@@ -29,17 +30,16 @@ class DataConverter implements FirestoreDataConverter<SharedTestMetadata> {
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
-    return {};
+    throw new Error('Frontend cannot modify shared tests.');
   }
 
   fromFirestore(
     snapshot: QueryDocumentSnapshot<RawSharedTestMetadata>
   ): SharedTestMetadata {
-    return {
+    return SharedTestMetadataSchema.parse({
       ...snapshot.data(),
       id: snapshot.id,
-      sharedDate: snapshot.data().sharedDate.toDate(),
-    };
+    });
   }
 }
 
