@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, effect, inject } from '@angular/core';
+import { FirebaseError } from '@angular/fire/app';
 import {
   MatBottomSheet,
   MatBottomSheetModule,
@@ -13,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
+import { IncompleteTestErrorDialogComponent } from '@test-creator/components/incomplete-test-error-dialog/incomplete-test-error-dialog.component';
 import {
   NewTestPromptComponent,
   NewTestPromptResult,
@@ -55,10 +57,19 @@ export class UserTestsComponent implements OnDestroy {
   private readonly pendingIndicatorService = inject(PendingIndicatorService);
 
   readonly tests = this.store.tests;
+  readonly error = this.store.error;
 
   constructor() {
     this.pendingIndicatorService.connectStateChanges({
       onPendingChange$: this.store.pendingState$,
+    });
+
+    effect(() => {
+      const error = this.error();
+
+      if (error) {
+        this.handleError(error);
+      }
     });
 
     this.store.load();
@@ -143,5 +154,16 @@ export class UserTestsComponent implements OnDestroy {
         filter((test) => test !== null)
       )
     );
+  }
+
+  private handleError(error: unknown) {
+    if (
+      error instanceof FirebaseError &&
+      error.code === 'functions/failed-precondition'
+    ) {
+      this.dialogs.open(IncompleteTestErrorDialogComponent);
+    } else {
+      throw error;
+    }
   }
 }
