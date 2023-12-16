@@ -17,15 +17,12 @@ import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
 import { Question } from '@test-creator/classes/question';
 import { QuestionDoc, RawQuestion } from '@test-creator/types/question';
-import { QuestionsTypes } from '@test-creator/types/questions';
 import { Observable, from, map, switchMap, take } from 'rxjs';
 
-class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
+class Converter implements FirestoreDataConverter<Question> {
+  toFirestore(modelObject: WithFieldValue<Question>): DocumentData;
   toFirestore(
-    modelObject: WithFieldValue<Question<QuestionsTypes>>
-  ): DocumentData;
-  toFirestore(
-    modelObject: PartialWithFieldValue<Question<QuestionsTypes>>,
+    modelObject: PartialWithFieldValue<Question>,
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
@@ -43,9 +40,9 @@ class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
   }
 
   fromFirestore(
-    snapshot: QueryDocumentSnapshot<RawQuestion<QuestionsTypes>>,
+    snapshot: QueryDocumentSnapshot<RawQuestion>,
     options?: SnapshotOptions | undefined
-  ): Question<QuestionsTypes> {
+  ): Question {
     const data = snapshot.data();
 
     return new Question({
@@ -58,17 +55,14 @@ class Converter implements FirestoreDataConverter<Question<QuestionsTypes>> {
 }
 
 class QuestionsServiceController extends FirestoreCollectionController<
-  Question<QuestionsTypes>,
-  RawQuestion<QuestionsTypes>
+  Question,
+  RawQuestion
 > {
-  override list(): Observable<Question<QuestionsTypes>[]> {
+  override list(): Observable<Question[]> {
     return this.query(orderBy('position'));
   }
 
-  swapPositions(
-    question1: QuestionDoc<QuestionsTypes>,
-    question2: QuestionDoc<QuestionsTypes>
-  ) {
+  swapPositions(question1: QuestionDoc, question2: QuestionDoc) {
     return this.collectionRef$.pipe(
       take(1),
       map((collectionRef) => collectionRef.path),
@@ -78,12 +72,12 @@ class QuestionsServiceController extends FirestoreCollectionController<
             const docRef1 = doc(
               this.firestore,
               `${collectionPath}/${question1.id}`
-            ) as DocumentReference<RawQuestion<QuestionsTypes>>;
+            ) as DocumentReference<RawQuestion>;
 
             const docRef2 = doc(
               this.firestore,
               `${collectionPath}/${question2.id}`
-            ) as DocumentReference<RawQuestion<QuestionsTypes>>;
+            ) as DocumentReference<RawQuestion>;
 
             const doc1 = await transaction.get(docRef1);
             const doc2 = await transaction.get(docRef2);

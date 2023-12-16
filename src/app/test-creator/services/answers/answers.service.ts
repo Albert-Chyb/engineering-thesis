@@ -17,21 +17,16 @@ import {
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
 import { Answer, RawAnswer } from '@test-creator/types/answer';
-import { ClosedQuestionsTypes } from '@test-creator/types/questions';
 import { Observable, from, map, switchMap, take } from 'rxjs';
 
-class DataConverter
-  implements FirestoreDataConverter<Answer<ClosedQuestionsTypes>>
-{
+class DataConverter implements FirestoreDataConverter<Answer> {
+  toFirestore(modelObject: WithFieldValue<Answer>): DocumentData;
   toFirestore(
-    modelObject: WithFieldValue<Answer<ClosedQuestionsTypes>>
-  ): DocumentData;
-  toFirestore(
-    modelObject: PartialWithFieldValue<Answer<ClosedQuestionsTypes>>,
+    modelObject: PartialWithFieldValue<Answer>,
     options: SetOptions
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
-    const model = modelObject as Answer<ClosedQuestionsTypes>;
+    const model = modelObject as Answer;
 
     return {
       content: model.content,
@@ -40,10 +35,10 @@ class DataConverter
   }
 
   fromFirestore(
-    snapshot: QueryDocumentSnapshot<RawAnswer<ClosedQuestionsTypes>>,
+    snapshot: QueryDocumentSnapshot<RawAnswer>,
     options?: SnapshotOptions | undefined
-  ): Answer<ClosedQuestionsTypes> {
-    const data = snapshot.data() as Answer<ClosedQuestionsTypes>;
+  ): Answer {
+    const data = snapshot.data() as Answer;
 
     return {
       id: snapshot.id,
@@ -54,26 +49,21 @@ class DataConverter
 }
 
 class AnswersCollectionController extends FirestoreCollectionController<
-  Answer<ClosedQuestionsTypes>,
-  RawAnswer<ClosedQuestionsTypes>
+  Answer,
+  RawAnswer
 > {
   constructor(
     firestore: Firestore,
-    collectionRef$: Observable<
-      CollectionReference<Answer<ClosedQuestionsTypes>>
-    >
+    collectionRef$: Observable<CollectionReference<Answer>>
   ) {
     super(firestore, collectionRef$);
   }
 
-  override list(): Observable<Answer<ClosedQuestionsTypes>[]> {
+  override list(): Observable<Answer[]> {
     return this.query(orderBy('position'));
   }
 
-  swapPositions(
-    answer1: Answer<ClosedQuestionsTypes>,
-    answer2: Answer<ClosedQuestionsTypes>
-  ) {
+  swapPositions(answer1: Answer, answer2: Answer) {
     return this.collectionRef$.pipe(
       take(1),
       map((collectionRef) => collectionRef.path),
@@ -83,12 +73,12 @@ class AnswersCollectionController extends FirestoreCollectionController<
             const docRef1 = doc(
               this.firestore,
               `${collectionPath}/${answer1.id}`
-            ) as DocumentReference<Answer<ClosedQuestionsTypes>>;
+            ) as DocumentReference<Answer>;
 
             const docRef2 = doc(
               this.firestore,
               `${collectionPath}/${answer2.id}`
-            ) as DocumentReference<Answer<ClosedQuestionsTypes>>;
+            ) as DocumentReference<Answer>;
 
             const doc1 = await transaction.get(docRef1);
             const doc2 = await transaction.get(docRef2);

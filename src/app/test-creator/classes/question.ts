@@ -1,21 +1,21 @@
-import { QuestionDoc } from '@test-creator/types/question';
 import {
   ClosedQuestionsTypes,
   OpenQuestionsTypes,
+  QuestionDoc,
   QuestionsTypes,
-} from '@test-creator/types/questions';
-import { QuestionMetadata, questionsMetadata } from './questions-metadata';
+} from '@test-creator/types/question';
 
-export class Question<TQuestionType extends QuestionsTypes>
-  implements QuestionDoc<TQuestionType>
-{
-  private readonly metadata: QuestionMetadata<TQuestionType>;
+import { questionsMetadata } from './questions-metadata';
+
+export class Question {
+  private readonly metadata;
+
   readonly id: string;
-  readonly type: TQuestionType;
+  readonly type;
   readonly content: string;
   readonly position: number;
 
-  constructor(doc: QuestionDoc<TQuestionType>) {
+  constructor(doc: QuestionDoc) {
     this.id = doc.id;
     this.type = doc.type;
     this.content = doc.content;
@@ -40,12 +40,12 @@ export class Question<TQuestionType extends QuestionsTypes>
   }
 
   /** Checks if this question is of a closed kind */
-  isClosedQuestion(): this is QuestionDoc<ClosedQuestionsTypes> {
+  isClosedQuestion(): this is QuestionDoc {
     return Question.getClosedQuestionsTypes().includes(this.type as any);
   }
 
   /** Checks if this question is of an opened kind */
-  isOpenQuestion(): this is QuestionDoc<OpenQuestionsTypes> {
+  isOpenQuestion(): this is QuestionDoc {
     return Question.getOpenQuestionsTypes().includes(this.type as any);
   }
 
@@ -59,7 +59,7 @@ export class Question<TQuestionType extends QuestionsTypes>
   }
 
   /** Returns the question document. */
-  toDoc(): QuestionDoc<TQuestionType> {
+  toDoc(): QuestionDoc {
     return {
       id: this.id,
       type: this.type,

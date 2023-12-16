@@ -1,4 +1,4 @@
-import { QuestionsTypes } from '@test-creator/types/questions';
+import { QuestionsTypes } from '@test-creator/types/question';
 
 export type QuestionMetadata<TQuestionType extends QuestionsTypes> = {
   type: TQuestionType;

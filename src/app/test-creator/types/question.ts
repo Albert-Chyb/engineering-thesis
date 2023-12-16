@@ -1,15 +1,27 @@
-import { QuestionsContentsTypes, QuestionsTypes } from './questions';
-
-/** Object of a question that a service returns and accepts. */
-export interface QuestionDoc<TQuestionType extends QuestionsTypes> {
-  id: string;
-  type: TQuestionType;
-  content: QuestionsContentsTypes[TQuestionType]['questionContentType'];
+interface QuestionBase {
+  content: string;
   position: number;
 }
 
-/** Object of a question that is stored in the database. */
-export type RawQuestion<TQuestionType extends QuestionsTypes> = Omit<
-  QuestionDoc<TQuestionType>,
-  'id'
->;
+export interface SingleChoiceQuestion extends QuestionBase {
+  type: 'single-choice';
+}
+
+export interface MultiChoiceQuestion extends QuestionBase {
+  type: 'multi-choice';
+}
+
+export interface TextAnswerQuestion extends QuestionBase {
+  type: 'text-answer';
+}
+
+export type RawQuestion =
+  | SingleChoiceQuestion
+  | MultiChoiceQuestion
+  | TextAnswerQuestion;
+
+export type QuestionDoc = RawQuestion & { id: string };
+
+export type QuestionsTypes = RawQuestion['type'];
+export type ClosedQuestionsTypes = Exclude<QuestionsTypes, 'text-answer'>;
+export type OpenQuestionsTypes = Exclude<QuestionsTypes, ClosedQuestionsTypes>;

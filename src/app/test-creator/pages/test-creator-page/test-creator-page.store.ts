@@ -12,10 +12,7 @@ import { AnswersService } from '@test-creator/services/answers/answers.service';
 import { QuestionsService } from '@test-creator/services/questions/questions.service';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Answer } from '@test-creator/types/answer';
-import {
-  ClosedQuestionsTypes,
-  QuestionsTypes,
-} from '@test-creator/types/questions';
+import { QuestionsTypes } from '@test-creator/types/question';
 import { Test } from '@test-creator/types/test';
 import {
   Observable,
@@ -34,17 +31,17 @@ const { isLoading, isPending, tasksCount } = loadingStateAdapter.getSelectors();
 
 type AnswerActionPayload = {
   questionId: string;
-  answer: Answer<ClosedQuestionsTypes>;
+  answer: Answer;
 };
 
 type AnswerEntryKey = string;
-type AnswerEntryValue = Answer<ClosedQuestionsTypes>[];
+type AnswerEntryValue = Answer[];
 type AnswerEntry = [AnswerEntryKey, AnswerEntryValue];
 
 interface TestCreatorPageState {
   loadingState: LoadingState;
   test: Test | null;
-  questions: Question<QuestionsTypes>[];
+  questions: Question[];
   questionsMetadata: QuestionMetadata<QuestionsTypes>[];
   answers: Map<AnswerEntryKey, AnswerEntryValue>;
   error: any | null;
@@ -191,50 +188,49 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   /**
    * Saves the question on the database.
    */
-  readonly saveQuestion = this.effect(
-    (question$: Observable<Question<QuestionsTypes>>) =>
-      question$.pipe(
-        tap(() =>
-          this.patchState(({ loadingState }) => ({
-            loadingState: loadingStateAdapter.taskStarted(loadingState),
-          }))
-        ),
-        concatMap((question) => {
-          const testId = this.get((state) => state.test)?.id;
+  readonly saveQuestion = this.effect((question$: Observable<Question>) =>
+    question$.pipe(
+      tap(() =>
+        this.patchState(({ loadingState }) => ({
+          loadingState: loadingStateAdapter.taskStarted(loadingState),
+        }))
+      ),
+      concatMap((question) => {
+        const testId = this.get((state) => state.test)?.id;
 
-          if (!testId) {
-            throw new Error(
-              'Tried to update a question without previously loading the test.'
-            );
-          }
-
-          return this.questionsService.getController(testId).create(
-            {
-              content: question.content,
-              type: question.type,
-              position: question.position,
-            },
-            question.id
+        if (!testId) {
+          throw new Error(
+            'Tried to update a question without previously loading the test.'
           );
-        }),
-        tapResponse(
-          () => {
-            this.patchState(({ loadingState }) => ({
-              loadingState: loadingStateAdapter.taskFinished(loadingState),
-            }));
+        }
+
+        return this.questionsService.getController(testId).create(
+          {
+            content: question.content,
+            type: question.type,
+            position: question.position,
           },
-          (error) => {
-            this.patchState(({ loadingState }) => ({
-              error,
-              loadingState: loadingStateAdapter.taskFinished(loadingState),
-            }));
-          }
-        )
+          question.id
+        );
+      }),
+      tapResponse(
+        () => {
+          this.patchState(({ loadingState }) => ({
+            loadingState: loadingStateAdapter.taskFinished(loadingState),
+          }));
+        },
+        (error) => {
+          this.patchState(({ loadingState }) => ({
+            error,
+            loadingState: loadingStateAdapter.taskFinished(loadingState),
+          }));
+        }
       )
+    )
   );
 
   readonly deleteQuestionFromDb = this.effect(
-    (question$: Observable<Question<QuestionsTypes>>) =>
+    (question$: Observable<Question>) =>
       question$.pipe(
         tap(() =>
           this.patchState(({ loadingState }) => ({
@@ -273,8 +269,8 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   readonly swapQuestionsOnDb = this.effect(
     (
       $: Observable<{
-        from: Question<QuestionsTypes>;
-        to: Question<QuestionsTypes>;
+        from: Question;
+        to: Question;
       }>
     ) =>
       $.pipe(
@@ -405,8 +401,8 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
     (
       $: Observable<{
         questionId: string;
-        from: Answer<ClosedQuestionsTypes>;
-        to: Answer<ClosedQuestionsTypes>;
+        from: Answer;
+        to: Answer;
       }>
     ) =>
       $.pipe(
@@ -448,14 +444,8 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   );
 
   readonly updateAnswer = this.updater(
-    (
-      state,
-      {
-        questionId,
-        answer,
-      }: { questionId: string; answer: Answer<ClosedQuestionsTypes> }
-    ) => {
-      const newAnswer: Answer<ClosedQuestionsTypes> = {
+    (state, { questionId, answer }: { questionId: string; answer: Answer }) => {
+      const newAnswer: Answer = {
         id: answer.id,
         content: answer.content,
         position: answer.position,
@@ -488,14 +478,8 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   );
 
   readonly addAnswer = this.updater(
-    (
-      state,
-      {
-        questionId,
-        answer,
-      }: { questionId: string; answer: Answer<ClosedQuestionsTypes> }
-    ) => {
-      const newAnswer: Answer<ClosedQuestionsTypes> = {
+    (state, { questionId, answer }: { questionId: string; answer: Answer }) => {
+      const newAnswer: Answer = {
         id: answer.id,
         content: answer.content,
         position: answer.position,
@@ -520,8 +504,8 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
         to,
       }: {
         questionId: string;
-        from: Answer<ClosedQuestionsTypes>;
-        to: Answer<ClosedQuestionsTypes>;
+        from: Answer;
+        to: Answer;
       }
     ) => {
       return {
@@ -539,13 +523,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   );
 
   readonly swapQuestions = this.updater(
-    (
-      state,
-      {
-        from,
-        to,
-      }: { from: Question<QuestionsTypes>; to: Question<QuestionsTypes> }
-    ) => {
+    (state, { from, to }: { from: Question; to: Question }) => {
       return {
         ...state,
         questions: this.swapPositionsById(
@@ -558,47 +536,41 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
     }
   );
 
-  readonly deleteQuestion = this.updater(
-    (state, question: Question<QuestionsTypes>) => {
-      return {
-        ...state,
-        questions: state.questions.filter((q) => q.id !== question.id),
-      };
-    }
-  );
+  readonly deleteQuestion = this.updater((state, question: Question) => {
+    return {
+      ...state,
+      questions: state.questions.filter((q) => q.id !== question.id),
+    };
+  });
 
-  readonly addQuestion = this.updater(
-    (state, question: Question<QuestionsTypes>) => {
-      return {
-        ...state,
-        questions: [...state.questions, question],
-      };
-    }
-  );
+  readonly addQuestion = this.updater((state, question: Question) => {
+    return {
+      ...state,
+      questions: [...state.questions, question],
+    };
+  });
 
   /**
    * Updates the local question state.
    */
-  readonly updateQuestion = this.updater(
-    (state, newQuestion: Question<QuestionsTypes>) => {
-      const id = newQuestion.id;
-      const questionIndex = state.questions.findIndex(
-        (question) => question.id === id
-      );
+  readonly updateQuestion = this.updater((state, newQuestion: Question) => {
+    const id = newQuestion.id;
+    const questionIndex = state.questions.findIndex(
+      (question) => question.id === id
+    );
 
-      if (questionIndex === -1) {
-        throw new Error('Tried to update a question that does not exist');
-      }
-
-      const updatedQuestions = [...state.questions];
-      updatedQuestions[questionIndex] = newQuestion;
-
-      return {
-        ...state,
-        questions: updatedQuestions,
-      };
+    if (questionIndex === -1) {
+      throw new Error('Tried to update a question that does not exist');
     }
-  );
+
+    const updatedQuestions = [...state.questions];
+    updatedQuestions[questionIndex] = newQuestion;
+
+    return {
+      ...state,
+      questions: updatedQuestions,
+    };
+  });
 
   /**
    * Updates the test locally.

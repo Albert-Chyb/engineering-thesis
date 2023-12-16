@@ -7,10 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { DocumentDirective } from '@common/directives/document.directive';
 import { Answer } from '@test-creator/types/answer';
-import {
-  ClosedQuestionsTypes,
-  QuestionsContentsTypes,
-} from '@test-creator/types/questions';
 import { AnswerFormGroup } from '@test-creator/types/test-creator-form';
 
 @Component({
@@ -27,25 +23,19 @@ import { AnswerFormGroup } from '@test-creator/types/test-creator-form';
   templateUrl: './answer-wrapper.component.html',
   styleUrls: ['./answer-wrapper.component.scss'],
 })
-export class AnswerWrapperComponent<
-  TQuestionType extends ClosedQuestionsTypes
-> extends DocumentDirective<
-  Answer<TQuestionType>,
-  AnswerFormGroup<TQuestionType>['controls']
+export class AnswerWrapperComponent extends DocumentDirective<
+  Answer,
+  AnswerFormGroup['controls']
 > {
   constructor() {
     super(
       new FormGroup({
-        content: new FormControl<
-          QuestionsContentsTypes[TQuestionType]['answerContentType']
-        >(''),
+        content: new FormControl(''),
       })
     );
   }
 
-  override convertFormToDoc(
-    value: typeof this.form.value
-  ): Answer<TQuestionType> {
+  override convertFormToDoc(value: typeof this.form.value): Answer {
     const answer = this.document();
 
     if (!answer) {

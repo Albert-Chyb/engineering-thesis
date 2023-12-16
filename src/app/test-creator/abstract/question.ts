@@ -1,16 +1,13 @@
 import { Directive } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DocumentDirective } from '@common/directives/document.directive';
-import { QuestionsTypes } from '@test-creator/types/questions';
 import { QuestionFormGroup } from '@test-creator/types/test-creator-form';
 import { Question as QuestionObj } from '../classes/question';
 
 @Directive()
-export abstract class Question<
-  TQuestionType extends QuestionsTypes
-> extends DocumentDirective<
-  QuestionObj<TQuestionType>,
-  QuestionFormGroup<TQuestionType>['controls']
+export abstract class Question extends DocumentDirective<
+  QuestionObj,
+  QuestionFormGroup['controls']
 > {
   constructor() {
     super(
@@ -20,16 +17,14 @@ export abstract class Question<
     );
   }
 
-  override convertFormToDoc(
-    value: typeof this.form.value
-  ): QuestionObj<TQuestionType> {
+  override convertFormToDoc(value: typeof this.form.value): QuestionObj {
     const question = this.document();
 
     if (!question) {
       throw new Error('Question is not defined');
     }
 
-    return new QuestionObj<TQuestionType>({
+    return new QuestionObj({
       id: question.id,
       type: question.type,
       content: value.content ?? '',

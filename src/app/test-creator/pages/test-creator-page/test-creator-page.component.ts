@@ -22,10 +22,7 @@ import { QuestionWrapperComponent } from '@test-creator/components/question-wrap
 import { TestCreatorFormComponent } from '@test-creator/components/test-creator-form/test-creator-form.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Answer } from '@test-creator/types/answer';
-import {
-  ClosedQuestionsTypes,
-  QuestionsTypes,
-} from '@test-creator/types/questions';
+import { QuestionsTypes } from '@test-creator/types/question';
 import { Test } from '@test-creator/types/test';
 import { debounceTime, map } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
@@ -94,15 +91,15 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
     return this.isPending() ?? false;
   }
 
-  getNewQuestionPosition(questions: Question<QuestionsTypes>[]) {
+  getNewQuestionPosition(questions: Question[]) {
     return (questions.at(-1)?.position ?? 0) + 1;
   }
 
-  getNewAnswerPosition(question: Question<QuestionsTypes>) {
+  getNewAnswerPosition(question: Question) {
     return (this.getAnswers(question).at(-1)?.position ?? 0) + 1;
   }
 
-  getAnswers(question: Question<QuestionsTypes>) {
+  getAnswers(question: Question) {
     return this.answers().get(question.id) ?? [];
   }
 
@@ -111,19 +108,15 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
     this.store.saveTest(newTest);
   }
 
-  handleUpdateAnswer(questionId: string, answer: Answer<ClosedQuestionsTypes>) {
+  handleUpdateAnswer(questionId: string, answer: Answer) {
     const payload = { questionId, answer };
 
     this.store.updateAnswer(payload);
     this.store.saveAnswerOnDb(payload);
   }
 
-  handleAddAnswer(question: Question<QuestionsTypes>) {
-    if (question.isOpenQuestion()) {
-      throw new Error('Cannot add answer to an open question');
-    }
-
-    const answer: Answer<ClosedQuestionsTypes> = {
+  handleAddAnswer(question: Question) {
+    const answer: Answer = {
       content: 'Nowa odpowiedź',
       id: this.testsService.generateId(),
       position: this.getNewAnswerPosition(question),
@@ -142,12 +135,8 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
   }
 
   handleAnswersPositionsSwap(
-    question: Question<QuestionsTypes>,
-    $event: CdkDragDrop<
-      Answer<ClosedQuestionsTypes>[],
-      Answer<ClosedQuestionsTypes>[],
-      Answer<ClosedQuestionsTypes>
-    >
+    question: Question,
+    $event: CdkDragDrop<Answer[], Answer[], Answer>
   ) {
     const prevIndex = $event.previousIndex;
     const currentIndex = $event.currentIndex;
@@ -160,16 +149,13 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
     this.store.swapAnswers(swap);
   }
 
-  handleUpdateQuestion(updatedQuestion: Question<QuestionsTypes>) {
+  handleUpdateQuestion(updatedQuestion: Question) {
     this.store.updateQuestion(updatedQuestion);
     this.store.saveQuestion(updatedQuestion);
   }
 
-  handleAddQuestion<TQuestionType extends QuestionsTypes>(
-    type: TQuestionType,
-    position: number
-  ) {
-    const newQuestion: Question<TQuestionType> = new Question({
+  handleAddQuestion(type: QuestionsTypes, position: number) {
+    const newQuestion: Question = new Question({
       id: this.testsService.generateId(),
       type,
       content: 'Nowe pytanie',
@@ -180,17 +166,13 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
     this.store.saveQuestion(newQuestion);
   }
 
-  handleDeleteQuestion(question: Question<QuestionsTypes>) {
+  handleDeleteQuestion(question: Question) {
     this.store.deleteQuestion(question);
     this.store.deleteQuestionFromDb(question);
   }
 
   handleQuestionsPositionsSwap(
-    $event: CdkDragDrop<
-      Question<QuestionsTypes>[],
-      Question<QuestionsTypes>[],
-      Question<QuestionsTypes>
-    >
+    $event: CdkDragDrop<Question[], Question[], Question>
   ) {
     const prevIndex = $event.previousIndex;
     const currentIndex = $event.currentIndex;
