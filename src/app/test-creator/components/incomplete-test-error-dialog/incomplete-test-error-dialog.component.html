@@ -3,14 +3,12 @@
 <mat-dialog-content class="mat-typography">
   <p>Nie można udostępnić testu w obecnym stanie.</p>
 
-  <h2>Możliwe przyczyny</h2>
+  <h2>Przyczyny:</h2>
 
   <mat-list role="list">
-    <mat-list-item role="listitem">Test nie zawiera pytań</mat-list-item>
-    <mat-list-item role="listitem"
-      >Przynajmniej jedno pytanie zamknięte zawiera mniej niż dwie
-      odpowiedzi</mat-list-item
-    >
+    @for (issue of issues; track $index) {
+    <mat-list-item role="listitem">{{ issue }}</mat-list-item>
+    }
   </mat-list>
 </mat-dialog-content>
 
