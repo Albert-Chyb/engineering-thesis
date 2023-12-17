@@ -8,13 +8,14 @@ import {
 } from 'firebase-admin/firestore';
 import { AuthData } from 'firebase-functions/lib/common/providers/tasks';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
-import { z } from 'zod';
+import { ZodIssue, z } from 'zod';
 import {
   getQuestionAnswers,
   getQuestions,
   getTest,
 } from '../data-access/created-tests';
 import { generateId } from '../helpers/generateId';
+import { RegexMap } from '../helpers/regex-map';
 import { sharedTestSchema } from '../models/shared-test';
 import { sharedTestMetadataSchema } from '../models/shared-test-metadata';
 
@@ -56,6 +57,36 @@ function createSharedTest(
       ),
     })),
   };
+}
+
+function convertTestIssuesToMessages(issues: ZodIssue[]): string[] {
+  const separator = '.';
+  const converters = new RegexMap<string>([
+    {
+      regex: /^questions$/,
+      valueGenerator: () => `Test nie zawiera żadnych pytań`,
+    },
+    {
+      regex: /^questions\.(?<questionIndex>\d+)$/,
+      valueGenerator: (regexGroups) => {
+        const questionIndex = regexGroups?.questionIndex;
+
+        if (!questionIndex) {
+          throw new Error(`Could not find answer index in regex groups`);
+        }
+
+        return `Pytanie ${
+          +questionIndex + 1
+        } zawiera mniej niż dwie odpowiedzi`;
+      },
+    },
+  ]);
+  const messages = issues.map(
+    (issue) =>
+      converters.getMatch(issue.path.join(separator)) ?? 'Nieznany błąd'
+  );
+
+  return messages;
 }
 
 export const shareTest = onCall<ParamsSchema, Promise<string>>((request) => {
@@ -111,7 +142,7 @@ export const shareTest = onCall<ParamsSchema, Promise<string>>((request) => {
       throw new HttpsError(
         'failed-precondition',
         `Created test is not in the valid shape`,
-        sharedTestValidation
+        convertTestIssuesToMessages(sharedTestValidation.error.issues)
       );
     }
 
