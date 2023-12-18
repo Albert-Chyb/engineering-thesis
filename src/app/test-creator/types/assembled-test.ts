@@ -1,11 +1,16 @@
-import { Answer } from './answer';
-import { QuestionDoc } from './question';
-import { Test } from './test';
+import { z } from 'zod';
+import { AnswerSchema } from './answer';
+import { QuestionSchema } from './question';
+import { TestSchema } from './test';
 
-export type AssembledQuestion = QuestionDoc & {
-  answers: Answer[];
-};
+export const AssembledQuestionSchema = QuestionSchema.extend({
+  answers: z.array(AnswerSchema),
+});
 
-export type AssembledTest = Test & {
-  questions: AssembledQuestion[];
-};
+export const AssembledTestSchema = TestSchema.extend({
+  questions: z.array(AssembledQuestionSchema),
+});
+
+export type AssembledQuestion = z.infer<typeof AssembledQuestionSchema>;
+
+export type AssembledTest = z.infer<typeof AssembledTestSchema>;
