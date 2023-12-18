@@ -14,7 +14,7 @@ import {
   SharedTestsActions,
   SharedTestsActionsBottomSheetComponent,
 } from '@tests-sharing/components/shared-tests-actions-bottom-sheet/shared-tests-actions-bottom-sheet.component';
-import { SharedTestsService } from '@tests-sharing/services/shared-tests.service';
+import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
 import { take } from 'rxjs';
 import { SharedTestsPageStore } from './shared-tests-page.store';
 
@@ -40,7 +40,7 @@ export class SharedTestsPageComponent {
   private readonly bottomSheets = inject(MatBottomSheet);
   private readonly clipboard = inject(Clipboard);
   private readonly snackBars = inject(MatSnackBar);
-  private readonly sharedTests = inject(SharedTestsService);
+  private readonly sharedTests = inject(SharedTestsMetadataService);
 
   readonly isLoading = this.store.isLoading$;
   readonly tests = this.store.tests;

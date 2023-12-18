@@ -9,6 +9,8 @@ import {
   SetOptions,
   WithFieldValue,
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   where,
@@ -46,7 +48,7 @@ class DataConverter implements FirestoreDataConverter<SharedTestMetadata> {
 @Injectable({
   providedIn: 'root',
 })
-export class SharedTestsService {
+export class SharedTestsMetadataService {
   private readonly functions = inject(Functions);
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
@@ -62,7 +64,7 @@ export class SharedTestsService {
     ).pipe(map((res) => res.data));
   }
 
-  getSharedTests(): Observable<SharedTestMetadata[]> {
+  getSharedTestsMetadata(): Observable<SharedTestMetadata[]> {
     return this.auth.uid$.pipe(
       switchMap((uid) =>
         from(
@@ -72,6 +74,20 @@ export class SharedTestsService {
         )
       ),
       map((snapshots) => snapshots.docs.map((snapshot) => snapshot.data()))
+    );
+  }
+
+  getSharedTestMetadata(id: string): Observable<SharedTestMetadata> {
+    return from(getDoc(doc(this.getMetadataCollectionRef(), id))).pipe(
+      map((snap) => {
+        const metadata = snap.data();
+
+        if (!metadata) {
+          throw new Error('Test metadata not found');
+        }
+
+        return metadata;
+      })
     );
   }
 

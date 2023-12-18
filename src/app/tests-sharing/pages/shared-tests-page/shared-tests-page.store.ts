@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { SharedTestsService } from '@tests-sharing/services/shared-tests.service';
+import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
 import { SharedTestMetadata } from '@tests-sharing/types/shared-test';
 import { switchMap, tap } from 'rxjs';
 
@@ -22,7 +22,7 @@ const INITIAL_STATE: SharedTestsPageState = {
 
 @Injectable()
 export class SharedTestsPageStore extends ComponentStore<SharedTestsPageState> {
-  private readonly sharedTests = inject(SharedTestsService);
+  private readonly sharedTests = inject(SharedTestsMetadataService);
 
   constructor() {
     super(INITIAL_STATE);
@@ -47,7 +47,7 @@ export class SharedTestsPageStore extends ComponentStore<SharedTestsPageState> {
           loadingState: loadingStateAdapter.startLoading(state.loadingState),
         }))
       ),
-      switchMap(() => this.sharedTests.getSharedTests()),
+      switchMap(() => this.sharedTests.getSharedTestsMetadata()),
       tapResponse(
         (tests) => {
           this.setTests(tests);
