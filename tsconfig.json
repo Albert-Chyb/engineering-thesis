@@ -26,7 +26,8 @@
       "@presenting-errors/*": ["src/app/presenting-errors/*"],
       "@test-creator/*": ["src/app/test-creator/*"],
       "@loading-indicator/*": ["src/app/loading-indicator/*"],
-      "@tests-sharing/*": ["src/app/tests-sharing/*"]
+      "@tests-sharing/*": ["src/app/tests-sharing/*"],
+      "@exam-session/*": ["src/app/exam-session/*"]
     }
   },
   "angularCompilerOptions": {
