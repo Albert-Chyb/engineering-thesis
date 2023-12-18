@@ -1,13 +1,12 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { ExamSessionPageStore } from './exam-session-page.store';
 
 @Component({
-  selector: 'app-exam-session-page',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './exam-session-page.component.html',
-  styleUrl: './exam-session-page.component.scss'
+  styleUrl: './exam-session-page.component.scss',
+  providers: [ExamSessionPageStore],
 })
-export class ExamSessionPageComponent {
-
-}
+export class ExamSessionPageComponent {}
