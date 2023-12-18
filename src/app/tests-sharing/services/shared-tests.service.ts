@@ -76,7 +76,7 @@ export class SharedTestsService {
   }
 
   generateLink(id: string) {
-    const routePath = `/take-test/${id}`;
+    const routePath = `/exam-session/${id}`;
     const origin = this.document.location.origin;
     const absolutePath = this.location.normalize(origin + routePath);
 
