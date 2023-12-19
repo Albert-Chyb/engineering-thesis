@@ -1,0 +1,19 @@
+<mat-card appearance="outlined" class="with-spacing-fix">
+  <mat-card-header>
+    <h2 mat-card-title>{{ question.content }}</h2>
+    <p mat-card-subtitle>Podaj swoją odpowiedź w polu poniżej</p>
+  </mat-card-header>
+
+  <mat-card-content>
+    <mat-form-field class="width-100">
+      <mat-label>Twoja odpowiedź</mat-label>
+      <textarea
+        [formControl]="userAnswer"
+        matInput
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="8"
+      ></textarea>
+    </mat-form-field>
+  </mat-card-content>
+</mat-card>

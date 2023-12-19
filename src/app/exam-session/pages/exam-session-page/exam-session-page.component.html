@@ -9,6 +9,8 @@
     <app-single-choice-question [question]="question" />
     } @case ('multi-choice') {
     <app-multi-choice-question [question]="question" />
+    } @case ('text-answer') {
+    <app-text-answer-question [question]="question" />
     } } }
   </mat-card-content>
 </mat-card>

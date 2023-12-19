@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
 import { MultiChoiceQuestionComponent } from '@exam-session/components/multi-choice-question/multi-choice-question.component';
 import { SingleChoiceQuestionComponent } from '@exam-session/components/single-choice-question/single-choice-question.component';
+import { TextAnswerQuestionComponent } from '@exam-session/components/text-answer-question/text-answer-question.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import { map } from 'rxjs';
 import { ExamSessionPageStore } from './exam-session-page.store';
@@ -14,6 +15,7 @@ import { ExamSessionPageStore } from './exam-session-page.store';
     CommonModule,
     SingleChoiceQuestionComponent,
     MultiChoiceQuestionComponent,
+    TextAnswerQuestionComponent,
     MatCardModule,
   ],
   templateUrl: './exam-session-page.component.html',
