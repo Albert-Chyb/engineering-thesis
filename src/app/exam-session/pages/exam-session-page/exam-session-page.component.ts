@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ErrorHandler, effect, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
+import { MultiChoiceQuestionComponent } from '@exam-session/components/multi-choice-question/multi-choice-question.component';
 import { SingleChoiceQuestionComponent } from '@exam-session/components/single-choice-question/single-choice-question.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import { map } from 'rxjs';
@@ -9,7 +10,12 @@ import { ExamSessionPageStore } from './exam-session-page.store';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, SingleChoiceQuestionComponent, MatCardModule],
+  imports: [
+    CommonModule,
+    SingleChoiceQuestionComponent,
+    MultiChoiceQuestionComponent,
+    MatCardModule,
+  ],
   templateUrl: './exam-session-page.component.html',
   styleUrl: './exam-session-page.component.scss',
   providers: [ExamSessionPageStore],
