@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, ErrorHandler, effect, inject } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
+import { SingleChoiceQuestionComponent } from '@exam-session/components/single-choice-question/single-choice-question.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import { map } from 'rxjs';
 import { ExamSessionPageStore } from './exam-session-page.store';
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SingleChoiceQuestionComponent, MatCardModule],
   templateUrl: './exam-session-page.component.html',
   styleUrl: './exam-session-page.component.scss',
   providers: [ExamSessionPageStore],
@@ -35,14 +37,18 @@ export class ExamSessionPageComponent {
       }
     });
 
-    this.store.load(this.route.params.pipe(map((params) => {
-      const id = params['id'];
+    this.store.load(
+      this.route.params.pipe(
+        map((params) => {
+          const id = params['id'];
 
-      if (!id) {
-        throw new Error('No test id provided.');
-      }
+          if (!id) {
+            throw new Error('No test id provided.');
+          }
 
-      return params['id'];
-    })));
+          return params['id'];
+        })
+      )
+    );
   }
 }

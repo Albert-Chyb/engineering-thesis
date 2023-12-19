@@ -1,1 +1,14 @@
-<p>exam-session-page works!</p>
+<mat-card class="with-spacing-fix">
+  <mat-card-header>
+    <h1 mat-card-title>Rozwiąż test</h1>
+    <p mat-card-subtitle>
+      Nazwa testu: {{ metadata()?.name }}
+    </p>
+  </mat-card-header>
+  <mat-card-content>
+    @for (question of test()?.questions; track question.id) { @switch
+    (question.type) { @case ('single-choice') {
+    <app-single-choice-question [question]="question" />
+    } } }
+  </mat-card-content>
+</mat-card>
