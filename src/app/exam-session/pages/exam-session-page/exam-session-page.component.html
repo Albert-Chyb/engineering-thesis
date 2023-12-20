@@ -25,13 +25,16 @@
               />
             }
             @case ("text-answer") {
-              <app-text-answer-question [question]="question" />
+              <app-text-answer-question
+                [question]="question"
+                [formControl]="safelyGetAnswersFormGroup(question.id)"
+              />
             }
           }
         }
       </form>
 
-      {{ safelyGetTestForm().value | json }}
+      <pre>{{ safelyGetTestForm().value | json }}</pre>
     </mat-card-content>
   </mat-card>
 }
