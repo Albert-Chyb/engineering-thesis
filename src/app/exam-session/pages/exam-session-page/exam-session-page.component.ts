@@ -85,6 +85,16 @@ export class ExamSessionPageComponent {
     );
   }
 
+  safelyGetTestForm() {
+    const testForm = this.testForm();
+
+    if (!testForm) {
+      throw new Error('Test form is not initialized.');
+    }
+
+    return testForm;
+  }
+
   private buildAnswersFormGroup(
     questions: AssembledQuestion[],
   ): FormGroup<Record<string, FormControl<string | number | boolean>>> {

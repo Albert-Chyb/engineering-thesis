@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, Input } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,5 +19,5 @@ import { MatInputModule } from '@angular/material/input';
   styleUrl: './test-taker-name.component.scss',
 })
 export class TestTakerNameComponent {
-  readonly formControl = new FormControl('', Validators.required);
+  @Input({ required: true }) formControl!: FormControl;
 }

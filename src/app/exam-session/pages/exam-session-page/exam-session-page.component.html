@@ -6,7 +6,9 @@
     </mat-card-header>
     <mat-card-content>
       <form class="v-stack">
-        <app-test-taker-name />
+        <app-test-taker-name
+          [formControl]="safelyGetTestForm().controls.testTakerName"
+        />
 
         @for (question of test()?.questions; track question.id) {
           @switch (question.type) {
@@ -22,6 +24,8 @@
           }
         }
       </form>
+
+      {{ safelyGetTestForm().value | json }}
     </mat-card-content>
   </mat-card>
 }
