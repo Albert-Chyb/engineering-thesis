@@ -95,9 +95,23 @@ export class ExamSessionPageComponent {
     return testForm;
   }
 
+  safelyGetAnswersFormGroup(questionId: string): FormControl<any> {
+    const test = this.safelyGetTestForm();
+    const answers = test.controls.answers;
+    const answersFormGroup = answers.get(questionId);
+
+    if (!answersFormGroup) {
+      throw new Error(
+        `Answers form group for question with id ${questionId} is not initialized.`,
+      );
+    }
+
+    return answersFormGroup as FormControl;
+  }
+
   private buildAnswersFormGroup(
     questions: AssembledQuestion[],
-  ): FormGroup<Record<string, FormControl<string | number | boolean>>> {
+  ): FormGroup<Record<string, FormControl<any>>> {
     const answers = new FormGroup({});
 
     questions.forEach((question) => {

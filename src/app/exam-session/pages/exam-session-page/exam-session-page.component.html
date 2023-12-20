@@ -16,7 +16,10 @@
               <app-single-choice-question [question]="question" />
             }
             @case ("multi-choice") {
-              <app-multi-choice-question [question]="question" />
+              <app-multi-choice-question
+                [question]="question"
+                [formControl]="safelyGetAnswersFormGroup(question.id)"
+              />
             }
             @case ("text-answer") {
               <app-text-answer-question [question]="question" />

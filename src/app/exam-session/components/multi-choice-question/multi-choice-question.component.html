@@ -5,11 +5,11 @@
   </mat-card-header>
 
   <mat-card-content>
-    <div class="answers" [formGroup]="userAnswer">
+    <div class="answers" [formGroup]="checkboxesForm">
       @for (answer of question.answers; track answer.id) {
-      <mat-checkbox [formControlName]="answer.id">{{
-        answer.content
-      }}</mat-checkbox>
+        <mat-checkbox [formControlName]="answer.id">{{
+          answer.content
+        }}</mat-checkbox>
       }
     </div>
   </mat-card-content>
