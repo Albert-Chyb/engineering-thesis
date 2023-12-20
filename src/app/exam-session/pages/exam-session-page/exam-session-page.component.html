@@ -4,15 +4,17 @@
     <p mat-card-subtitle>Nazwa testu: {{ metadata()?.name }}</p>
   </mat-card-header>
   <mat-card-content>
-    <app-test-taker-name />
+    <div class="v-stack">
+      <app-test-taker-name />
 
-    @for (question of test()?.questions; track question.id) { @switch
-    (question.type) { @case ('single-choice') {
-    <app-single-choice-question [question]="question" />
-    } @case ('multi-choice') {
-    <app-multi-choice-question [question]="question" />
-    } @case ('text-answer') {
-    <app-text-answer-question [question]="question" />
-    } } }
+      @for (question of test()?.questions; track question.id) { @switch
+      (question.type) { @case ('single-choice') {
+      <app-single-choice-question [question]="question" />
+      } @case ('multi-choice') {
+      <app-multi-choice-question [question]="question" />
+      } @case ('text-answer') {
+      <app-text-answer-question [question]="question" />
+      } } }
+    </div>
   </mat-card-content>
 </mat-card>
