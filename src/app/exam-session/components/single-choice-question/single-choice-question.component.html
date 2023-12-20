@@ -8,7 +8,7 @@
     <mat-radio-group
       aria-label="Zaznacz swoją odpowiedź"
       class="answers"
-      [formControl]="userAnswer"
+      [formControl]="formControl"
     >
       @for (answer of question.answers; track answer.id) {
       <mat-radio-button [value]="answer.id">{{

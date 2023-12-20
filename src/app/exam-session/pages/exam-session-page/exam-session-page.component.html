@@ -13,7 +13,10 @@
         @for (question of test()?.questions; track question.id) {
           @switch (question.type) {
             @case ("single-choice") {
-              <app-single-choice-question [question]="question" />
+              <app-single-choice-question
+                [question]="question"
+                [formControl]="safelyGetAnswersFormGroup(question.id)"
+              />
             }
             @case ("multi-choice") {
               <app-multi-choice-question

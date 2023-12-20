@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { AssembledQuestion } from '@test-creator/types/assembled-test';
@@ -14,6 +14,5 @@ import { AssembledQuestion } from '@test-creator/types/assembled-test';
 })
 export class SingleChoiceQuestionComponent {
   @Input({ required: true }) question!: AssembledQuestion;
-
-  readonly userAnswer = new FormControl('', Validators.required);
+  @Input({ required: true }) formControl!: FormControl<string | null>;
 }
