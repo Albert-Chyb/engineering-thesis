@@ -101,7 +101,7 @@ export class ExamSessionPageComponent {
     const answers = new FormGroup({});
 
     questions.forEach((question) => {
-      answers.addControl(question.id, new FormGroup({}));
+      answers.addControl(question.id, new FormControl(null));
     });
 
     return answers;
