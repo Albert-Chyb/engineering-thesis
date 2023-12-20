@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, ErrorHandler, effect, inject } from '@angular/core';
+import {
+  Component,
+  ErrorHandler,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
 import { MultiChoiceQuestionComponent } from '@exam-session/components/multi-choice-question/multi-choice-question.component';
@@ -7,6 +14,7 @@ import { SingleChoiceQuestionComponent } from '@exam-session/components/single-c
 import { TestTakerNameComponent } from '@exam-session/components/test-taker-name/test-taker-name.component';
 import { TextAnswerQuestionComponent } from '@exam-session/components/text-answer-question/text-answer-question.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
+import { AssembledQuestion } from '@test-creator/types/assembled-test';
 import { map } from 'rxjs';
 import { ExamSessionPageStore } from './exam-session-page.store';
 
@@ -34,6 +42,21 @@ export class ExamSessionPageComponent {
   readonly metadata = this.store.metadata;
   readonly test = this.store.test;
 
+  readonly testForm = computed(() => {
+    const test = this.test();
+
+    if (!test) {
+      return null;
+    }
+
+    const testForm = new FormGroup({
+      testTakerName: new FormControl(''),
+      answers: this.buildAnswersFormGroup(test.questions),
+    });
+
+    return testForm;
+  });
+
   constructor() {
     this.pendingIndicator.connectStateChanges({
       onPendingChange$: this.store.pendingIndicatorChanges$,
@@ -57,8 +80,20 @@ export class ExamSessionPageComponent {
           }
 
           return params['id'];
-        })
-      )
+        }),
+      ),
     );
+  }
+
+  private buildAnswersFormGroup(
+    questions: AssembledQuestion[],
+  ): FormGroup<Record<string, FormControl<string | number | boolean>>> {
+    const answers = new FormGroup({});
+
+    questions.forEach((question) => {
+      answers.addControl(question.id, new FormGroup({}));
+    });
+
+    return answers;
   }
 }

@@ -1,20 +1,27 @@
-<mat-card class="with-spacing-fix">
-  <mat-card-header>
-    <h1 mat-card-title>Rozwiąż test</h1>
-    <p mat-card-subtitle>Nazwa testu: {{ metadata()?.name }}</p>
-  </mat-card-header>
-  <mat-card-content>
-    <div class="v-stack">
-      <app-test-taker-name />
+@if (testForm()) {
+  <mat-card class="with-spacing-fix">
+    <mat-card-header>
+      <h1 mat-card-title>Rozwiąż test</h1>
+      <p mat-card-subtitle>Nazwa testu: {{ metadata()?.name }}</p>
+    </mat-card-header>
+    <mat-card-content>
+      <form class="v-stack">
+        <app-test-taker-name />
 
-      @for (question of test()?.questions; track question.id) { @switch
-      (question.type) { @case ('single-choice') {
-      <app-single-choice-question [question]="question" />
-      } @case ('multi-choice') {
-      <app-multi-choice-question [question]="question" />
-      } @case ('text-answer') {
-      <app-text-answer-question [question]="question" />
-      } } }
-    </div>
-  </mat-card-content>
-</mat-card>
+        @for (question of test()?.questions; track question.id) {
+          @switch (question.type) {
+            @case ("single-choice") {
+              <app-single-choice-question [question]="question" />
+            }
+            @case ("multi-choice") {
+              <app-multi-choice-question [question]="question" />
+            }
+            @case ("text-answer") {
+              <app-text-answer-question [question]="question" />
+            }
+          }
+        }
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
