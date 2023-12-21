@@ -3,6 +3,16 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "(Windows) Launch Brave",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://127.0.0.1:4200",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "npm: start",
+      "runtimeExecutable": "C:\\Users\\alber\\AppData\\Local\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+      "runtimeArgs": ["--remote-debugging-port=9222", "--incognito"]
+    },
+    {
       "name": "(MacOS) Launch Brave",
       "request": "launch",
       "type": "chrome",
