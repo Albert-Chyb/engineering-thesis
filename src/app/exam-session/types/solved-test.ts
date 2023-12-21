@@ -17,6 +17,7 @@ export const RawSolvedTestSchema = z.object({
       SingleChoiceQuestionAnswerSchema,
       MultipleChoiceQuestionAnswerSchema,
       TextAnswerQuestionAnswerSchema,
+      z.null(),
     ]),
   ),
   sharedTestId: z.string(),
