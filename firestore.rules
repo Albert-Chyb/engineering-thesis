@@ -55,6 +55,20 @@ service cloud.firestore {
 
       allow create, update: if false;
     }
+
+    match /shared-tests/{sharedTestId}/solved-tests/{solvedTestId} {
+      allow create: if 
+        schemaSolvedTest() && 
+        exists(/databases/$(database)/documents/shared-tests/$(request.resource.data.sharedTestId));
+        
+      allow update: if false;
+
+      allow read, delete: if
+        isLoggedIn() &&
+        isUser(
+          get(/databases/$(database)/documents/shared-tests/$(sharedTestId)).data.author
+        );
+    }
   }
 }
 
@@ -99,4 +113,13 @@ function schemaCreatorAnswer() {
 
     request.resource.data.position is int &&
     request.resource.data.position > 0;
+}
+
+function schemaSolvedTest() {
+  return 
+    request.resource.data.keys().hasOnly(['answers', 'date', 'sharedTestId', 'testTakerName']) &&
+    request.resource.data.answers is map &&
+    request.resource.data.date is timestamp &&
+    request.resource.data.sharedTestId is string &&
+    request.resource.data.testTakerName is string;
 }
