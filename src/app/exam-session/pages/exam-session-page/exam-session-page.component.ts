@@ -6,7 +6,8 @@ import {
   effect,
   inject,
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
 import { MultiChoiceQuestionComponent } from '@exam-session/components/multi-choice-question/multi-choice-question.component';
@@ -27,6 +28,8 @@ import { ExamSessionPageStore } from './exam-session-page.store';
     TextAnswerQuestionComponent,
     TestTakerNameComponent,
     MatCardModule,
+    ReactiveFormsModule,
+    MatButtonModule,
   ],
   templateUrl: './exam-session-page.component.html',
   styleUrl: './exam-session-page.component.scss',
@@ -50,7 +53,7 @@ export class ExamSessionPageComponent {
     }
 
     const testForm = new FormGroup({
-      testTakerName: new FormControl(''),
+      testTakerName: new FormControl('', Validators.required),
       answers: this.buildAnswersFormGroup(test.questions),
     });
 
@@ -107,6 +110,10 @@ export class ExamSessionPageComponent {
     }
 
     return answersFormGroup as FormControl;
+  }
+
+  handleFormSubmit() {
+    console.log('Solved test sent');
   }
 
   private buildAnswersFormGroup(

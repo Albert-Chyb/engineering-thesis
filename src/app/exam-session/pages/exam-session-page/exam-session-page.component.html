@@ -5,7 +5,12 @@
       <p mat-card-subtitle>Nazwa testu: {{ metadata()?.name }}</p>
     </mat-card-header>
     <mat-card-content>
-      <form class="v-stack">
+      <form
+        class="v-stack"
+        id="solved-test-form"
+        [formGroup]="safelyGetTestForm()"
+        (ngSubmit)="handleFormSubmit()"
+      >
         <app-test-taker-name
           [form]="safelyGetTestForm().controls.testTakerName"
         />
@@ -36,5 +41,17 @@
 
       <pre>{{ safelyGetTestForm().value | json }}</pre>
     </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button
+        mat-button
+        color="accent"
+        type="submit"
+        form="solved-test-form"
+        [disabled]="safelyGetTestForm().invalid"
+      >
+        Prześlij rozwiązania
+      </button>
+    </mat-card-actions>
   </mat-card>
 }
