@@ -17,6 +17,7 @@ interface ExamSessionPageState {
   test: AssembledTest | null;
   error: any;
   loadingState: LoadingState;
+  isSaved: boolean;
 }
 
 const INITIAL_STATE: ExamSessionPageState = {
@@ -24,6 +25,7 @@ const INITIAL_STATE: ExamSessionPageState = {
   test: null,
   error: null,
   loadingState: loadingStateAdapter.getInitialState(),
+  isSaved: false,
 };
 
 @Injectable()
@@ -40,6 +42,7 @@ export class ExamSessionPageStore extends ComponentStore<ExamSessionPageState> {
   readonly error = this.selectSignal((state) => state.error);
   readonly metadata = this.selectSignal((state) => state.metadata);
   readonly test = this.selectSignal((state) => state.test);
+  readonly isSaved = this.selectSignal((state) => state.isSaved);
 
   constructor() {
     super(INITIAL_STATE);
@@ -96,6 +99,7 @@ export class ExamSessionPageStore extends ComponentStore<ExamSessionPageState> {
         tapResponse(
           () =>
             this.patchState((state) => ({
+              isSaved: true,
               loadingState: loadingStateAdapter.taskFinished(
                 state.loadingState,
               ),
