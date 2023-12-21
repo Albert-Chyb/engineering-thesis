@@ -26,5 +26,11 @@ export const SolvedTestSchema = RawSolvedTestSchema.extend({
   date: z.instanceof(Timestamp).transform((timestamp) => timestamp.toDate()),
 });
 
+export const SolvedTestFormValueSchema = z.object({
+  testTakerName: RawSolvedTestSchema.shape.testTakerName,
+  answers: RawSolvedTestSchema.shape.answers,
+});
+
 export type RawSolvedTest = z.infer<typeof RawSolvedTestSchema>;
 export type SolvedTest = z.infer<typeof SolvedTestSchema>;
+export type SolvedTestFormValue = z.infer<typeof SolvedTestFormValueSchema>;
