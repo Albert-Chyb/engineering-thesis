@@ -19,5 +19,5 @@ import { MatInputModule } from '@angular/material/input';
   styleUrl: './test-taker-name.component.scss',
 })
 export class TestTakerNameComponent {
-  @Input({ required: true }) formControl!: FormControl;
+  @Input({ required: true }) form!: FormControl;
 }

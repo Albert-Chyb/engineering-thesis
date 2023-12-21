@@ -14,5 +14,5 @@ import { AssembledQuestion } from '@test-creator/types/assembled-test';
 })
 export class SingleChoiceQuestionComponent {
   @Input({ required: true }) question!: AssembledQuestion;
-  @Input({ required: true }) formControl!: FormControl<string | null>;
+  @Input({ required: true }) form!: FormControl<string | null>;
 }

@@ -21,5 +21,5 @@ import { AssembledQuestion } from '@test-creator/types/assembled-test';
 })
 export class TextAnswerQuestionComponent {
   @Input({ required: true }) question!: AssembledQuestion;
-  @Input({ required: true }) formControl!: FormControl<string | null>;
+  @Input({ required: true }) form!: FormControl<string | null>;
 }

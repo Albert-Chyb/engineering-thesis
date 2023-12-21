@@ -20,7 +20,7 @@ import { AssembledQuestion } from '@test-creator/types/assembled-test';
 })
 export class MultiChoiceQuestionComponent implements OnInit {
   @Input({ required: true }) question!: AssembledQuestion;
-  @Input({ required: true }) formControl!: FormControl<string[] | null>;
+  @Input({ required: true }) form!: FormControl<string[] | null>;
 
   readonly checkboxesForm = new FormGroup<
     Record<string, FormControl<boolean | null>>
@@ -34,7 +34,7 @@ export class MultiChoiceQuestionComponent implements OnInit {
           checkboxes as Record<string, boolean | null>,
         );
 
-        this.formControl.setValue(selectedAnswers);
+        this.form.setValue(selectedAnswers);
       });
   }
 
@@ -56,7 +56,7 @@ export class MultiChoiceQuestionComponent implements OnInit {
     const controls = this.question.answers.reduce(
       (acc, current) => {
         acc[current.id] = new FormControl(
-          this.formControl.value?.includes(current.id) ?? null,
+          this.form.value?.includes(current.id) ?? null,
         );
 
         return acc;
