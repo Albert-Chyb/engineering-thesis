@@ -19,6 +19,7 @@ export const RawSolvedTestSchema = z.object({
       TextAnswerQuestionAnswerSchema,
     ]),
   ),
+  sharedTestId: z.string(),
 });
 
 export const SolvedTestSchema = RawSolvedTestSchema.extend({
