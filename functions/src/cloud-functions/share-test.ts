@@ -30,7 +30,7 @@ type ParamsSchema = z.infer<typeof dataSchema>;
 
 function createSharedTestMetadata(
   metadata: { name: string },
-  auth: AuthData
+  auth: AuthData,
 ): DocumentData {
   return {
     name: metadata.name,
@@ -42,7 +42,7 @@ function createSharedTestMetadata(
 function createSharedTest(
   test: DocumentSnapshot<DocumentData>,
   questions: QuerySnapshot<DocumentData>,
-  answers: [string, QuerySnapshot<DocumentData>][]
+  answers: [string, QuerySnapshot<DocumentData>][],
 ): DocumentData {
   return {
     ...test.data(),
@@ -53,7 +53,7 @@ function createSharedTest(
         (answer) => ({
           ...answer.data(),
           id: answer.id,
-        })
+        }),
       ),
     })),
   };
@@ -83,87 +83,93 @@ function convertTestIssuesToMessages(issues: ZodIssue[]): string[] {
   ]);
   const messages = issues.map(
     (issue) =>
-      converters.getMatch(issue.path.join(separator)) ?? 'Nieznany błąd'
+      converters.getMatch(issue.path.join(separator)) ?? 'Nieznany błąd',
   );
 
   return messages;
 }
 
-export const shareTest = onCall<ParamsSchema, Promise<string>>((request) => {
-  return db.runTransaction<string>(async (transaction: Transaction) => {
-    if (!request.auth) {
-      throw new HttpsError(
-        'unauthenticated',
-        'You must be signed in to share a test'
+export const shareTest = onCall<ParamsSchema, Promise<string>>(
+  { cors: true },
+  (request) => {
+    return db.runTransaction<string>(async (transaction: Transaction) => {
+      if (!request.auth) {
+        throw new HttpsError(
+          'unauthenticated',
+          'You must be signed in to share a test',
+        );
+      }
+
+      const dataValidation = dataSchema.safeParse(request.data);
+
+      if (!dataValidation.success) {
+        throw new HttpsError(
+          'invalid-argument',
+          `Invalid cloud function params`,
+          dataValidation.error,
+        );
+
+      }
+      const { testId } = dataValidation.data;
+      const testRef = getTest(testId, request.auth);
+      const test = await transaction.get(testRef);
+
+      if (!test.exists) {
+        throw new HttpsError(
+          'not-found',
+          `Test with id ${testId} was not found`,
+        );
+      }
+
+      const questionsRef = getQuestions(testRef);
+      const questions = await transaction.get(questionsRef);
+
+      const answers = await Promise.all(
+        questions.docs.map((question) =>
+          transaction
+            .get(getQuestionAnswers(testRef, question.ref))
+            .then(
+              (answers) =>
+                [question.id, answers] as [string, QuerySnapshot<DocumentData>],
+            ),
+        ),
       );
-    }
 
-    const dataValidation = dataSchema.safeParse(request.data);
-
-    if (!dataValidation.success) {
-      throw new HttpsError(
-        'invalid-argument',
-        `Invalid cloud function params`,
-        dataValidation.error
+      const id = generateId(db);
+      const sharedTestMetadata = createSharedTestMetadata(
+        request.data,
+        request.auth,
       );
-    }
+      const sharedTest = createSharedTest(test, questions, answers);
+      const sharedTestValidation = sharedTestSchema.safeParse(sharedTest);
 
-    const { testId } = dataValidation.data;
-    const testRef = getTest(testId, request.auth);
-    const test = await transaction.get(testRef);
+      if (!sharedTestValidation.success) {
+        throw new HttpsError(
+          'failed-precondition',
+          `Created test is not in the valid shape`,
+          convertTestIssuesToMessages(sharedTestValidation.error.issues),
+        );
+      }
 
-    if (!test.exists) {
-      throw new HttpsError('not-found', `Test with id ${testId} was not found`);
-    }
+      const sharedTestMetadataValidation =
+        sharedTestMetadataSchema.safeParse(sharedTestMetadata);
 
-    const questionsRef = getQuestions(testRef);
-    const questions = await transaction.get(questionsRef);
+      if (!sharedTestMetadataValidation.success) {
+        throw new HttpsError(
+          'internal',
+          `Could not create shared test metadata`,
+          sharedTestMetadataValidation,
+        );
+      }
 
-    const answers = await Promise.all(
-      questions.docs.map((question) =>
-        transaction
-          .get(getQuestionAnswers(testRef, question.ref))
-          .then(
-            (answers) =>
-              [question.id, answers] as [string, QuerySnapshot<DocumentData>]
-          )
-      )
-    );
+      transaction
+        .create(
+          db.doc(`shared-tests-metadata/${id}`),
+          sharedTestMetadataValidation.data,
+        )
+        .create(db.doc(`shared-tests/${id}`), sharedTestValidation.data);
 
-    const id = generateId(db);
-    const sharedTestMetadata = createSharedTestMetadata(
-      request.data,
-      request.auth
-    );
-    const sharedTest = createSharedTest(test, questions, answers);
-    const sharedTestValidation = sharedTestSchema.safeParse(sharedTest);
-
-    if (!sharedTestValidation.success) {
-      throw new HttpsError(
-        'failed-precondition',
-        `Created test is not in the valid shape`,
-        convertTestIssuesToMessages(sharedTestValidation.error.issues)
-      );
-    }
-
-    const sharedTestMetadataValidation =
-      sharedTestMetadataSchema.safeParse(sharedTestMetadata);
-
-    if (!sharedTestMetadataValidation.success) {
-      throw new HttpsError(
-        'internal',
-        `Could not create shared test metadata`,
-        sharedTestMetadataValidation
-      );
-    }
-
-    transaction
-      .create(
-        db.doc(`shared-tests-metadata/${id}`),
-        sharedTestMetadataValidation.data
-      )
-      .create(db.doc(`shared-tests/${id}`), sharedTestValidation.data);
-
-    return id;
-  });
-});
+      return id;
+    });
+  },
+);
