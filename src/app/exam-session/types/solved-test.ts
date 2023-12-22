@@ -20,7 +20,10 @@ export const RawSolvedTestSchema = z.object({
       z.null(),
     ]),
   ),
-  sharedTestId: z.string(),
+  sharedTest: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
 });
 
 export const SolvedTestSchema = RawSolvedTestSchema.extend({
