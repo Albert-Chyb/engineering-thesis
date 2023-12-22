@@ -4,7 +4,14 @@ import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { SolvedTest } from '@tests-grading/types/solved-test';
-import { Observable, switchMap, tap } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  mergeMap,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 
 const loadingStateAdapter = new LoadingStateAdapter();
 
@@ -61,4 +68,67 @@ export class SubmittedSolutionsPageStore extends ComponentStore<SubmittedSolutio
       ),
     ),
   );
+
+  readonly delete = this.effect(
+    (ids$: Observable<{ solvedTestId: string; sharedTestId: string }>) =>
+      ids$.pipe(
+        tap(() =>
+          this.patchState((state) => ({
+            loadingState: loadingStateAdapter.taskStarted(state.loadingState),
+          })),
+        ),
+        mergeMap(({ solvedTestId, sharedTestId }) => {
+          const solvedTest = this.get((state) =>
+            state.solvedTests.find(
+              (solvedTest) => solvedTest.id === solvedTestId,
+            ),
+          );
+
+          if (!solvedTest) {
+            throw new Error(`Solved test with id ${solvedTestId} not found`);
+          }
+
+          this.removeSolvedTest(solvedTestId);
+
+          return this.solvedTestsService
+            .delete(sharedTestId, solvedTestId)
+            .pipe(
+              catchError((error) => {
+                this.addSolvedTest(solvedTest);
+
+                return throwError(() => error);
+              }),
+            );
+        }),
+        tapResponse(
+          () =>
+            this.patchState((state) => ({
+              loadingState: loadingStateAdapter.taskFinished(
+                state.loadingState,
+              ),
+            })),
+          (error) =>
+            this.patchState((state) => ({
+              error,
+              loadingState: loadingStateAdapter.taskFinished(
+                state.loadingState,
+              ),
+            })),
+        ),
+      ),
+  );
+
+  private removeSolvedTest(solvedTestId: string) {
+    this.patchState((state) => ({
+      solvedTests: state.solvedTests.filter(
+        (solvedTest) => solvedTest.id !== solvedTestId,
+      ),
+    }));
+  }
+
+  private addSolvedTest(solvedTest: SolvedTest) {
+    this.patchState((state) => ({
+      solvedTests: [...state.solvedTests, solvedTest],
+    }));
+  }
 }

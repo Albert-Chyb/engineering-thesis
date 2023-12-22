@@ -3,7 +3,9 @@ import {
   Firestore,
   FirestoreDataConverter,
   collection,
+  doc,
   getDocs,
+  runTransaction,
 } from '@angular/fire/firestore';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import {
@@ -49,6 +51,24 @@ export class SolvedTestsService {
         }),
       ),
     ).pipe(map((result) => result.data));
+  }
+
+  delete(sharedTestId: string, solvedTestId: string) {
+    return from(
+      runTransaction<void>(this.firestore, async (transaction) => {
+        const testDocRef = doc(
+          this.firestore,
+          `shared-tests/${sharedTestId}/solved-tests/${solvedTestId}`,
+        );
+        const testAnswersDocRef = doc(
+          this.firestore,
+          `shared-tests/${sharedTestId}/solved-tests-answers/${solvedTestId}`,
+        );
+
+        transaction.delete(testDocRef);
+        transaction.delete(testAnswersDocRef);
+      }),
+    );
   }
 
   list(sharedTestId: string) {

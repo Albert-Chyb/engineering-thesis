@@ -9,7 +9,11 @@
     <mat-card-content>
       <mat-action-list>
         @for (solvedTest of solvedTests(); track solvedTest.id) {
-          <button mat-list-item>
+          <button
+            mat-list-item
+            [appBottomSheetActionsTrigger]="pageActions"
+            (onActionClick)="handlePageAction($event, solvedTest.id)"
+          >
             <h2 matListItemTitle>
               {{ solvedTest.testTakerName }}
             </h2>
