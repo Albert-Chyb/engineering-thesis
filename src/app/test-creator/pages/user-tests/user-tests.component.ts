@@ -2,10 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, effect, inject } from '@angular/core';
 import { FirebaseError } from '@angular/fire/app';
 import { FunctionsError } from '@angular/fire/functions';
-import {
-  MatBottomSheet,
-  MatBottomSheetModule,
-} from '@angular/material/bottom-sheet';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -15,20 +12,21 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
-import { IncompleteTestErrorDialogComponent, IncompleteTestErrorDialogData } from '@test-creator/components/incomplete-test-error-dialog/incomplete-test-error-dialog.component';
+import {
+  IncompleteTestErrorDialogComponent,
+  IncompleteTestErrorDialogData,
+} from '@test-creator/components/incomplete-test-error-dialog/incomplete-test-error-dialog.component';
 import {
   NewTestPromptComponent,
   NewTestPromptResult,
 } from '@test-creator/components/new-test-prompt/new-test-prompt.component';
-import {
-  TestActionsBottomSheetComponent,
-  TestActionsBottomSheetResult,
-} from '@test-creator/components/test-actions-bottom-sheet/test-actions-bottom-sheet.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import {
   SharedTestMetadataDialogComponent,
   SharedTestMetadataDialogResult,
 } from '@tests-sharing/components/shared-test-metadata-dialog/shared-test-metadata-dialog.component';
+import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-action';
+import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
 import { filter, map, take } from 'rxjs';
 import { UserTestsStore } from './user-tests.store';
 
@@ -44,6 +42,7 @@ import { UserTestsStore } from './user-tests.store';
     MatDialogModule,
     MatTooltipModule,
     NoDataInfoComponent,
+    BottomSheetActionsTriggerDirective,
   ],
   templateUrl: './user-tests.component.html',
   styleUrl: './user-tests.component.scss',
@@ -51,7 +50,6 @@ import { UserTestsStore } from './user-tests.store';
 })
 export class UserTestsComponent implements OnDestroy {
   private readonly store = inject(UserTestsStore);
-  private readonly bottomSheets = inject(MatBottomSheet);
   private readonly dialogs = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly userTests = inject(UserTestsService);
@@ -59,6 +57,27 @@ export class UserTestsComponent implements OnDestroy {
 
   readonly tests = this.store.tests;
   readonly error = this.store.error;
+
+  readonly pageActions: BottomSheetAction[] = [
+    {
+      name: 'edit',
+      title: 'Edytuj',
+      description: 'Przejdź do edycji',
+      icon: 'edit',
+    },
+    {
+      name: 'delete',
+      title: 'Usuń',
+      description: 'Usuń test',
+      icon: 'delete',
+    },
+    {
+      name: 'share',
+      title: 'Udostępnij',
+      description: 'Udostępnij test',
+      icon: 'share',
+    },
+  ];
 
   constructor() {
     this.pendingIndicatorService.connectStateChanges({
@@ -80,34 +99,20 @@ export class UserTestsComponent implements OnDestroy {
     this.pendingIndicatorService.disconnectStateChanges();
   }
 
-  showTestActions(testId: string) {
-    const bottomSheetRef = this.bottomSheets.open<
-      TestActionsBottomSheetComponent,
-      void,
-      TestActionsBottomSheetResult
-    >(TestActionsBottomSheetComponent);
+  handlePageAction(actionName: string, testId: string) {
+    switch (actionName) {
+      case 'edit':
+        this.router.navigate(['test-creator', testId]);
+        break;
 
-    bottomSheetRef
-      .afterDismissed()
-      .pipe(take(1))
-      .subscribe((result) => {
-        switch (result?.action) {
-          case 'edit':
-            this.router.navigate(['test-creator', testId]);
-            break;
+      case 'delete':
+        this.store.delete(testId);
+        break;
 
-          case 'delete':
-            this.store.delete(testId);
-            break;
-
-          case 'share':
-            this.showSharedTestMetadataPrompt(testId);
-            break;
-
-          default:
-            break;
-        }
-      });
+      case 'share':
+        this.showSharedTestMetadataPrompt(testId);
+        break;
+    }
   }
 
   showSharedTestMetadataPrompt(testId: string) {
@@ -152,8 +157,8 @@ export class UserTestsComponent implements OnDestroy {
             name: initialTest.name,
           };
         }),
-        filter((test) => test !== null)
-      )
+        filter((test) => test !== null),
+      ),
     );
   }
 
