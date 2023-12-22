@@ -5,3 +5,4 @@ initializeApp({
 });
 
 export { shareTest } from './cloud-functions/share-test';
+export { saveSolvedTest } from './cloud-functions/save-solved-test';
