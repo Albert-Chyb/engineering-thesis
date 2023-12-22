@@ -128,7 +128,11 @@ export class SubmittedSolutionsPageStore extends ComponentStore<SubmittedSolutio
 
   private addSolvedTest(solvedTest: SolvedTest) {
     this.patchState((state) => ({
-      solvedTests: [...state.solvedTests, solvedTest],
+      solvedTests: this.sortTestsByDate([...state.solvedTests, solvedTest]),
     }));
+  }
+
+  private sortTestsByDate(tests: SolvedTest[]) {
+    return tests.sort((a, b) => b.date.getTime() - a.date.getTime());
   }
 }
