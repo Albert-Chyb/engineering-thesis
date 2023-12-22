@@ -12,6 +12,7 @@ import { ExamSessionPageComponent } from '@exam-session/pages/exam-session-page/
 import { hasPendingTasksGuard } from '@loading-indicator/guards/has-pending-tasks.guard';
 import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
 import { UserTestsComponent } from '@test-creator/pages/user-tests/user-tests.component';
+import { SubmittedSolutionsPageComponent } from '@tests-grading/pages/submitted-solutions-page/submitted-solutions-page.component';
 import { SharedTestsPageComponent } from '@tests-sharing/pages/shared-tests-page/shared-tests-page.component';
 import { TestCreatorPageComponent } from './test-creator/pages/test-creator-page/test-creator-page.component';
 
@@ -79,5 +80,13 @@ export const routes: Routes = [
   {
     path: 'exam-session/:id',
     component: ExamSessionPageComponent,
+  },
+  {
+    path: 'shared-tests/:id/submitted-solutions',
+    component: SubmittedSolutionsPageComponent,
+    canActivate: [AuthGuard],
+    data: {
+      authGuardPipe: redirectLoggedOutToLogin,
+    },
   },
 ];
