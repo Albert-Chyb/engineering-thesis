@@ -9,11 +9,13 @@ const loadingStateAdapter = new LoadingStateAdapter();
 type SubmittedSolutionsPageState = {
   solvedTests: SolvedTest[];
   loadingState: LoadingState;
+  error: unknown;
 };
 
 const INITIAL_STATE: SubmittedSolutionsPageState = {
   solvedTests: [],
   loadingState: loadingStateAdapter.getInitialState(),
+  error: null,
 };
 
 @Injectable()
@@ -21,4 +23,11 @@ export class SubmittedSolutionsPageStore extends ComponentStore<SubmittedSolutio
   constructor() {
     super(INITIAL_STATE);
   }
+
+  readonly error = this.selectSignal((state) => state.error);
+  readonly pendingState$ = this.select({
+    isPending: this.select((state) =>
+      loadingStateAdapter.getSelectors().isPending(state.loadingState),
+    ),
+  });
 }
