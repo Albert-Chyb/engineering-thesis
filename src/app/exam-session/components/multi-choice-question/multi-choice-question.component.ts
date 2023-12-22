@@ -1,79 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, Input } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatListModule } from '@angular/material/list';
 import { AssembledQuestion } from '@test-creator/types/assembled-test';
 
 @Component({
   selector: 'app-multi-choice-question',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, MatCardModule, ReactiveFormsModule, MatListModule],
   templateUrl: './multi-choice-question.component.html',
   styleUrl: './multi-choice-question.component.scss',
 })
-export class MultiChoiceQuestionComponent implements OnInit {
+export class MultiChoiceQuestionComponent {
   @Input({ required: true }) question!: AssembledQuestion;
   @Input({ required: true }) form!: FormControl<string[] | null>;
-
-  readonly checkboxesForm = new FormGroup<
-    Record<string, FormControl<boolean | null>>
-  >({});
-
-  constructor() {
-    this.checkboxesForm.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((checkboxes) => {
-        const selectedAnswers = this.extractSelectedAnswers(
-          checkboxes as Record<string, boolean | null>,
-        );
-
-        this.form.setValue(selectedAnswers);
-      });
-  }
-
-  ngOnInit(): void {
-    this.setControls();
-  }
-
-  private setControls() {
-    const controls = this.buildControls();
-
-    for (const key in controls) {
-      this.checkboxesForm.setControl(key, controls[key], {
-        emitEvent: false,
-      });
-    }
-  }
-
-  private buildControls(): Record<string, FormControl<boolean | null>> {
-    const controls = this.question.answers.reduce(
-      (acc, current) => {
-        acc[current.id] = new FormControl(
-          this.form.value?.includes(current.id) ?? null,
-        );
-
-        return acc;
-      },
-      {} as Record<string, FormControl<boolean | null>>,
-    );
-
-    return controls;
-  }
-
-  private extractSelectedAnswers(
-    value: Record<string, boolean | null>,
-  ): string[] {
-    const selectedAnswers = Object.entries(value)
-      .filter(([, value]) => value)
-      .map(([key]) => key);
-
-    return selectedAnswers;
-  }
 }
