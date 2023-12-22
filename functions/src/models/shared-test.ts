@@ -31,9 +31,11 @@ const sharedTestQuestion = testQuestionSchema
           message: 'Closed question should have at least two answers',
         };
       }
-    }
+    },
   );
 
 export const sharedTestSchema = testSchema.extend({
   questions: z.array(sharedTestQuestion).min(1),
 });
+
+export type SharedTest = z.infer<typeof sharedTestSchema>;
