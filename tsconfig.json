@@ -28,7 +28,8 @@
       "@loading-indicator/*": ["src/app/loading-indicator/*"],
       "@tests-sharing/*": ["src/app/tests-sharing/*"],
       "@exam-session/*": ["src/app/exam-session/*"],
-      "@tests-grading/*": ["src/app/tests-grading/*"]
+      "@tests-grading/*": ["src/app/tests-grading/*"],
+      "@utils/*": ["src/app/utils/*"]
     }
   },
   "angularCompilerOptions": {
