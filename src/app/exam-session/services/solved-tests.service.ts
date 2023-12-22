@@ -3,8 +3,10 @@ import {
   Firestore,
   FirestoreDataConverter,
   collection,
+  collectionSnapshots,
   doc,
-  getDocs,
+  orderBy,
+  query,
   runTransaction,
 } from '@angular/fire/firestore';
 import { Functions, httpsCallable } from '@angular/fire/functions';
@@ -73,9 +75,10 @@ export class SolvedTestsService {
 
   list(sharedTestId: string) {
     const collectionRef = this.getCollectionRef(sharedTestId);
+    const collectionQuery = query(collectionRef, orderBy('date', 'desc'));
 
-    return from(getDocs(collectionRef)).pipe(
-      map((querySnap) => querySnap.docs.map((doc) => doc.data())),
+    return collectionSnapshots(collectionQuery).pipe(
+      map((snapshots) => snapshots.map((snapshot) => snapshot.data())),
     );
   }
 
