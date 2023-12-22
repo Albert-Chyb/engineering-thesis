@@ -1,10 +1,11 @@
+import { SolvedTestSchema } from '@tests-grading/types/solved-test';
 import { z } from 'zod';
-import { SolvedTestSchema } from './solved-test';
+import { QuestionsAnswerSchema } from './user-answers';
 
 export const saveSolvedTestCloudFnDataSchema = z.object({
   testTakerName: SolvedTestSchema.shape.testTakerName,
   sharedTestId: SolvedTestSchema.shape.sharedTest.shape.id,
-  answers: SolvedTestSchema.shape.answers,
+  answers: QuestionsAnswerSchema,
 });
 
 export type SaveSolvedTestCloudFnData = z.infer<
