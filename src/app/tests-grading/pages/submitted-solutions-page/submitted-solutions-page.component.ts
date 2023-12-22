@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, ErrorHandler, effect, inject } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute } from '@angular/router';
+import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import { map } from 'rxjs';
 import { SubmittedSolutionsPageStore } from './submitted-solutions-page.store';
@@ -8,7 +11,12 @@ import { SubmittedSolutionsPageStore } from './submitted-solutions-page.store';
 @Component({
   selector: 'app-submitted-solutions-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    LoadingIndicatorComponent,
+    MatListModule,
+    MatCardModule,
+  ],
   templateUrl: './submitted-solutions-page.component.html',
   styleUrl: './submitted-solutions-page.component.scss',
   providers: [SubmittedSolutionsPageStore],
@@ -33,6 +41,7 @@ export class SubmittedSolutionsPageComponent {
   readonly error = this.store.error;
   readonly loadingState = this.store.pendingState$;
   readonly solvedTests = this.store.solvedTests;
+  readonly isLoading = this.store.isLoading;
 
   constructor() {
     this.pendingIndicator.connectStateChanges({

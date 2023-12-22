@@ -35,6 +35,9 @@ export class SubmittedSolutionsPageStore extends ComponentStore<SubmittedSolutio
       loadingStateAdapter.getSelectors().isPending(state.loadingState),
     ),
   });
+  readonly isLoading = this.selectSignal((state) =>
+    loadingStateAdapter.getSelectors().isLoading(state.loadingState),
+  );
 
   readonly load = this.effect((sharedTestId$: Observable<string>) =>
     sharedTestId$.pipe(
