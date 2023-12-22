@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ErrorHandler, effect, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
+import { map } from 'rxjs';
 import { SubmittedSolutionsPageStore } from './submitted-solutions-page.store';
 
 @Component({
@@ -15,9 +17,22 @@ export class SubmittedSolutionsPageComponent {
   private readonly store = inject(SubmittedSolutionsPageStore);
   private readonly pendingIndicator = inject(PendingIndicatorService);
   private readonly errorHandler = inject(ErrorHandler);
+  private readonly route = inject(ActivatedRoute);
 
+  private readonly sharedTestId$ = this.route.paramMap.pipe(
+    map((params) => {
+      const sharedTestId = params.get('id');
+
+      if (!sharedTestId) {
+        throw new Error('sharedTestId is missing');
+      }
+
+      return sharedTestId;
+    }),
+  );
   readonly error = this.store.error;
   readonly loadingState = this.store.pendingState$;
+  readonly solvedTests = this.store.solvedTests;
 
   constructor() {
     this.pendingIndicator.connectStateChanges({
@@ -31,5 +46,7 @@ export class SubmittedSolutionsPageComponent {
         this.errorHandler.handleError(error);
       }
     });
+
+    this.store.load(this.sharedTestId$);
   }
 }
