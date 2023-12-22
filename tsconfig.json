@@ -27,7 +27,8 @@
       "@test-creator/*": ["src/app/test-creator/*"],
       "@loading-indicator/*": ["src/app/loading-indicator/*"],
       "@tests-sharing/*": ["src/app/tests-sharing/*"],
-      "@exam-session/*": ["src/app/exam-session/*"]
+      "@exam-session/*": ["src/app/exam-session/*"],
+      "@tests-grading/*": ["src/app/tests-grading/*"]
     }
   },
   "angularCompilerOptions": {
