@@ -62,7 +62,7 @@ service cloud.firestore {
       allow read, delete: if
         isLoggedIn() &&
         isUser(
-          get(/databases/$(database)/documents/shared-tests/$(sharedTestId)).data.author
+          get(/databases/$(database)/documents/shared-tests-metadata/$(sharedTestId)).data.author
         );
     }
 
@@ -72,7 +72,7 @@ service cloud.firestore {
       allow read, delete: if
         isLoggedIn() &&
         isUser(
-          get(/databases/$(database)/documents/shared-tests/$(sharedTestId)).data.author
+          get(/databases/$(database)/documents/shared-tests-metadata/$(sharedTestId)).data.author
         );
     }
   }
