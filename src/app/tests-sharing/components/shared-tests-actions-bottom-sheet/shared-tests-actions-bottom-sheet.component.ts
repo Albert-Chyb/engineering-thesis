@@ -4,7 +4,7 @@ import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 
-export type SharedTestsActions = 'copy-link';
+export type SharedTestsActions = 'copy-link' | 'show-solved-tests';
 
 @Component({
   selector: 'app-shared-tests-actions-bottom-sheet',
@@ -27,6 +27,12 @@ export class SharedTestsActionsBottomSheetComponent {
       title: 'Pobierz link',
       icon: 'share',
       description: 'Skopiuj link do schowka',
+    },
+    {
+      id: 'show-solved-tests',
+      title: 'Rozwiązane testy',
+      icon: 'pageview',
+      description: 'Przeglądaj przesłane rozwiązania',
     },
   ];
 

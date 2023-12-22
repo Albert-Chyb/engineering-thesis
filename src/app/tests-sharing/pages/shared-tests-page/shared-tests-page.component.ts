@@ -8,6 +8,7 @@ import {
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import {
@@ -41,6 +42,7 @@ export class SharedTestsPageComponent {
   private readonly clipboard = inject(Clipboard);
   private readonly snackBars = inject(MatSnackBar);
   private readonly sharedTests = inject(SharedTestsMetadataService);
+  private readonly router = inject(Router);
 
   readonly isLoading = this.store.isLoading$;
   readonly tests = this.store.tests;
@@ -70,6 +72,10 @@ export class SharedTestsPageComponent {
 
             this.copyToClipboard(link);
             this.snackBars.open('Skopiowano link do schowka', 'Zamknij');
+            break;
+
+          case 'show-solved-tests':
+            this.router.navigate(['shared-tests', id, 'submitted-solutions']);
             break;
         }
       });
