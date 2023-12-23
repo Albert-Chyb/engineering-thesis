@@ -13,3 +13,7 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+.app-dialog {
+  width: clamp(300px, 80vw, 600px);
+}
