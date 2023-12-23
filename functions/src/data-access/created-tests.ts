@@ -14,7 +14,7 @@ import { AuthData } from 'firebase-functions/lib/common/providers/https';
  */
 export function getTest(
   id: string,
-  auth: AuthData
+  auth: AuthData,
 ): DocumentReference<DocumentData> {
   return getFirestore()
     .collection(`users/${auth.uid}/tests`)
@@ -27,7 +27,9 @@ export function getTest(
  * @returns Reference to the questions collection.
  */
 export function getQuestions(testRef: DocumentReference<DocumentData>) {
-  return testRef.collection('questions') as CollectionReference<DocumentData>;
+  return testRef
+    .collection('questions')
+    .orderBy('position', 'asc') as CollectionReference<DocumentData>;
 }
 
 /**
@@ -38,10 +40,11 @@ export function getQuestions(testRef: DocumentReference<DocumentData>) {
  */
 export function getQuestionAnswers(
   testRef: DocumentReference<DocumentData>,
-  questionRef: DocumentReference<DocumentData>
+  questionRef: DocumentReference<DocumentData>,
 ) {
   return testRef
     .collection('questions')
     .doc(questionRef.id)
-    .collection('answers') as CollectionReference<DocumentData>;
+    .collection('answers')
+    .orderBy('position', 'asc') as CollectionReference<DocumentData>;
 }
