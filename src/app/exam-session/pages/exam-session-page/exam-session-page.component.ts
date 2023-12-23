@@ -14,16 +14,15 @@ import {
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MultiChoiceQuestionComponent } from '@exam-session/components/multi-choice-question/multi-choice-question.component';
-import { SavedSuccessfullyDialogComponent } from '@exam-session/components/saved-successfully-dialog/saved-successfully-dialog.component';
 import { SingleChoiceQuestionComponent } from '@exam-session/components/single-choice-question/single-choice-question.component';
 import { TestTakerNameComponent } from '@exam-session/components/test-taker-name/test-taker-name.component';
 import { TextAnswerQuestionComponent } from '@exam-session/components/text-answer-question/text-answer-question.component';
 import { SolvedTestFormValueSchema } from '@exam-session/types/solved-test';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import { AssembledQuestion } from '@test-creator/types/assembled-test';
+import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
 import { map, take } from 'rxjs';
 import { ExamSessionPageStore } from './exam-session-page.store';
 
@@ -48,8 +47,8 @@ export class ExamSessionPageComponent {
   private readonly pendingIndicator = inject(PendingIndicatorService);
   private readonly route = inject(ActivatedRoute);
   private readonly errorHandler = inject(ErrorHandler);
-  private readonly dialogs = inject(MatDialog);
   private readonly router = inject(Router);
+  private readonly commonDialogs = inject(CommonDialogsService);
 
   readonly error = this.store.error;
   readonly metadata = this.store.metadata;
@@ -151,13 +150,12 @@ export class ExamSessionPageComponent {
   }
 
   private showSavedSuccessfullyDialog() {
-    const dialogRef = this.dialogs.open(SavedSuccessfullyDialogComponent);
-
-    dialogRef
-      .afterClosed()
+    this.commonDialogs
+      .alert(
+        'Zapisano odpowiedzi',
+        'Twoje rozwiązania zostały poprawnie zapisane.',
+      )
       .pipe(take(1))
-      .subscribe(() => {
-        this.router.navigateByUrl('/');
-      });
+      .subscribe(() => this.router.navigateByUrl('/'));
   }
 }
