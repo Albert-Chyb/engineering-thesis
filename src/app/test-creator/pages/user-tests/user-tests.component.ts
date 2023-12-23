@@ -1,26 +1,23 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, effect, inject } from '@angular/core';
-import { FirebaseError } from '@angular/fire/app';
-import { FunctionsError } from '@angular/fire/functions';
+import { Component, ErrorHandler, inject } from '@angular/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
-import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
-import {
-  IncompleteTestErrorDialogComponent,
-  IncompleteTestErrorDialogData,
-} from '@test-creator/components/incomplete-test-error-dialog/incomplete-test-error-dialog.component';
+import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-action';
 import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
 import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
+import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
+import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { filter, map, take } from 'rxjs';
+import { UserTestsPageErrorHandler } from './user-tests-page.error-handler';
 import { UserTestsStore } from './user-tests.store';
 
 @Component({
@@ -36,17 +33,28 @@ import { UserTestsStore } from './user-tests.store';
     MatTooltipModule,
     NoDataInfoComponent,
     BottomSheetActionsTriggerDirective,
+    PageStatesDirective,
+    LoadingIndicatorComponent,
   ],
   templateUrl: './user-tests.component.html',
   styleUrl: './user-tests.component.scss',
-  providers: [UserTestsStore, CommonDialogsService],
+  providers: [
+    {
+      provide: ErrorHandler,
+      useClass: UserTestsPageErrorHandler,
+    },
+    UserTestsStore,
+    CommonDialogsService,
+    {
+      provide: PAGE_STATE_INDICATORS,
+      useExisting: UserTestsStore,
+    },
+  ],
 })
-export class UserTestsComponent implements OnDestroy {
+export class UserTestsComponent {
   private readonly store = inject(UserTestsStore);
-  private readonly dialogs = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly userTests = inject(UserTestsService);
-  private readonly pendingIndicatorService = inject(PendingIndicatorService);
   private readonly commonDialogs = inject(CommonDialogsService);
 
   readonly tests = this.store.tests;
@@ -74,23 +82,7 @@ export class UserTestsComponent implements OnDestroy {
   ];
 
   constructor() {
-    this.pendingIndicatorService.connectStateChanges({
-      onPendingChange$: this.store.pendingState$,
-    });
-
-    effect(() => {
-      const error = this.error();
-
-      if (error) {
-        this.handleError(error);
-      }
-    });
-
     this.store.load();
-  }
-
-  ngOnDestroy(): void {
-    this.pendingIndicatorService.disconnectStateChanges();
   }
 
   handlePageAction(actionName: string, testId: string) {
@@ -157,25 +149,5 @@ export class UserTestsComponent implements OnDestroy {
           })),
         ),
     );
-  }
-
-  private handleError(error: unknown) {
-    if (
-      error instanceof FirebaseError &&
-      error.code === 'functions/failed-precondition'
-    ) {
-      const cloudFnError = error as FunctionsError;
-      const issues = cloudFnError.details as string[];
-
-      this.dialogs.open<
-        IncompleteTestErrorDialogComponent,
-        IncompleteTestErrorDialogData,
-        void
-      >(IncompleteTestErrorDialogComponent, {
-        data: { issues },
-      });
-    } else {
-      throw error;
-    }
   }
 }

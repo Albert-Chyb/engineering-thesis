@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  ErrorHandler,
-  computed,
-  effect,
-  inject,
-} from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -20,9 +14,11 @@ import { SingleChoiceQuestionComponent } from '@exam-session/components/single-c
 import { TestTakerNameComponent } from '@exam-session/components/test-taker-name/test-taker-name.component';
 import { TextAnswerQuestionComponent } from '@exam-session/components/text-answer-question/text-answer-question.component';
 import { SolvedTestFormValueSchema } from '@exam-session/types/solved-test';
-import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
+import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { AssembledQuestion } from '@test-creator/types/assembled-test';
 import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
+import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
+import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { map, take } from 'rxjs';
 import { ExamSessionPageStore } from './exam-session-page.store';
 
@@ -37,16 +33,22 @@ import { ExamSessionPageStore } from './exam-session-page.store';
     MatCardModule,
     ReactiveFormsModule,
     MatButtonModule,
+    PageStatesDirective,
+    LoadingIndicatorComponent,
   ],
   templateUrl: './exam-session-page.component.html',
   styleUrl: './exam-session-page.component.scss',
-  providers: [ExamSessionPageStore],
+  providers: [
+    ExamSessionPageStore,
+    {
+      provide: PAGE_STATE_INDICATORS,
+      useExisting: ExamSessionPageStore,
+    },
+  ],
 })
 export class ExamSessionPageComponent {
   private readonly store = inject(ExamSessionPageStore);
-  private readonly pendingIndicator = inject(PendingIndicatorService);
   private readonly route = inject(ActivatedRoute);
-  private readonly errorHandler = inject(ErrorHandler);
   private readonly router = inject(Router);
   private readonly commonDialogs = inject(CommonDialogsService);
 
@@ -71,18 +73,6 @@ export class ExamSessionPageComponent {
   });
 
   constructor() {
-    this.pendingIndicator.connectStateChanges({
-      onPendingChange$: this.store.pendingIndicatorChanges$,
-    });
-
-    effect(() => {
-      const error = this.error();
-
-      if (error) {
-        this.errorHandler.handleError(error);
-      }
-    });
-
     effect(() => {
       const isSaved = this.isSaved();
 

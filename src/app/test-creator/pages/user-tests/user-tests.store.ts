@@ -6,6 +6,7 @@ import { UserTestsService } from '@test-creator/services/user-tests/user-tests.s
 import { Test } from '@test-creator/types/test';
 import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
 import { ShareTestCloudFnPayload } from '@tests-sharing/types/share-test-cloud-fn';
+import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import { Observable, mergeMap, switchMap, tap } from 'rxjs';
 
 const loadingAdapter = new LoadingStateAdapter();
@@ -22,25 +23,30 @@ const INITIAL_STATE: UserTestsState = {
 };
 
 @Injectable()
-export class UserTestsStore extends ComponentStore<UserTestsState> {
+export class UserTestsStore
+  extends ComponentStore<UserTestsState>
+  implements PageStateIndicators
+{
   private readonly userTests = inject(UserTestsService);
   private readonly sharedTests = inject(SharedTestsMetadataService);
 
   readonly tests = this.selectSignal((state) => state.tests);
+
   readonly error = this.selectSignal((state) => state.error);
+
   readonly isLoading = this.selectSignal(
-    loadingAdapter.getSelectors().isLoading
-  );
-  readonly isPending = this.selectSignal(
-    loadingAdapter.getSelectors().isPending
-  );
-  readonly tasksCount = this.selectSignal(
-    loadingAdapter.getSelectors().tasksCount
+    loadingAdapter.getSelectors().isLoading,
   );
 
-  readonly pendingState$ = this.select({
-    isPending: this.select(loadingAdapter.getSelectors().isPending),
-  });
+  readonly isPending = this.selectSignal(
+    loadingAdapter.getSelectors().isPending,
+  );
+
+  readonly isEmpty = this.selectSignal((state) => state.tests.length === 0);
+
+  readonly tasksCount = this.selectSignal(
+    loadingAdapter.getSelectors().tasksCount,
+  );
 
   constructor() {
     super(INITIAL_STATE);
@@ -61,16 +67,16 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
           this.patchState((state) => ({
             ...loadingAdapter.finishLoading(state),
             error,
-          }))
-      )
-    )
+          })),
+      ),
+    ),
   );
 
   readonly shareTest = this.effect(
     (testId$: Observable<ShareTestCloudFnPayload>) =>
       testId$.pipe(
         tap(() =>
-          this.patchState((state) => loadingAdapter.taskStarted(state))
+          this.patchState((state) => loadingAdapter.taskStarted(state)),
         ),
         mergeMap((testId) => {
           return this.sharedTests.shareTest(testId).pipe(
@@ -85,11 +91,11 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
                   ...loadingAdapter.taskFinished(state),
                   error,
                 }));
-              }
-            )
+              },
+            ),
           );
-        })
-      )
+        }),
+      ),
   );
 
   readonly delete = this.effect((testId$: Observable<string>) =>
@@ -120,11 +126,11 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
                 ...loadingAdapter.taskFinished(state),
                 error,
               }));
-            }
-          )
+            },
+          ),
         );
-      })
-    )
+      }),
+    ),
   );
 
   readonly create = this.effect((test$: Observable<Test>) =>
@@ -146,11 +152,11 @@ export class UserTestsStore extends ComponentStore<UserTestsState> {
                 ...loadingAdapter.taskFinished(state),
                 error,
               }));
-            }
-          )
-        )
-      )
-    )
+            },
+          ),
+        ),
+      ),
+    ),
   );
 
   private _delete = this.updater((state, testId: string) => ({

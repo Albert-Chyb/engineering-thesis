@@ -4,6 +4,7 @@ import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { SolvedTest } from '@tests-grading/types/solved-test';
+import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import {
   Observable,
   catchError,
@@ -28,20 +29,28 @@ const INITIAL_STATE: SubmittedSolutionsPageState = {
 };
 
 @Injectable()
-export class SubmittedSolutionsPageStore extends ComponentStore<SubmittedSolutionsPageState> {
+export class SubmittedSolutionsPageStore
+  extends ComponentStore<SubmittedSolutionsPageState>
+  implements PageStateIndicators
+{
   private readonly solvedTestsService = inject(SolvedTestsService);
 
   constructor() {
     super(INITIAL_STATE);
   }
 
+  readonly isPending = this.selectSignal((state) =>
+    loadingStateAdapter.getSelectors().isPending(state.loadingState),
+  );
+  
+  readonly isEmpty = this.selectSignal(
+    (state) => state.solvedTests.length === 0,
+  );
+
   readonly solvedTests = this.selectSignal((state) => state.solvedTests);
+
   readonly error = this.selectSignal((state) => state.error);
-  readonly pendingState$ = this.select({
-    isPending: this.select((state) =>
-      loadingStateAdapter.getSelectors().isPending(state.loadingState),
-    ),
-  });
+
   readonly isLoading = this.selectSignal((state) =>
     loadingStateAdapter.getSelectors().isLoading(state.loadingState),
   );

@@ -6,11 +6,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
-import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
 import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-action';
 import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
+import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
+import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { SharedTestsPageStore } from './shared-tests-page.store';
 
 @Component({
@@ -25,27 +27,29 @@ import { SharedTestsPageStore } from './shared-tests-page.store';
     ClipboardModule,
     MatSnackBarModule,
     BottomSheetActionsTriggerDirective,
+    PageStatesDirective,
+    NoDataInfoComponent,
   ],
   templateUrl: './shared-tests-page.component.html',
   styleUrl: './shared-tests-page.component.scss',
-  providers: [SharedTestsPageStore],
+  providers: [
+    SharedTestsPageStore,
+    {
+      provide: PAGE_STATE_INDICATORS,
+      useExisting: SharedTestsPageStore,
+    },
+  ],
 })
 export class SharedTestsPageComponent {
   private readonly store = inject(SharedTestsPageStore);
-  private readonly pendingIndicator = inject(PendingIndicatorService);
   private readonly clipboard = inject(Clipboard);
   private readonly snackBars = inject(MatSnackBar);
   private readonly sharedTests = inject(SharedTestsMetadataService);
   private readonly router = inject(Router);
 
-  readonly isLoading = this.store.isLoading$;
   readonly tests = this.store.tests;
 
   constructor() {
-    this.pendingIndicator.connectStateChanges({
-      onPendingChange$: this.store.isPending$,
-    });
-
     this.store.load();
   }
 

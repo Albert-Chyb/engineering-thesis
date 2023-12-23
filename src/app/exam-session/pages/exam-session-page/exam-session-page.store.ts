@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { SharedTestsService } from '@exam-session/services/shared-tests.service';
 import { SolvedTestsService } from '@exam-session/services/solved-tests.service';
 import { SolvedTestFormValue } from '@exam-session/types/solved-test';
@@ -8,6 +8,7 @@ import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { AssembledTest } from '@test-creator/types/assembled-test';
 import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
 import { SharedTestMetadata } from '@tests-sharing/types/shared-test';
+import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import { Observable, combineLatest, exhaustMap, switchMap, tap } from 'rxjs';
 
 const loadingStateAdapter = new LoadingStateAdapter();
@@ -29,20 +30,28 @@ const INITIAL_STATE: ExamSessionPageState = {
 };
 
 @Injectable()
-export class ExamSessionPageStore extends ComponentStore<ExamSessionPageState> {
+export class ExamSessionPageStore
+  extends ComponentStore<ExamSessionPageState>
+  implements PageStateIndicators
+{
   private readonly sharedTests = inject(SharedTestsService);
   private readonly sharedTestsMetadata = inject(SharedTestsMetadataService);
   private readonly solvedTests = inject(SolvedTestsService);
 
-  readonly pendingIndicatorChanges$ = this.select({
-    isPending: this.select((state) =>
-      loadingStateAdapter.getSelectors().isPending(state.loadingState),
-    ),
-  });
   readonly error = this.selectSignal((state) => state.error);
   readonly metadata = this.selectSignal((state) => state.metadata);
   readonly test = this.selectSignal((state) => state.test);
   readonly isSaved = this.selectSignal((state) => state.isSaved);
+
+  readonly isLoading = this.selectSignal((state) =>
+    loadingStateAdapter.getSelectors().isLoading(state.loadingState),
+  );
+
+  readonly isPending = this.selectSignal((state) =>
+    loadingStateAdapter.getSelectors().isPending(state.loadingState),
+  );
+
+  readonly isEmpty = signal(false).asReadonly();
 
   constructor() {
     super(INITIAL_STATE);

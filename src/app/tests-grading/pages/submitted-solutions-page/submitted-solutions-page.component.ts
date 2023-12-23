@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, ErrorHandler, effect, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute } from '@angular/router';
+import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
-import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-action';
 import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
+import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
+import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { map, take } from 'rxjs';
 import { SubmittedSolutionsPageStore } from './submitted-solutions-page.store';
 
@@ -21,15 +23,21 @@ import { SubmittedSolutionsPageStore } from './submitted-solutions-page.store';
     MatCardModule,
     MatBottomSheetModule,
     BottomSheetActionsTriggerDirective,
+    PageStatesDirective,
+    NoDataInfoComponent,
   ],
   templateUrl: './submitted-solutions-page.component.html',
   styleUrl: './submitted-solutions-page.component.scss',
-  providers: [SubmittedSolutionsPageStore],
+  providers: [
+    SubmittedSolutionsPageStore,
+    {
+      provide: PAGE_STATE_INDICATORS,
+      useExisting: SubmittedSolutionsPageStore,
+    },
+  ],
 })
 export class SubmittedSolutionsPageComponent {
   private readonly store = inject(SubmittedSolutionsPageStore);
-  private readonly pendingIndicator = inject(PendingIndicatorService);
-  private readonly errorHandler = inject(ErrorHandler);
   private readonly route = inject(ActivatedRoute);
 
   private readonly sharedTestId$ = this.route.paramMap.pipe(
@@ -43,10 +51,8 @@ export class SubmittedSolutionsPageComponent {
       return sharedTestId;
     }),
   );
-  readonly error = this.store.error;
-  readonly loadingState = this.store.pendingState$;
+
   readonly solvedTests = this.store.solvedTests;
-  readonly isLoading = this.store.isLoading;
 
   readonly pageActions: BottomSheetAction[] = [
     {
@@ -58,18 +64,6 @@ export class SubmittedSolutionsPageComponent {
   ];
 
   constructor() {
-    this.pendingIndicator.connectStateChanges({
-      onPendingChange$: this.loadingState,
-    });
-
-    effect(() => {
-      const error = this.error();
-
-      if (error) {
-        this.errorHandler.handleError(error);
-      }
-    });
-
     this.store.load(this.sharedTestId$);
   }
 

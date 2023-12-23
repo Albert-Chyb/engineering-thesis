@@ -1,3 +1,34 @@
+<ng-template #hasDataTemplate>
+  <mat-action-list>
+    @for (test of tests(); track test.id) {
+      <button
+        mat-list-item
+        [appBottomSheetActionsTrigger]="pageActions"
+        (onActionClick)="handlePageAction($event, test.id)"
+      >
+        <mat-icon matListItemIcon>description</mat-icon>
+        <h2 matListItemTitle>{{ test.name }}</h2>
+      </button>
+    }
+  </mat-action-list>
+</ng-template>
+
+<ng-template #isLoadingTemplate>
+  <app-loading-indicator>Ładuję testy ...</app-loading-indicator>
+</ng-template>
+
+<ng-template #noDataTemplate>
+  <app-no-data-info>
+    <ng-container no-data-info-icon>
+      <img src="assets/icons/no-data.svg" alt="" />
+    </ng-container>
+
+    <ng-container no-data-info-message>
+      <p>Nie masz utworzonych testów</p>
+    </ng-container>
+  </app-no-data-info>
+</ng-template>
+
 <mat-card>
   <mat-card-header>
     <mat-card-title-group>
@@ -17,27 +48,11 @@
   </mat-card-header>
 
   <mat-card-content>
-    <mat-action-list>
-      @for (test of tests(); track test.id) {
-        <button
-          mat-list-item
-          [appBottomSheetActionsTrigger]="pageActions"
-          (onActionClick)="handlePageAction($event, test.id)"
-        >
-          <mat-icon matListItemIcon>description</mat-icon>
-          <h2 matListItemTitle>{{ test.name }}</h2>
-        </button>
-      } @empty {
-        <app-no-data-info>
-          <ng-container no-data-info-icon>
-            <img src="assets/icons/no-data.svg" alt="" />
-          </ng-container>
-
-          <ng-container no-data-info-message>
-            <p>Brak testów</p>
-          </ng-container>
-        </app-no-data-info>
-      }
-    </mat-action-list>
+    <ng-container
+      appPageStates
+      [dataTemplate]="hasDataTemplate"
+      [emptyTemplate]="noDataTemplate"
+      [loadingTemplate]="isLoadingTemplate"
+    ></ng-container>
   </mat-card-content>
 </mat-card>
