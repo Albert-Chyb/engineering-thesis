@@ -1,9 +1,0 @@
-<mat-action-list>
-  @for (action of actions; track $index) {
-  <button mat-list-item (click)="handleActionClick(action.id)">
-    <mat-icon matListItemIcon>{{ action.icon }}</mat-icon>
-    <p matListItemTitle>{{ action.title }}</p>
-    <p matListItemLine>{{ action.description }}</p>
-  </button>
-  }
-</mat-action-list>
