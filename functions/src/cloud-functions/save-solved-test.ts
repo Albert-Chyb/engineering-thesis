@@ -16,7 +16,7 @@ const db = getFirestore();
 
 export const saveSolvedTestFnDataSchema = z.object({
   testTakerName: solvedTestSchema.shape.testTakerName,
-  sharedTestId: solvedTestSchema.shape.sharedTest.shape.id,
+  sharedTestId: solvedTestSchema.shape.sharedTestId,
   answers: solvedTestAnswersSchema.shape.answers,
 });
 
