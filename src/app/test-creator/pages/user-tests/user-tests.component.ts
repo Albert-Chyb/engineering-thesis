@@ -16,17 +16,10 @@ import {
   IncompleteTestErrorDialogComponent,
   IncompleteTestErrorDialogData,
 } from '@test-creator/components/incomplete-test-error-dialog/incomplete-test-error-dialog.component';
-import {
-  NewTestPromptComponent,
-  NewTestPromptResult,
-} from '@test-creator/components/new-test-prompt/new-test-prompt.component';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
-import {
-  SharedTestMetadataDialogComponent,
-  SharedTestMetadataDialogResult,
-} from '@tests-sharing/components/shared-test-metadata-dialog/shared-test-metadata-dialog.component';
 import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-action';
 import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
+import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
 import { filter, map, take } from 'rxjs';
 import { UserTestsStore } from './user-tests.store';
 
@@ -46,7 +39,7 @@ import { UserTestsStore } from './user-tests.store';
   ],
   templateUrl: './user-tests.component.html',
   styleUrl: './user-tests.component.scss',
-  providers: [UserTestsStore],
+  providers: [UserTestsStore, CommonDialogsService],
 })
 export class UserTestsComponent implements OnDestroy {
   private readonly store = inject(UserTestsStore);
@@ -54,6 +47,7 @@ export class UserTestsComponent implements OnDestroy {
   private readonly router = inject(Router);
   private readonly userTests = inject(UserTestsService);
   private readonly pendingIndicatorService = inject(PendingIndicatorService);
+  private readonly commonDialogs = inject(CommonDialogsService);
 
   readonly tests = this.store.tests;
   readonly error = this.store.error;
@@ -106,59 +100,62 @@ export class UserTestsComponent implements OnDestroy {
         break;
 
       case 'delete':
-        this.store.delete(testId);
+        this.store.delete(
+          this.commonDialogs
+            .confirm('Usuń test', 'Czy na pewno chcesz usunąć test ?')
+            .pipe(
+              filter((result) => !!result),
+              map(() => testId),
+            ),
+        );
         break;
 
       case 'share':
-        this.showSharedTestMetadataPrompt(testId);
+        this.shareTest(testId);
         break;
     }
   }
 
-  showSharedTestMetadataPrompt(testId: string) {
-    const dialogRef = this.dialogs.open<
-      SharedTestMetadataDialogComponent,
-      void,
-      SharedTestMetadataDialogResult
-    >(SharedTestMetadataDialogComponent);
-
-    dialogRef
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe((result) => {
-        if (!result) {
-          return;
-        }
-
-        this.store.shareTest({
-          testId,
-          name: result.name,
-        });
-      });
+  shareTest(testId: string) {
+    this.store.shareTest(
+      this.commonDialogs
+        .prompt({
+          title: 'Udostępnij test',
+          message: 'Podaj pod jaką nazwą chcesz udostępnić test',
+          input: {
+            placeholder: 'Nazwa udostępnienia',
+            label: 'Nazwa udostępnienia',
+          },
+        })
+        .pipe(
+          filter((name) => !!name),
+          map((name) => ({
+            name: name ?? '',
+            testId,
+          })),
+        ),
+    );
   }
 
-  showNewTestPrompt() {
-    const dialogRef = this.dialogs.open<
-      NewTestPromptComponent,
-      void,
-      NewTestPromptResult
-    >(NewTestPromptComponent);
-
+  addNewTest() {
     this.store.create(
-      dialogRef.afterClosed().pipe(
-        take(1),
-        map((initialTest) => {
-          if (!initialTest) {
-            return null as any;
-          }
-
-          return {
+      this.commonDialogs
+        .prompt({
+          title: 'Nowy test',
+          message: 'Podaj nazwę nowego testu',
+          input: {
+            placeholder: 'Nazwa testu',
+            label: 'Nazwa testu',
+          },
+        })
+        .pipe(
+          take(1),
+          filter((name) => !!name),
+          map((name) => ({
+            name: name ?? '',
             id: this.userTests.generateId(),
-            name: initialTest.name,
-          };
-        }),
-        filter((test) => test !== null),
-      ),
+          })),
+        ),
     );
   }
 
