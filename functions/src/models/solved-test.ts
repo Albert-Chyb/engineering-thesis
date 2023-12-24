@@ -7,6 +7,7 @@ export const solvedTestSchema = z.object({
   date: z.custom((value) => value instanceof FieldValue, {
     message: 'Date must be set by a field sentinel',
   }),
+  grade: z.number().min(0).max(1).nullable(),
 });
 
 export type SolvedTest = z.infer<typeof solvedTestSchema>;

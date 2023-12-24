@@ -9,6 +9,7 @@ import { SharedTest } from '../models/shared-test';
 import { SolvedTest, solvedTestSchema } from '../models/solved-test';
 import {
   SolvedTestAnswers,
+  solvedTestAnswerSchema,
   solvedTestAnswersSchema,
 } from '../models/solved-test-answers';
 
@@ -17,7 +18,17 @@ const db = getFirestore();
 export const saveSolvedTestFnDataSchema = z.object({
   testTakerName: solvedTestSchema.shape.testTakerName,
   sharedTestId: solvedTestSchema.shape.sharedTestId,
-  answers: solvedTestAnswersSchema.shape.answers,
+  answers: z.record(solvedTestAnswerSchema.shape.answer).transform((value) =>
+    Object.fromEntries(
+      Object.entries(value).map(([questionId, answer]) => [
+        questionId,
+        {
+          answer,
+          isCorrect: null,
+        },
+      ]),
+    ),
+  ),
 });
 
 export type SaveSolvedTestFnData = z.infer<typeof saveSolvedTestFnDataSchema>;
@@ -61,6 +72,7 @@ export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
         ...data,
         date: FieldValue.serverTimestamp(),
         sharedTestId: sharedTestRef.id,
+        grade: null,
       });
       const solvedTestAnswersDocData = solvedTestAnswersSchema.parse(data);
 
