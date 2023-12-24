@@ -3,8 +3,10 @@ import {
   Firestore,
   FirestoreDataConverter,
   collection,
+  collectionData,
   collectionSnapshots,
   doc,
+  docData,
   orderBy,
   query,
   runTransaction,
@@ -77,9 +79,14 @@ export class SolvedTestsService {
     const collectionRef = this.getCollectionRef(sharedTestId);
     const collectionQuery = query(collectionRef, orderBy('date', 'desc'));
 
-    return collectionSnapshots(collectionQuery).pipe(
-      map((snapshots) => snapshots.map((snapshot) => snapshot.data())),
-    );
+    return collectionData(collectionQuery);
+  }
+
+  get(sharedTestId: string, solvedTestId: string) {
+    const collectionRef = this.getCollectionRef(sharedTestId);
+    const docRef = doc(collectionRef, solvedTestId);
+
+    return docData(docRef);
   }
 
   private getCollectionRef(sharedTestId: string) {
