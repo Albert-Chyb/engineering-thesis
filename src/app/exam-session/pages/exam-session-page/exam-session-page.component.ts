@@ -13,7 +13,7 @@ import { MultiChoiceQuestionComponent } from '@exam-session/components/multi-cho
 import { SingleChoiceQuestionComponent } from '@exam-session/components/single-choice-question/single-choice-question.component';
 import { TestTakerNameComponent } from '@exam-session/components/test-taker-name/test-taker-name.component';
 import { TextAnswerQuestionComponent } from '@exam-session/components/text-answer-question/text-answer-question.component';
-import { SolvedTestFormValueSchema } from '@exam-session/types/solved-test';
+import { SolvedTestFormValueSchema } from '@exam-session/types/solved-test-form-value';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { AssembledQuestion } from '@test-creator/types/assembled-test';
 import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';

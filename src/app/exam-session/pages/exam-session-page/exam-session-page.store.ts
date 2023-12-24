@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { SharedTestsService } from '@exam-session/services/shared-tests.service';
 import { SolvedTestsService } from '@exam-session/services/solved-tests.service';
-import { SolvedTestFormValue } from '@exam-session/types/solved-test';
+import { SolvedTestFormValue } from '@exam-session/types/solved-test-form-value';
 import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';

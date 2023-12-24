@@ -14,7 +14,7 @@ import {
   SaveSolvedTestCloudFnData,
   saveSolvedTestCloudFnDataSchema,
 } from '@exam-session/types/save-solved-test-cloud-fn';
-import { SolvedTestFormValue } from '@exam-session/types/solved-test';
+import { SolvedTestFormValue } from '@exam-session/types/solved-test-form-value';
 import { SolvedTest, SolvedTestSchema } from '@tests-grading/types/solved-test';
 import { Observable, from, map } from 'rxjs';
 
