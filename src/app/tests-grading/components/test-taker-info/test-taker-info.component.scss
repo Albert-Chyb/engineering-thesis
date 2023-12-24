@@ -1,0 +1,16 @@
+@use "../../../sass/theme" as theme;
+@use "@angular/material" as mat;
+
+.test-taker-info {
+  display: flex;
+  flex-direction: row;
+  column-gap: 32px;
+
+  &__info-label {
+    font: mat.get-theme-typography(theme.$app-theme, headline-6);
+  }
+
+  &__info-value {
+    font: mat.get-theme-typography(theme.$app-theme, body-1);
+  }
+}
