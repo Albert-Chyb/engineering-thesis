@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
+import { TestTakerInfoComponent } from '@tests-grading/components/test-taker-info/test-taker-info.component';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { Observable, map } from 'rxjs';
@@ -17,6 +18,7 @@ import { TestGradingPageStore } from './test-grading-page.store';
     NoDataInfoComponent,
     LoadingIndicatorComponent,
     MatCardModule,
+    TestTakerInfoComponent,
   ],
   templateUrl: './test-grading-page.component.html',
   styleUrl: './test-grading-page.component.scss',
