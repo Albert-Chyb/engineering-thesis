@@ -1,9 +1,9 @@
-<mat-card>
-  <mat-card-content class="loading-indicator">
+<div class="loading-indicator">
+  <div class="loading-indicator__spinner">
     <mat-spinner color="accent" />
+  </div>
 
-    <mat-card-title class="loading-indicator__message">
-      <ng-content />
-    </mat-card-title>
-  </mat-card-content>
-</mat-card>
+  <div class="loading-indicator__message">
+    <ng-content />
+  </div>
+</div>
