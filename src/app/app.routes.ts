@@ -13,6 +13,7 @@ import { hasPendingTasksGuard } from '@loading-indicator/guards/has-pending-task
 import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
 import { UserTestsComponent } from '@test-creator/pages/user-tests/user-tests.component';
 import { SubmittedSolutionsPageComponent } from '@tests-grading/pages/submitted-solutions-page/submitted-solutions-page.component';
+import { TestGradingPageComponent } from '@tests-grading/pages/test-grading-page/test-grading-page.component';
 import { SharedTestsPageComponent } from '@tests-sharing/pages/shared-tests-page/shared-tests-page.component';
 import { TestCreatorPageComponent } from './test-creator/pages/test-creator-page/test-creator-page.component';
 
@@ -84,6 +85,14 @@ export const routes: Routes = [
   {
     path: 'shared-tests/:id/submitted-solutions',
     component: SubmittedSolutionsPageComponent,
+    canActivate: [AuthGuard],
+    data: {
+      authGuardPipe: redirectLoggedOutToLogin,
+    },
+  },
+  {
+    path: 'shared-tests/:sharedTestId/submitted-solutions/:solvedTestId/grade',
+    component: TestGradingPageComponent,
     canActivate: [AuthGuard],
     data: {
       authGuardPipe: redirectLoggedOutToLogin,

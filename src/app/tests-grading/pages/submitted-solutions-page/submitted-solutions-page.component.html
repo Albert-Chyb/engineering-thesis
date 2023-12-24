@@ -4,7 +4,7 @@
       <button
         mat-list-item
         [appBottomSheetActionsTrigger]="pageActions"
-        (onActionClick)="handlePageAction($event, solvedTest.id)"
+        (onActionClick)="handlePageAction($event, solvedTest)"
       >
         @if (isSolvedTestGraded(solvedTest)) {
           <mat-icon matListItemIcon>check_circle</mat-icon>

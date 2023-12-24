@@ -4,7 +4,7 @@ import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { SolvedTest } from '@tests-grading/types/solved-test';
@@ -12,7 +12,7 @@ import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-acti
 import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { PageStatesDirective } from '@utils/page-states/page-states.directive';
-import { map, take } from 'rxjs';
+import { map } from 'rxjs';
 import { SubmittedSolutionsPageStore } from './submitted-solutions-page.store';
 
 @Component({
@@ -42,6 +42,7 @@ import { SubmittedSolutionsPageStore } from './submitted-solutions-page.store';
 export class SubmittedSolutionsPageComponent {
   private readonly store = inject(SubmittedSolutionsPageStore);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   private readonly sharedTestId$ = this.route.paramMap.pipe(
     map((params) => {
@@ -64,6 +65,12 @@ export class SubmittedSolutionsPageComponent {
       description: 'Usuń rozwiązanie',
       title: 'Usuń',
     },
+    {
+      name: 'grade',
+      icon: 'fact_check',
+      description: 'Oceń poprawność rozwiązania',
+      title: 'Oceń',
+    },
   ];
 
   constructor() {
@@ -74,18 +81,23 @@ export class SubmittedSolutionsPageComponent {
     return solvedTest.grade !== null;
   }
 
-  handlePageAction(actionName: string, solvedTestId: string) {
+  handlePageAction(actionName: string, solvedTest: SolvedTest) {
     switch (actionName) {
       case 'delete':
-        this.store.delete(
-          this.sharedTestId$.pipe(
-            take(1),
-            map((sharedTestId) => ({
-              sharedTestId,
-              solvedTestId,
-            })),
-          ),
-        );
+        this.store.delete({
+          sharedTestId: solvedTest.sharedTestId,
+          solvedTestId: solvedTest.id,
+        });
+        break;
+
+      case 'grade':
+        this.router.navigate([
+          'shared-tests',
+          solvedTest.sharedTestId,
+          'submitted-solutions',
+          solvedTest.id,
+          'grade',
+        ]);
         break;
     }
   }
