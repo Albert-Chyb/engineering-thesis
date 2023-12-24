@@ -1,0 +1,14 @@
+import { QuestionsAnswerSchema } from '@exam-session/types/user-answers';
+import { z } from 'zod';
+
+export const SolvedTestAnswersSchema = z.object({
+  id: z.string(),
+  answers: z.record(
+    z.object({
+      isCorrect: z.boolean().nullable(),
+      answers: QuestionsAnswerSchema,
+    }),
+  ),
+});
+
+export type SolvedTestAnswers = z.infer<typeof SolvedTestAnswersSchema>;
