@@ -9,7 +9,6 @@ import {
   SnapshotOptions,
   WithFieldValue,
   collection,
-  collectionData,
   doc,
   docData,
 } from '@angular/fire/firestore';
