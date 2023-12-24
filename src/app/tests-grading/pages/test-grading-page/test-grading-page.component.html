@@ -1,1 +1,29 @@
-<p>test-grading-page works!</p>
+<ng-template #loadingTemplate>
+  <app-loading-indicator>Ładuję ...</app-loading-indicator>
+</ng-template>
+
+<ng-template #noDataTemplate>
+  <app-no-data-info>
+    <span no-data-info-message>Nie znaleziono danych</span>
+    <img no-data-info-icon src="assets/icons/no-data.svg" />
+  </app-no-data-info>
+</ng-template>
+
+<ng-template #dataTemplate>
+  <p>Page works</p>
+</ng-template>
+
+<mat-card>
+  <mat-card-header>
+    <h1 mat-card-title>Oceń rozwiązania</h1>
+  </mat-card-header>
+
+  <mat-card-content>
+    <ng-container
+      appPageStates
+      [dataTemplate]="dataTemplate"
+      [emptyTemplate]="noDataTemplate"
+      [loadingTemplate]="loadingTemplate"
+    />
+  </mat-card-content>
+</mat-card>

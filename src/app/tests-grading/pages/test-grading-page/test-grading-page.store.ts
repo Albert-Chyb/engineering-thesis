@@ -6,6 +6,7 @@ import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { SolvedTestsAnswersService } from '@tests-grading/services/solved-tests-answers.service';
 import { SolvedTest } from '@tests-grading/types/solved-test';
 import { SolvedTestAnswers } from '@tests-grading/types/solved-test-answers';
+import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import { Observable, combineLatest, switchMap, tap } from 'rxjs';
 
 const loadingAdapter = new LoadingStateAdapter();
@@ -25,7 +26,10 @@ const INITIAL_STATE: TestGradingPageState = {
 };
 
 @Injectable()
-export class TestGradingPageStore extends ComponentStore<TestGradingPageState> {
+export class TestGradingPageStore
+  extends ComponentStore<TestGradingPageState>
+  implements PageStateIndicators
+{
   private readonly solvedTestsAnswers = inject(SolvedTestsAnswersService);
   private readonly solvedTests = inject(SolvedTestsService);
 
@@ -33,6 +37,16 @@ export class TestGradingPageStore extends ComponentStore<TestGradingPageState> {
   readonly solvedTestAnswers = this.selectSignal(
     (state) => state.solvedTestAnswers,
   );
+  readonly isLoading = this.selectSignal((state) =>
+    loadingAdapter.getSelectors().isLoading(state.loadingState),
+  );
+  readonly isPending = this.selectSignal((state) =>
+    loadingAdapter.getSelectors().isPending(state.loadingState),
+  );
+  readonly isEmpty = this.selectSignal(
+    (state) => !state.solvedTest && !state.solvedTestAnswers,
+  );
+  readonly error = this.selectSignal((state) => state.error);
 
   constructor() {
     super(INITIAL_STATE);
