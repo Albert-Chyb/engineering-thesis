@@ -1,8 +1,10 @@
 import { Injectable, inject } from '@angular/core';
+import { SharedTestsService } from '@exam-session/services/shared-tests.service';
 import { SolvedTestsService } from '@exam-session/services/solved-tests.service';
 import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
+import { AssembledTest } from '@test-creator/types/assembled-test';
 import { SolvedTestsAnswersService } from '@tests-grading/services/solved-tests-answers.service';
 import { SolvedTest } from '@tests-grading/types/solved-test';
 import { SolvedTestAnswers } from '@tests-grading/types/solved-test-answers';
@@ -16,6 +18,7 @@ interface TestGradingPageState {
   error: unknown;
   solvedTest: SolvedTest | null;
   solvedTestAnswers: SolvedTestAnswers | null;
+  sharedTest: AssembledTest | null;
 }
 
 const INITIAL_STATE: TestGradingPageState = {
@@ -23,6 +26,7 @@ const INITIAL_STATE: TestGradingPageState = {
   error: null,
   solvedTestAnswers: null,
   solvedTest: null,
+  sharedTest: null,
 };
 
 @Injectable()
@@ -32,7 +36,9 @@ export class TestGradingPageStore
 {
   private readonly solvedTestsAnswers = inject(SolvedTestsAnswersService);
   private readonly solvedTests = inject(SolvedTestsService);
+  private readonly sharedTests = inject(SharedTestsService);
 
+  readonly sharedTest = this.selectSignal((state) => state.sharedTest);
   readonly solvedTest = this.selectSignal((state) => state.solvedTest);
   readonly solvedTestAnswers = this.selectSignal(
     (state) => state.solvedTestAnswers,
@@ -67,13 +73,15 @@ export class TestGradingPageStore
               sharedTestId,
               solvedTestId,
             ),
+            sharedTest: this.sharedTests.getSharedTest(sharedTestId),
           }),
         ),
         tapResponse(
-          ({ solvedTestAnswers, solvedTest }) =>
+          ({ solvedTestAnswers, solvedTest, sharedTest }) =>
             this.patchState((state) => ({
               solvedTestAnswers,
               solvedTest,
+              sharedTest,
               loadingState: loadingAdapter.finishLoading(state.loadingState),
             })),
           (error) => {
