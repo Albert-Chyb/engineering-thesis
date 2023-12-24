@@ -44,9 +44,8 @@ export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
         .collection('shared-tests')
         .doc(data.sharedTestId) as DocumentReference<SharedTest>;
       const sharedTestSnapshot = await transaction.get(sharedTestRef);
-      const sharedTestData = sharedTestSnapshot.data();
 
-      if (!sharedTestSnapshot.exists || sharedTestData === undefined) {
+      if (!sharedTestSnapshot.exists) {
         throw new HttpsError('invalid-argument', 'Shared test does not exist');
       }
 
@@ -61,10 +60,7 @@ export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
       const solvedTestDocData = solvedTestSchema.parse({
         ...data,
         date: FieldValue.serverTimestamp(),
-        sharedTest: {
-          id: data.sharedTestId,
-          name: sharedTestData.name,
-        },
+        sharedTestId: sharedTestRef.id,
       });
       const solvedTestAnswersDocData = solvedTestAnswersSchema.parse(data);
 
