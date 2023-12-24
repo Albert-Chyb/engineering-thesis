@@ -6,7 +6,7 @@ export const SolvedTestAnswersSchema = z.object({
   answers: z.record(
     z.object({
       isCorrect: z.boolean().nullable(),
-      answers: QuestionsAnswerSchema,
+      answer: QuestionsAnswerSchema.valueSchema,
     }),
   ),
 });
