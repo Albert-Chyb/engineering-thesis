@@ -57,7 +57,7 @@ export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
       const sharedTestSnapshot = await transaction.get(sharedTestRef);
 
       if (!sharedTestSnapshot.exists) {
-        throw new HttpsError('invalid-argument', 'Shared test does not exist');
+        throw new HttpsError('not-found', 'Shared test does not exist');
       }
 
       const solvedTestRef = db
