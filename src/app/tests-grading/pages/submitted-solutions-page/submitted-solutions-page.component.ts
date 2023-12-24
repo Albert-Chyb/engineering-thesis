@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
+import { SolvedTest } from '@tests-grading/types/solved-test';
 import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-action';
 import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
@@ -25,6 +27,7 @@ import { SubmittedSolutionsPageStore } from './submitted-solutions-page.store';
     BottomSheetActionsTriggerDirective,
     PageStatesDirective,
     NoDataInfoComponent,
+    MatIconModule,
   ],
   templateUrl: './submitted-solutions-page.component.html',
   styleUrl: './submitted-solutions-page.component.scss',
@@ -65,6 +68,10 @@ export class SubmittedSolutionsPageComponent {
 
   constructor() {
     this.store.load(this.sharedTestId$);
+  }
+
+  isSolvedTestGraded(solvedTest: SolvedTest): boolean {
+    return solvedTest.grade !== null;
   }
 
   handlePageAction(actionName: string, solvedTestId: string) {

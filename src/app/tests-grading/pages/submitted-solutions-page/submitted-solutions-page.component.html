@@ -6,11 +6,23 @@
         [appBottomSheetActionsTrigger]="pageActions"
         (onActionClick)="handlePageAction($event, solvedTest.id)"
       >
-        <h2 matListItemTitle>
-          {{ solvedTest.testTakerName }}
-        </h2>
+        @if (isSolvedTestGraded(solvedTest)) {
+          <mat-icon matListItemIcon>check_circle</mat-icon>
+        } @else {
+          <mat-icon matListItemIcon>pending_actions</mat-icon>
+        }
 
-        <p matListItemLine>Przesłano: {{ solvedTest.date | date: "short" }}</p>
+        <h2 matListItemTitle>{{ solvedTest.testTakerName }}</h2>
+
+        <span matListItemLine
+          >Przesłano: {{ solvedTest.date | date: "short" }}</span
+        >
+
+        @if (isSolvedTestGraded(solvedTest)) {
+          <span matListItemLine>Ocena: {{ solvedTest.grade | percent }}</span>
+        } @else {
+          <span matListItemLine>Ocena: oczekuje na sprawdzenie</span>
+        }
       </button>
     }
   </mat-action-list>
