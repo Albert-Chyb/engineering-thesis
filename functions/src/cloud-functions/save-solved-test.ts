@@ -64,8 +64,8 @@ export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
       });
       const solvedTestAnswersDocData = solvedTestAnswersSchema.parse(data);
 
-      transaction.set(solvedTestRef, solvedTestDocData);
-      transaction.set(solvedTestAnswersRef, solvedTestAnswersDocData);
+      transaction.create(solvedTestRef, solvedTestDocData);
+      transaction.create(solvedTestAnswersRef, solvedTestAnswersDocData);
 
       return solvedTestRef.id;
     });
