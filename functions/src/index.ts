@@ -4,5 +4,6 @@ initializeApp({
   credential: applicationDefault(),
 });
 
-export { shareTest } from './cloud-functions/share-test';
+export { evaluateSolvedTestAnswers } from './cloud-functions/evaluate-solved-test-answers';
 export { saveSolvedTest } from './cloud-functions/save-solved-test';
+export { shareTest } from './cloud-functions/share-test';
