@@ -1,0 +1,12 @@
+.mat-divider {
+  margin: 32px 0;
+}
+
+.answer-evaluation {
+  margin-top: 8px;
+
+  &__choices {
+    display: flex;
+    flex-direction: column;
+  }
+}

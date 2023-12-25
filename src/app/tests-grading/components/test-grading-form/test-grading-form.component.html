@@ -1,0 +1,40 @@
+<ng-container [formGroup]="answersEvaluationsForm">
+  @for (item of data; track item.question.id; let isLast = $last) {
+    @switch (item.question.type) {
+      @case ("single-choice") {
+        <app-single-choice-question
+          [question]="item.question"
+          [form]="buildAnswerFormControl(item.answer)"
+        />
+      }
+      @case ("multi-choice") {
+        <app-multi-choice-question
+          [question]="item.question"
+          [form]="buildAnswerFormControl(item.answer)"
+        />
+      }
+      @case ("text-answer") {
+        <app-text-answer-question
+          [question]="item.question"
+          [form]="buildAnswerFormControl(item.answer)"
+        />
+      }
+    }
+
+    <div class="answer-evaluation">
+      <mat-radio-group
+        class="answer-evaluation__choices"
+        [formControlName]="item.question.id"
+      >
+        <mat-radio-button [value]="true">Odpowiedź poprawna</mat-radio-button>
+        <mat-radio-button [value]="false"
+          >Odpowiedź niepoprawna</mat-radio-button
+        >
+      </mat-radio-group>
+    </div>
+
+    @if (!isLast) {
+      <mat-divider />
+    }
+  }
+</ng-container>
