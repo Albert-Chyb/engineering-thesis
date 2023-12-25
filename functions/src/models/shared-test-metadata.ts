@@ -6,3 +6,5 @@ export const sharedTestMetadataSchema = z.object({
   author: z.string(),
   sharedDate: firestoreFieldValueSchema,
 });
+
+export type SharedTestMetadata = z.infer<typeof sharedTestMetadataSchema>;
