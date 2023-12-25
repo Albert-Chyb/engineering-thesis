@@ -9,13 +9,10 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MultiChoiceQuestionComponent } from '@exam-session/components/multi-choice-question/multi-choice-question.component';
-import { SingleChoiceQuestionComponent } from '@exam-session/components/single-choice-question/single-choice-question.component';
+import { AnswersFormComponent } from '@exam-session/components/answers-form/answers-form.component';
 import { TestTakerNameComponent } from '@exam-session/components/test-taker-name/test-taker-name.component';
-import { TextAnswerQuestionComponent } from '@exam-session/components/text-answer-question/text-answer-question.component';
 import { SolvedTestFormValueSchema } from '@exam-session/types/solved-test-form-value';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
-import { AssembledTest } from '@test-creator/types/assembled-test';
 import { SolvedTestAnswerRecordValue } from '@tests-grading/types/solved-test-answers';
 import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
@@ -27,15 +24,13 @@ import { ExamSessionPageStore } from './exam-session-page.store';
   standalone: true,
   imports: [
     CommonModule,
-    SingleChoiceQuestionComponent,
-    MultiChoiceQuestionComponent,
-    TextAnswerQuestionComponent,
     TestTakerNameComponent,
     MatCardModule,
     ReactiveFormsModule,
     MatButtonModule,
     PageStatesDirective,
     LoadingIndicatorComponent,
+    AnswersFormComponent,
   ],
   templateUrl: './exam-session-page.component.html',
   styleUrl: './exam-session-page.component.scss',
@@ -61,7 +56,7 @@ export class ExamSessionPageComponent {
   readonly form = new FormGroup({
     testTakerName: new FormControl('', Validators.required),
     answers: new FormGroup<
-      Record<string, FormControl<SolvedTestAnswerRecordValue>>
+      Record<string, FormControl<SolvedTestAnswerRecordValue | null>>
     >({}),
   });
 
@@ -71,14 +66,6 @@ export class ExamSessionPageComponent {
 
       if (isSaved) {
         this.showSavedSuccessfullyDialog();
-      }
-    });
-
-    effect(() => {
-      const test = this.test();
-
-      if (test) {
-        this.rebuildAnswersFormGroup(test);
       }
     });
 
@@ -97,37 +84,11 @@ export class ExamSessionPageComponent {
     );
   }
 
-  getAnswerControl(questionId: string) {
-    const control = this.form.controls.answers.get(questionId) as FormControl;
-
-    if (!control) {
-      throw new Error(`No answer control for question with id ${questionId}.`);
-    }
-
-    return control;
-  }
-
   handleFormSubmit() {
     const testForm = this.form;
     const solvedTest = SolvedTestFormValueSchema.parse(testForm.value);
 
     this.store.saveSolvedTest(solvedTest);
-  }
-
-  private rebuildAnswersFormGroup(test: AssembledTest) {
-    const answersForm: FormGroup = this.form.controls.answers;
-
-    for (const controlName in answersForm) {
-      answersForm.removeControl(controlName, { emitEvent: false });
-    }
-
-    for (const question of test.questions) {
-      answersForm.addControl(question.id, new FormControl(null), {
-        emitEvent: false,
-      });
-    }
-
-    answersForm.updateValueAndValidity();
   }
 
   private showSavedSuccessfullyDialog() {

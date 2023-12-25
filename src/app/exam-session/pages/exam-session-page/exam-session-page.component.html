@@ -19,28 +19,10 @@
       >
         <app-test-taker-name [form]="form.controls.testTakerName" />
 
-        @for (question of test()?.questions; track question.id) {
-          @switch (question.type) {
-            @case ("single-choice") {
-              <app-single-choice-question
-                [question]="question"
-                [form]="getAnswerControl(question.id)"
-              />
-            }
-            @case ("multi-choice") {
-              <app-multi-choice-question
-                [question]="question"
-                [form]="getAnswerControl(question.id)"
-              />
-            }
-            @case ("text-answer") {
-              <app-text-answer-question
-                [question]="question"
-                [form]="getAnswerControl(question.id)"
-              />
-            }
-          }
-        }
+        <app-answers-form
+          [questions]="test()?.questions ?? []"
+          [formRef]="form.controls.answers"
+        />
       </form>
     </mat-card-content>
 
