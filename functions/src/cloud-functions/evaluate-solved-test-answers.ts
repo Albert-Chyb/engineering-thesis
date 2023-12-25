@@ -5,6 +5,7 @@ import { ensureExistence } from '../data-access/common';
 import { sharedTestMetadata } from '../data-access/shared-tests-metadata';
 import { solvedTest } from '../data-access/solved-tests';
 import { solvedTestAnswers } from '../data-access/solved-tests-answers';
+import { solvedTestSchema } from '../models/solved-test';
 import {
   SolvedTestAnswers,
   solvedTestAnswerSchema,
@@ -38,44 +39,34 @@ function createUpdateObj(
 }
 
 function calcGrade(solvedTest: SolvedTestAnswers): number | null {
-  const statistics = {
-    correct: 0,
-    incorrect: 0,
-    pending: 0,
-  };
+  const answers = Object.values(solvedTest.answers);
 
-  for (const questionId in solvedTest.answers) {
-    if (Object.prototype.hasOwnProperty.call(solvedTest.answers, questionId)) {
-      const answers = solvedTest.answers[questionId];
+  const allAnswersChecked = answers.every(
+    (answer) => answer.isCorrect !== null,
+  );
 
-      if (answers.isCorrect === null) {
-        statistics.pending++;
-      } else if (answers.isCorrect) {
-        statistics.correct++;
-      } else {
-        statistics.incorrect++;
-      }
-    }
-  }
-
-  if (statistics.pending > 0) {
+  if (!allAnswersChecked) {
     return null;
   }
 
-  return statistics.correct / (statistics.correct + statistics.incorrect);
+  const total = answers.length;
+  const correct = answers.filter((answer) => answer.isCorrect === true).length;
+
+  return correct / total;
 }
 
-export const evaluateSolvedTestAnswers = onCall<FnData>((req) => {
+export const evaluateSolvedTestAnswers = onCall<FnData>(async (req) => {
   const uid = req.auth?.uid;
 
   if (!uid) {
     throw new HttpsError('unauthenticated', 'User is not authenticated');
   }
 
-  return db.runTransaction<void>(async (transaction) => {
-    const { answersEvaluations, sharedTestId, solvedTestId } =
-      fnDataSchema.parse(req.data);
+  const { answersEvaluations, sharedTestId, solvedTestId } = fnDataSchema.parse(
+    req.data,
+  );
 
+  await db.runTransaction<void>(async (transaction) => {
     const sharedTestMetadataSnapshot = await ensureExistence(
       sharedTestMetadata(sharedTestId),
       transaction,
@@ -92,10 +83,7 @@ export const evaluateSolvedTestAnswers = onCall<FnData>((req) => {
 
     const solvedTestAnswersRef = solvedTestAnswers(sharedTestId, solvedTestId);
 
-    const solvedTestAnswersData = await ensureExistence(
-      solvedTestAnswersRef,
-      transaction,
-    );
+    await ensureExistence(solvedTestAnswersRef, transaction);
 
     transaction.update(
       solvedTestAnswersRef,
@@ -103,9 +91,15 @@ export const evaluateSolvedTestAnswers = onCall<FnData>((req) => {
         createUpdateObj(answersEvaluations),
       ) as PartialWithFieldValue<SolvedTestAnswers>,
     );
+  });
 
-    transaction.update(solvedTest(sharedTestId, solvedTestId), {
-      grade: calcGrade(solvedTestAnswersData.data()),
-    });
+  const solvedTestRef = solvedTest(sharedTestId, solvedTestId);
+  const solvedTestAnswersSnapshot = await ensureExistence(
+    solvedTestAnswers(sharedTestId, solvedTestId),
+  );
+  const solvedTestAnswersData = solvedTestAnswersSnapshot.data();
+
+  await solvedTestRef.update({
+    grade: solvedTestSchema.shape.grade.parse(calcGrade(solvedTestAnswersData)),
   });
 });
