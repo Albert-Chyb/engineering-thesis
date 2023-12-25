@@ -8,8 +8,9 @@ import { AssembledTest } from '@test-creator/types/assembled-test';
 import { SolvedTestsAnswersService } from '@tests-grading/services/solved-tests-answers.service';
 import { SolvedTest } from '@tests-grading/types/solved-test';
 import { SolvedTestAnswers } from '@tests-grading/types/solved-test-answers';
+import { SolvedTestAnswersEvaluations } from '@tests-grading/types/solved-test-answers-evaluations';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
-import { Observable, combineLatest, switchMap, tap } from 'rxjs';
+import { Observable, combineLatest, exhaustMap, switchMap, tap } from 'rxjs';
 
 const loadingAdapter = new LoadingStateAdapter();
 
@@ -90,6 +91,42 @@ export class TestGradingPageStore
               loadingState: loadingAdapter.finishLoading(state.loadingState),
             }));
           },
+        ),
+      ),
+  );
+
+  readonly evaluateAnswers = this.effect(
+    (evaluations$: Observable<SolvedTestAnswersEvaluations>) =>
+      evaluations$.pipe(
+        tap(() =>
+          this.patchState((state) => ({
+            loadingState: loadingAdapter.taskStarted(state.loadingState),
+          })),
+        ),
+        exhaustMap((evaluations) => {
+          const solvedTestId = this.get((state) => state.solvedTest)?.id;
+          const sharedTestId = this.get((state) => state.sharedTest)?.id;
+
+          if (!solvedTestId || !sharedTestId) {
+            throw new Error('Solved test id and shared test id are required');
+          }
+
+          return this.solvedTestsAnswers.evaluateAnswers(
+            sharedTestId,
+            solvedTestId,
+            evaluations,
+          );
+        }),
+        tapResponse(
+          () =>
+            this.patchState((state) => ({
+              loadingState: loadingAdapter.taskFinished(state.loadingState),
+            })),
+          (error) =>
+            this.patchState((state) => ({
+              loadingState: loadingAdapter.taskFinished(state.loadingState),
+              error,
+            })),
         ),
       ),
   );
