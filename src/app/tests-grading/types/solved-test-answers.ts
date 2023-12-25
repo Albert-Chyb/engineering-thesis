@@ -2,19 +2,25 @@ import { QuestionsAnswerSchema } from '@exam-session/types/user-answers';
 import { QuestionsTypesEnum } from '@test-creator/types/question';
 import { z } from 'zod';
 
-export const SolvedTestAnswerSchema = z.object({
+const SolvedTestAnswerRecordValueSchema = z.object({
   isCorrect: z.boolean().nullable(),
   answer: QuestionsAnswerSchema.valueSchema,
   questionType: QuestionsTypesEnum,
 });
 
+export const SolvedTestAnswerSchema = SolvedTestAnswerRecordValueSchema.extend({
+  questionId: z.string(),
+});
+
 export const SolvedTestAnswersSchema = z.object({
   id: z.string(),
-  answers: z.record(SolvedTestAnswerSchema).transform((record) =>
-    Object.entries(record).map(([key, value]) => ({
-      questionId: key,
-      ...value,
-    })),
+  answers: z.record(SolvedTestAnswerRecordValueSchema).transform((record) =>
+    Object.entries(record).map(([questionId, questionAnswer]) =>
+      SolvedTestAnswerSchema.parse({
+        questionId: questionId,
+        ...questionAnswer,
+      }),
+    ),
   ),
 });
 
