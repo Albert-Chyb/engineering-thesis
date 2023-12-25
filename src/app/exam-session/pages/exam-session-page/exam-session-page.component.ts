@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -15,7 +15,8 @@ import { TestTakerNameComponent } from '@exam-session/components/test-taker-name
 import { TextAnswerQuestionComponent } from '@exam-session/components/text-answer-question/text-answer-question.component';
 import { SolvedTestFormValueSchema } from '@exam-session/types/solved-test-form-value';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
-import { AssembledQuestion } from '@test-creator/types/assembled-test';
+import { AssembledTest } from '@test-creator/types/assembled-test';
+import { SolvedTestAnswerRecordValue } from '@tests-grading/types/solved-test-answers';
 import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { PageStatesDirective } from '@utils/page-states/page-states.directive';
@@ -57,19 +58,11 @@ export class ExamSessionPageComponent {
   readonly test = this.store.test;
   readonly isSaved = this.store.isSaved;
 
-  readonly testForm = computed(() => {
-    const test = this.test();
-
-    if (!test) {
-      return null;
-    }
-
-    const testForm = new FormGroup({
-      testTakerName: new FormControl('', Validators.required),
-      answers: this.buildAnswersFormGroup(test.questions),
-    });
-
-    return testForm;
+  readonly form = new FormGroup({
+    testTakerName: new FormControl('', Validators.required),
+    answers: new FormGroup<
+      Record<string, FormControl<SolvedTestAnswerRecordValue>>
+    >({}),
   });
 
   constructor() {
@@ -78,6 +71,14 @@ export class ExamSessionPageComponent {
 
       if (isSaved) {
         this.showSavedSuccessfullyDialog();
+      }
+    });
+
+    effect(() => {
+      const test = this.test();
+
+      if (test) {
+        this.rebuildAnswersFormGroup(test);
       }
     });
 
@@ -96,47 +97,37 @@ export class ExamSessionPageComponent {
     );
   }
 
-  safelyGetTestForm() {
-    const testForm = this.testForm();
+  getAnswerControl(questionId: string) {
+    const control = this.form.controls.answers.get(questionId) as FormControl;
 
-    if (!testForm) {
-      throw new Error('Test form is not initialized.');
+    if (!control) {
+      throw new Error(`No answer control for question with id ${questionId}.`);
     }
 
-    return testForm;
-  }
-
-  safelyGetAnswersFormGroup(questionId: string): FormControl<any> {
-    const test = this.safelyGetTestForm();
-    const answers = test.controls.answers;
-    const answersFormGroup = answers.get(questionId);
-
-    if (!answersFormGroup) {
-      throw new Error(
-        `Answers form group for question with id ${questionId} is not initialized.`,
-      );
-    }
-
-    return answersFormGroup as FormControl;
+    return control;
   }
 
   handleFormSubmit() {
-    const testForm = this.safelyGetTestForm();
+    const testForm = this.form;
     const solvedTest = SolvedTestFormValueSchema.parse(testForm.value);
 
     this.store.saveSolvedTest(solvedTest);
   }
 
-  private buildAnswersFormGroup(
-    questions: AssembledQuestion[],
-  ): FormGroup<Record<string, FormControl<any>>> {
-    const answers = new FormGroup({});
+  private rebuildAnswersFormGroup(test: AssembledTest) {
+    const answersForm: FormGroup = this.form.controls.answers;
 
-    questions.forEach((question) => {
-      answers.addControl(question.id, new FormControl(null));
-    });
+    for (const controlName in answersForm) {
+      answersForm.removeControl(controlName, { emitEvent: false });
+    }
 
-    return answers;
+    for (const question of test.questions) {
+      answersForm.addControl(question.id, new FormControl(null), {
+        emitEvent: false,
+      });
+    }
+
+    answersForm.updateValueAndValidity();
   }
 
   private showSavedSuccessfullyDialog() {
