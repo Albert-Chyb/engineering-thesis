@@ -1,18 +1,14 @@
 <mat-card appearance="outlined">
-  <mat-card-header>
-    <h2 mat-card-title>Informacje o rozwiązującym</h2>
-  </mat-card-header>
-
   <mat-card-content class="test-taker-info">
     <div>
-      <h3 class="test-taker-info__info-label">Imię i nazwisko</h3>
+      <h2 class="test-taker-info__info-label">Imię i nazwisko</h2>
       <p class="test-taker-info__info-value">
         {{ solvedTest?.testTakerName }}
       </p>
     </div>
 
     <div>
-      <h3 class="test-taker-info__info-label">Data przesłania</h3>
+      <h2 class="test-taker-info__info-label">Data przesłania</h2>
       <p class="test-taker-info__info-value">
         {{ solvedTest?.date | date: "short" }}
       </p>
@@ -20,7 +16,7 @@
 
     @if (solvedTest?.grade != null) {
       <div>
-        <h3 class="test-taker-info__info-label">Ocena</h3>
+        <h2 class="test-taker-info__info-label">Ocena</h2>
         <p class="test-taker-info__info-value">
           {{ solvedTest?.grade | percent }}
         </p>
