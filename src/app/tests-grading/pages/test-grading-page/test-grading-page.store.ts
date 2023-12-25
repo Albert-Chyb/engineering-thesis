@@ -10,7 +10,7 @@ import { SolvedTest } from '@tests-grading/types/solved-test';
 import { SolvedTestAnswers } from '@tests-grading/types/solved-test-answers';
 import { SolvedTestAnswersEvaluations } from '@tests-grading/types/solved-test-answers-evaluations';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
-import { Observable, combineLatest, exhaustMap, switchMap, tap } from 'rxjs';
+import { Observable, combineLatest, concatMap, switchMap, tap } from 'rxjs';
 
 const loadingAdapter = new LoadingStateAdapter();
 
@@ -103,7 +103,7 @@ export class TestGradingPageStore
             loadingState: loadingAdapter.taskStarted(state.loadingState),
           })),
         ),
-        exhaustMap((evaluations) => {
+        concatMap((evaluations) => {
           const solvedTestId = this.get((state) => state.solvedTest)?.id;
           const sharedTestId = this.get((state) => state.sharedTest)?.id;
 
