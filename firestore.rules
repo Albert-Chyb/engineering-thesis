@@ -75,6 +75,17 @@ service cloud.firestore {
           get(/databases/$(database)/documents/shared-tests-metadata/$(sharedTestId)).data.author
         );
     }
+
+
+    match /answers-keys/{sharedTestId} {
+      allow update, create: if false;
+
+      allow read, delete: if
+        isLoggedIn() &&
+        isUser(
+          get(/databases/$(database)/documents/shared-tests-metadata/$(sharedTestId)).data.author
+        );
+    }
   }
 }
 
