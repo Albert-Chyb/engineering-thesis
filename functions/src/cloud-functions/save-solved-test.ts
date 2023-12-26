@@ -33,28 +33,6 @@ export const saveSolvedTestFnDataSchema = z.object({
 
 export type SaveSolvedTestFnData = z.infer<typeof saveSolvedTestFnDataSchema>;
 
-function appendQuestionsTypes(
-  answers: SaveSolvedTestFnData['answers'],
-  solvedTest: SharedTest,
-) {
-  const answersWithQuestionsTypes: SolvedTestAnswers['answers'] = {};
-
-  for (const questionId in answers) {
-    const question = solvedTest.questions.find((q) => q.id === questionId);
-
-    if (!question) {
-      throw new HttpsError('internal', 'Question not found');
-    }
-
-    answersWithQuestionsTypes[questionId] = {
-      ...answers[questionId],
-      questionType: question.type,
-    };
-  }
-
-  return answersWithQuestionsTypes;
-}
-
 export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
   (req) => {
     const dataValidation = saveSolvedTestFnDataSchema.safeParse(req.data);
@@ -96,9 +74,9 @@ export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
         sharedTestId: sharedTestRef.id,
         grade: null,
       });
-      const solvedTestAnswersDocData = solvedTestAnswersSchema.parse({
-        answers: appendQuestionsTypes(data.answers, sharedTestSnapshot.data()!),
-      });
+      const solvedTestAnswersDocData = solvedTestAnswersSchema.parse(
+        data,
+      );
 
       transaction.create(solvedTestRef, solvedTestDocData);
       transaction.create(solvedTestAnswersRef, solvedTestAnswersDocData);

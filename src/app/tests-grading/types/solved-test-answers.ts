@@ -5,7 +5,6 @@ import { z } from 'zod';
 export const SolvedTestAnswerRecordValueSchema = z.object({
   isCorrect: z.boolean().nullable(),
   answer: QuestionsAnswerSchema.valueSchema,
-  questionType: QuestionsTypesEnum,
 });
 
 export const SolvedTestAnswerSchema = SolvedTestAnswerRecordValueSchema.extend({

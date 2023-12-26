@@ -1,10 +1,8 @@
 import { z } from 'zod';
-import { AllQuestionsTypes } from '../constants/questions-types';
 
 export const solvedTestAnswerSchema = z.object({
   answer: z.union([z.string(), z.array(z.string()), z.null()]),
   isCorrect: z.boolean().nullable(),
-  questionType: z.enum(AllQuestionsTypes),
 });
 
 export const solvedTestAnswersSchema = z.object({
