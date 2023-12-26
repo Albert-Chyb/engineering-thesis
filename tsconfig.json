@@ -29,7 +29,8 @@
       "@tests-sharing/*": ["src/app/tests-sharing/*"],
       "@exam-session/*": ["src/app/exam-session/*"],
       "@tests-grading/*": ["src/app/tests-grading/*"],
-      "@utils/*": ["src/app/utils/*"]
+      "@utils/*": ["src/app/utils/*"],
+      "@answers-keys/*": ["src/app/answers-keys/*"]
     }
   },
   "angularCompilerOptions": {
