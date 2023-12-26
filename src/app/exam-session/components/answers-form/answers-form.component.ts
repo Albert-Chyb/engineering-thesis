@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { QuestionsAnswers } from '@exam-session/types/user-answers';
 import { AssembledQuestion } from '@test-creator/types/assembled-test';
 import { SolvedTestAnswerRecordValue } from '@tests-grading/types/solved-test-answers';
 import { MultiChoiceQuestionComponent } from '../multi-choice-question/multi-choice-question.component';
@@ -24,9 +25,14 @@ export class AnswersFormComponent implements OnChanges {
   @Input({ required: true }) formRef!: FormGroup<
     Record<string, FormControl<SolvedTestAnswerRecordValue | null>>
   >;
+  @Input() existingAnswers: QuestionsAnswers | null = {};
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('questions' in changes || 'formRef' in changes) {
+    if (
+      'questions' in changes ||
+      'formRef' in changes ||
+      'existingAnswers' in changes
+    ) {
       this.rebuildAnswersFormGroup(this.questions);
     }
   }
@@ -49,12 +55,20 @@ export class AnswersFormComponent implements OnChanges {
     }
 
     for (const question of questions) {
-      answersForm.addControl(question.id, new FormControl(null), {
-        emitEvent: false,
-      });
+      answersForm.addControl(
+        question.id,
+        new FormControl(this.getExistingAnswer(question.id)),
+        {
+          emitEvent: false,
+        },
+      );
     }
 
     answersForm.markAsPristine();
     answersForm.updateValueAndValidity();
+  }
+
+  private getExistingAnswer(questionId: string) {
+    return this.existingAnswers?.[questionId] ?? null;
   }
 }
