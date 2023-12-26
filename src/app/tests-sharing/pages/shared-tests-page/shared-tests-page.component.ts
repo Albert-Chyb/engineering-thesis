@@ -66,6 +66,12 @@ export class SharedTestsPageComponent {
       icon: 'pageview',
       description: 'Przeglądaj przesłane rozwiązania',
     },
+    {
+      name: 'create-answers-keys',
+      title: 'Klucz odpowiedzi',
+      icon: 'add_circle',
+      description: 'Utwórz klucz odpowiedzi',
+    },
   ];
 
   handlePageAction(actionName: string, id: string) {
@@ -79,6 +85,10 @@ export class SharedTestsPageComponent {
 
       case 'show-solved-tests':
         this.router.navigate(['shared-tests', id, 'submitted-solutions']);
+        break;
+
+      case 'create-answers-keys':
+        this.router.navigate(['shared-tests', id, 'create-answers-keys']);
         break;
     }
   }
