@@ -4,6 +4,7 @@ import {
   redirectUnauthorizedTo,
 } from '@angular/fire/auth-guard';
 import { Routes } from '@angular/router';
+import { AnswersKeysPageComponent } from '@answers-keys/pages/answers-keys-page/answers-keys-page.component';
 import { LoginComponent } from '@authentication/pages/login/login.component';
 import { PasswordRecoveryComponent } from '@authentication/pages/password-recovery/password-recovery.component';
 import { SignupComponent } from '@authentication/pages/signup/signup.component';
@@ -93,6 +94,14 @@ export const routes: Routes = [
   {
     path: 'shared-tests/:sharedTestId/submitted-solutions/:solvedTestId/grade',
     component: TestGradingPageComponent,
+    canActivate: [AuthGuard],
+    data: {
+      authGuardPipe: redirectLoggedOutToLogin,
+    },
+  },
+  {
+    path: 'shared-tests/:sharedTestId/create-answers-keys',
+    component: AnswersKeysPageComponent,
     canActivate: [AuthGuard],
     data: {
       authGuardPipe: redirectLoggedOutToLogin,
