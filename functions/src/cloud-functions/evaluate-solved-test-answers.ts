@@ -62,9 +62,12 @@ export const evaluateSolvedTestAnswers = onCall<FnData>(async (req) => {
     throw new HttpsError('unauthenticated', 'User is not authenticated');
   }
 
-  const { answersEvaluations, sharedTestId, solvedTestId } = fnDataSchema.parse(
-    req.data,
-  );
+  await evaluateSolvedTestAnswersFn(req.data, uid);
+});
+
+export async function evaluateSolvedTestAnswersFn(data: FnData, uid: string) {
+  const { answersEvaluations, sharedTestId, solvedTestId } =
+    fnDataSchema.parse(data);
 
   await db.runTransaction<void>(async (transaction) => {
     const sharedTestMetadataSnapshot = await ensureExistence(
@@ -102,4 +105,4 @@ export const evaluateSolvedTestAnswers = onCall<FnData>(async (req) => {
   await solvedTestRef.update({
     grade: solvedTestSchema.shape.grade.parse(calcGrade(solvedTestAnswersData)),
   });
-});
+}
