@@ -17,3 +17,8 @@ export const testQuestionSchema = z.object({
 export const testSchema = z.object({
   name: z.string(),
 });
+
+export type TestAnswer = z.infer<typeof testAnswerSchema>;
+export type TestQuestion = z.infer<typeof testQuestionSchema>;
+export type Test = z.infer<typeof testSchema>;
+export type QuestionsTypes = z.infer<typeof testQuestionsTypesSchema>;
