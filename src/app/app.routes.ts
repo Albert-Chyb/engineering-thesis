@@ -28,6 +28,11 @@ function redirectLoggedOutToLogin() {
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: '/my-tests',
+    pathMatch: 'full',
+  },
+  {
     path: 'login',
     component: LoginComponent,
     canActivate: [AuthGuard],
