@@ -1,10 +1,38 @@
-<app-pending-indicator class="loading-indicator" />
+<app-pending-indicator class="loading-indicator">
+  <mat-toolbar color="primary">
+    <button mat-icon-button aria-label="Otwórz główną nawigacje strony">
+      <mat-icon>menu</mat-icon>
+    </button>
 
-<main class="main-container">
+    <a routerLink="/" mat-button>Testy online</a>
+
+    <span class="flex-spacer"></span>
+
+    @if (isLoggedIn()) {
+      <a
+        routerLink="/logout"
+        mat-icon-button
+        matTooltip="Wyloguj się"
+        aria-label="Przejdź to strony umożliwiającej wylogowanie się"
+      >
+        <mat-icon>logout</mat-icon>
+      </a>
+    } @else {
+      <a
+        routerLink="/login"
+        mat-icon-button
+        matTooltip="Zaloguj się"
+        aria-label="Przejdź to strony umożliwiającej zalogowanie się"
+      >
+        <mat-icon>login</mat-icon>
+      </a>
+    }
+  </mat-toolbar>
+</app-pending-indicator>
+
+<main
+  class="main-container"
+  [class.main-container--mobile-view]="isMobileView()"
+>
   <router-outlet></router-outlet>
-
-  <div>
-    <button (click)="auth.signOut()" *ngIf="isLoggedIn()">Wyloguj się</button>
-    <a routerLink="/signup" *ngIf="!isLoggedIn()">Załóż konto</a>
-  </div>
 </main>
