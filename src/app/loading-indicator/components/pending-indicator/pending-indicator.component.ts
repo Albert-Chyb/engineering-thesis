@@ -8,7 +8,7 @@ import { PendingIndicator } from '@loading-indicator/services/pending-indicator.
   standalone: true,
   imports: [CommonModule, MatProgressBarModule],
   templateUrl: './pending-indicator.component.html',
-  styleUrl: './pending-indicator.component.css',
+  styleUrl: './pending-indicator.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PendingIndicatorComponent implements PendingIndicator {

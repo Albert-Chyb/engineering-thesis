@@ -1,3 +1,10 @@
-@if (isShown()) {
-<mat-progress-bar mode="indeterminate"  />
-}
+<div class="pending-indicator">
+  @if (isShown()) {
+    <mat-progress-bar
+      mode="indeterminate"
+      class="pending-indicator__indicator"
+    />
+  }
+
+  <ng-content />
+</div>
