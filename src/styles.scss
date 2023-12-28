@@ -17,3 +17,7 @@ body {
 .app-dialog {
   width: clamp(300px, 80vw, 600px);
 }
+
+.flex-spacer {
+  flex: 1 1 auto;
+}
