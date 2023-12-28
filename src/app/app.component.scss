@@ -12,6 +12,20 @@
   z-index: 9999;
 }
 
+.main-container {
+  --main-toolbar-height: var(--mat-toolbar-standard-height);
+
+  &--mobile-view {
+    --main-toolbar-height: var(--mat-toolbar-mobile-height);
+  }
+
+  min-height: calc(100vh - var(--main-toolbar-height));
+}
+
+mat-sidenav {
+  min-width: max(10vw, 300px);
+}
+
 @media (min-width: 576px) {
   .main-container {
     max-width: 540px;
