@@ -6,6 +6,7 @@ import {
 import { Routes } from '@angular/router';
 import { AnswersKeysPageComponent } from '@answers-keys/pages/answers-keys-page/answers-keys-page.component';
 import { LoginComponent } from '@authentication/pages/login/login.component';
+import { LogoutComponent } from '@authentication/pages/logout/logout.component';
 import { PasswordRecoveryComponent } from '@authentication/pages/password-recovery/password-recovery.component';
 import { SignupComponent } from '@authentication/pages/signup/signup.component';
 import { requireSilentNavigationGuard } from '@common/route-guards/require-silent-navigation/require-silent-navigation.guard';
@@ -108,6 +109,14 @@ export const routes: Routes = [
     path: 'shared-tests/:sharedTestId/create-answers-keys',
     component: AnswersKeysPageComponent,
     canActivate: [AuthGuard],
+    data: {
+      authGuardPipe: redirectLoggedOutToLogin,
+    },
+  },
+  {
+    path: 'logout',
+    component: LogoutComponent,
+    canActivate: [requireSilentNavigationGuard, AuthGuard],
     data: {
       authGuardPipe: redirectLoggedOutToLogin,
     },

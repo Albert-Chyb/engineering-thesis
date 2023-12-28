@@ -1,0 +1,14 @@
+<mat-card>
+  <mat-card-header>
+    <h1>Wyloguj się</h1>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p>Czy na pewno chcesz się wylogować ?</p>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-button (click)="logout()" color="warn">Tak</button>
+    <a mat-button routerLink="/">Nie</a>
+  </mat-card-actions>
+</mat-card>

@@ -15,6 +15,7 @@
     @if (isLoggedIn()) {
       <a
         routerLink="/logout"
+        [skipLocationChange]="true"
         mat-icon-button
         matTooltip="Wyloguj się"
         aria-label="Przejdź to strony umożliwiającej wylogowanie się"
