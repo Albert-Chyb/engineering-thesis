@@ -55,15 +55,18 @@ function calcGrade(solvedTest: SolvedTestAnswers): number | null {
   return correct / total;
 }
 
-export const evaluateSolvedTestAnswers = onCall<FnData>(async (req) => {
-  const uid = req.auth?.uid;
+export const evaluateSolvedTestAnswers = onCall<FnData>(
+  { cors: true },
+  async (req) => {
+    const uid = req.auth?.uid;
 
-  if (!uid) {
-    throw new HttpsError('unauthenticated', 'User is not authenticated');
-  }
+    if (!uid) {
+      throw new HttpsError('unauthenticated', 'User is not authenticated');
+    }
 
-  await evaluateSolvedTestAnswersFn(req.data, uid);
-});
+    await evaluateSolvedTestAnswersFn(req.data, uid);
+  },
+);
 
 export async function evaluateSolvedTestAnswersFn(data: FnData, uid: string) {
   const { answersEvaluations, sharedTestId, solvedTestId } =
