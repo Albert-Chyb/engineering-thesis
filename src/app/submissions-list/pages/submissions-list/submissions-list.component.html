@@ -11,7 +11,24 @@
   </app-no-data-info>
 </ng-template>
 
-<ng-template #dataTemplate> dsa </ng-template>
+<ng-template #dataTemplate>
+  <mat-nav-list>
+    @for (submission of submissions(); track submission.id) {
+      <a mat-list-item [routerLink]="['submissions', submission.id]">
+        <span matListItemTitle>{{ submission.sharedTestName }}</span>
+        <span matListItemLine
+          >Przesłano: {{ submission.date | date: "short" }}</span
+        >
+
+        @if (submission.grade) {
+          <span matListItemLine>Ocena: {{ submission.grade | percent }}</span>
+        } @else {
+          <span matListItemLine>Oczekuje na sprawdzenie</span>
+        }
+      </a>
+    }
+  </mat-nav-list>
+</ng-template>
 
 <mat-card>
   <mat-card-header>

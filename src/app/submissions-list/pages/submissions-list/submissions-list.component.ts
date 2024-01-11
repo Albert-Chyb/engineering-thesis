@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
+import { RouterModule } from '@angular/router';
+import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { SubmissionsListComponentStore } from './submissions-list.store';
-import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 
 @Component({
   standalone: true,
@@ -14,7 +16,9 @@ import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-inf
     PageStatesDirective,
     MatCardModule,
     LoadingIndicatorComponent,
-    NoDataInfoComponent
+    NoDataInfoComponent,
+    MatListModule,
+    RouterModule,
   ],
   templateUrl: './submissions-list.component.html',
   styleUrl: './submissions-list.component.scss',
@@ -26,4 +30,12 @@ import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-inf
     },
   ],
 })
-export class SubmissionsListComponent {}
+export class SubmissionsListComponent {
+  private readonly store = inject(SubmissionsListComponentStore);
+
+  readonly submissions = this.store.submissions;
+
+  constructor() {
+    this.store.load();
+  }
+}
