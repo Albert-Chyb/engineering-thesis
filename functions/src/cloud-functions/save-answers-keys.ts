@@ -13,7 +13,7 @@ export const saveAnswersKeysDataSchema = z.object({
 
 export const saveAnswersKeys = onCall<
   z.infer<typeof saveAnswersKeysDataSchema>
->(async (req) => {
+>({ cors: true }, async (req) => {
   const userId = req.auth?.uid;
 
   if (!userId) {

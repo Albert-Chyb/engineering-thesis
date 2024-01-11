@@ -34,6 +34,7 @@ export const saveSolvedTestFnDataSchema = z.object({
 export type SaveSolvedTestFnData = z.infer<typeof saveSolvedTestFnDataSchema>;
 
 export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
+  { cors: true },
   (req) => {
     const dataValidation = saveSolvedTestFnDataSchema.safeParse(req.data);
 
@@ -74,9 +75,7 @@ export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
         sharedTestId: sharedTestRef.id,
         grade: null,
       });
-      const solvedTestAnswersDocData = solvedTestAnswersSchema.parse(
-        data,
-      );
+      const solvedTestAnswersDocData = solvedTestAnswersSchema.parse(data);
 
       transaction.create(solvedTestRef, solvedTestDocData);
       transaction.create(solvedTestAnswersRef, solvedTestAnswersDocData);
