@@ -88,7 +88,6 @@ service cloud.firestore {
         );
     }
 
-
     match /answers-keys/{sharedTestId} {
       allow update, create: if false;
 
@@ -97,6 +96,15 @@ service cloud.firestore {
         isUser(
           get(/databases/$(database)/documents/shared-tests-metadata/$(sharedTestId)).data.author
         );
+    }
+
+    match /{path=**}/solved-tests/{solvedTestId} {
+      allow write: if false;
+
+      // Allow the test taker to read tests solved by him in a group collection query
+      allow read: if 
+        isLoggedIn() &&
+        isUser(resource.data.testTakerId);
     }
   }
 }
@@ -144,11 +152,3 @@ function schemaCreatorAnswer() {
     request.resource.data.position > 0;
 }
 
-function schemaSolvedTest() {
-  return 
-    request.resource.data.keys().hasOnly(['answers', 'date', 'sharedTestId', 'testTakerName']) &&
-    request.resource.data.answers is map &&
-    request.resource.data.date is timestamp &&
-    request.resource.data.sharedTestId is string &&
-    request.resource.data.testTakerName is string;
-}
