@@ -8,7 +8,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '@authentication/services/auth.service';
 import { PendingIndicatorComponent } from '@loading-indicator/components/pending-indicator/pending-indicator.component';
 import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
@@ -58,6 +58,12 @@ export class AppComponent implements AfterViewInit {
       icon: 'shared-tests',
       title: 'Udostępnione testy',
       description: 'Przeglądaj udostępnione publicznie testy',
+    },
+    {
+      link: '/submissions-list',
+      icon: 'assignment_turned_in',
+      title: 'Moje wyniki',
+      description: 'Przeglądaj wyniki rozwiązanych testów',
     },
   ];
 

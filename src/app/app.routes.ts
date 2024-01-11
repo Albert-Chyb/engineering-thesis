@@ -13,6 +13,7 @@ import { requireSilentNavigationGuard } from '@common/route-guards/require-silen
 import { ExamSessionPageComponent } from '@exam-session/pages/exam-session-page/exam-session-page.component';
 import { hasPendingTasksGuard } from '@loading-indicator/guards/has-pending-tasks.guard';
 import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
+import { SubmissionsListComponent } from '@submissions-list/pages/submissions-list/submissions-list.component';
 import { UserTestsComponent } from '@test-creator/pages/user-tests/user-tests.component';
 import { SubmittedSolutionsPageComponent } from '@tests-grading/pages/submitted-solutions-page/submitted-solutions-page.component';
 import { TestGradingPageComponent } from '@tests-grading/pages/test-grading-page/test-grading-page.component';
@@ -121,6 +122,14 @@ export const routes: Routes = [
     path: 'logout',
     component: LogoutComponent,
     canActivate: [requireSilentNavigationGuard, AuthGuard],
+    data: {
+      authGuardPipe: redirectLoggedOutToLogin,
+    },
+  },
+  {
+    path: 'submissions-list',
+    component: SubmissionsListComponent,
+    canActivate: [AuthGuard],
     data: {
       authGuardPipe: redirectLoggedOutToLogin,
     },
