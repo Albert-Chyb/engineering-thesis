@@ -30,7 +30,8 @@
       "@exam-session/*": ["src/app/exam-session/*"],
       "@tests-grading/*": ["src/app/tests-grading/*"],
       "@utils/*": ["src/app/utils/*"],
-      "@answers-keys/*": ["src/app/answers-keys/*"]
+      "@answers-keys/*": ["src/app/answers-keys/*"],
+      "@submissions-list/*": ["src/app/submissions-list/*"]
     }
   },
   "angularCompilerOptions": {
