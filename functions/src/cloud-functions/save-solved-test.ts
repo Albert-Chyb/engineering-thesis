@@ -82,6 +82,7 @@ export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
         ...data,
         date: FieldValue.serverTimestamp(),
         sharedTestId: sharedTestRef.id,
+        sharedTestName: sharedTestSnapshot.data()!.name,
         grade: null,
         testTakerId: uid,
       });

@@ -5,6 +5,7 @@ export const solvedTestSchema = z.object({
   testTakerName: z.string(),
   testTakerId: z.string(),
   sharedTestId: z.string(),
+  sharedTestName: z.string(),
   date: z.custom((value) => value instanceof FieldValue, {
     message: 'Date must be set by a field sentinel',
   }),

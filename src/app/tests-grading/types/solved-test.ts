@@ -5,6 +5,7 @@ export const SolvedTestSchema = z.object({
   testTakerName: z.string(),
   testTakerId: z.string(),
   sharedTestId: z.string(),
+  sharedTestName: z.string(),
   id: z.string(),
   date: z.instanceof(Timestamp).transform((timestamp) => timestamp.toDate()),
   grade: z.number().min(0).max(1).nullable(),
