@@ -9,7 +9,6 @@ import {
   SetOptions,
   SnapshotOptions,
   WithFieldValue,
-  collection,
   doc,
   orderBy,
 } from '@angular/fire/firestore';
@@ -28,7 +27,7 @@ class Converter implements FirestoreDataConverter<Question> {
   toFirestore(modelObject: WithFieldValue<Question>): DocumentData;
   toFirestore(
     modelObject: PartialWithFieldValue<Question>,
-    options: SetOptions
+    options: SetOptions,
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
     return RawQuestionSchema.parse(modelObject);
@@ -36,7 +35,7 @@ class Converter implements FirestoreDataConverter<Question> {
 
   fromFirestore(
     snapshot: QueryDocumentSnapshot<RawQuestion>,
-    options?: SnapshotOptions | undefined
+    options?: SnapshotOptions | undefined,
   ): Question {
     const doc = QuestionSchema.parse({
       ...snapshot.data(options),
@@ -47,16 +46,34 @@ class Converter implements FirestoreDataConverter<Question> {
   }
 }
 
-class QuestionsServiceController extends FirestoreCollectionController<
+@Injectable({
+  providedIn: 'root',
+})
+export class QuestionsService extends FirestoreCollectionController<
   Question,
   RawQuestion
 > {
-  override list(): Observable<Question[]> {
-    return this.query(orderBy('position'));
+  constructor() {
+    const auth = inject(AuthService);
+    const firestore = inject(Firestore);
+
+    super(
+      firestore,
+      auth.uid$.pipe(map((uid) => `users/${uid}/tests/{testId}/questions/`)),
+      new Converter(),
+    );
   }
 
-  swapPositions(question1: QuestionDoc, question2: QuestionDoc) {
-    return this.collectionRef$.pipe(
+  override list(params: string[]): Observable<Question[]> {
+    return this.query(params, orderBy('position'));
+  }
+
+  swapPositions(
+    testId: string,
+    question1: QuestionDoc,
+    question2: QuestionDoc,
+  ) {
+    return this.getCollectionRef([testId]).pipe(
       take(1),
       map((collectionRef) => collectionRef.path),
       switchMap((collectionPath) =>
@@ -64,12 +81,12 @@ class QuestionsServiceController extends FirestoreCollectionController<
           this.transaction(async (transaction) => {
             const docRef1 = doc(
               this.firestore,
-              `${collectionPath}/${question1.id}`
+              `${collectionPath}/${question1.id}`,
             ) as DocumentReference<RawQuestion>;
 
             const docRef2 = doc(
               this.firestore,
-              `${collectionPath}/${question2.id}`
+              `${collectionPath}/${question2.id}`,
             ) as DocumentReference<RawQuestion>;
 
             const doc1 = await transaction.get(docRef1);
@@ -82,28 +99,9 @@ class QuestionsServiceController extends FirestoreCollectionController<
             transaction
               .update(docRef1, { position: doc2.data().position })
               .update(docRef2, { position: doc1.data().position });
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
-  }
-}
-
-@Injectable({
-  providedIn: 'root',
-})
-export class QuestionsService {
-  private readonly auth = inject(AuthService);
-  private readonly firestore = inject(Firestore);
-
-  getController(testId: string) {
-    const collectionRef$ = this.auth.uid$.pipe(
-      map((uid) => `users/${uid}/tests/${testId}/questions/`),
-      map((path) =>
-        collection(this.firestore, path).withConverter(new Converter())
-      )
-    );
-
-    return new QuestionsServiceController(this.firestore, collectionRef$);
   }
 }

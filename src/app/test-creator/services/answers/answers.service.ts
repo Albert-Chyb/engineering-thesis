@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import {
-  CollectionReference,
   DocumentData,
   DocumentReference,
   Firestore,
@@ -10,7 +9,6 @@ import {
   SetOptions,
   SnapshotOptions,
   WithFieldValue,
-  collection,
   doc,
   orderBy,
 } from '@angular/fire/firestore';
@@ -28,7 +26,7 @@ class DataConverter implements FirestoreDataConverter<Answer> {
   toFirestore(modelObject: WithFieldValue<Answer>): DocumentData;
   toFirestore(
     modelObject: PartialWithFieldValue<Answer>,
-    options: SetOptions
+    options: SetOptions,
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
     return RawAnswerSchema.parse(modelObject);
@@ -36,7 +34,7 @@ class DataConverter implements FirestoreDataConverter<Answer> {
 
   fromFirestore(
     snapshot: QueryDocumentSnapshot<RawAnswer>,
-    options?: SnapshotOptions | undefined
+    options?: SnapshotOptions | undefined,
   ): Answer {
     return AnswerSchema.parse({
       id: snapshot.id,
@@ -45,23 +43,40 @@ class DataConverter implements FirestoreDataConverter<Answer> {
   }
 }
 
-class AnswersCollectionController extends FirestoreCollectionController<
+@Injectable({
+  providedIn: 'root',
+})
+export class AnswersService extends FirestoreCollectionController<
   Answer,
   RawAnswer
 > {
-  constructor(
-    firestore: Firestore,
-    collectionRef$: Observable<CollectionReference<Answer>>
+  constructor() {
+    const auth = inject(AuthService);
+    const firestore = inject(Firestore);
+
+    super(
+      firestore,
+      auth.uid$.pipe(
+        map(
+          (uid) =>
+            `users/${uid}/tests/{testId}/questions/{questionId}/answers/`,
+        ),
+      ),
+      new DataConverter(),
+    );
+  }
+
+  override list(params: string[]): Observable<Answer[]> {
+    return this.query(params, orderBy('position'));
+  }
+
+  swapPositions(
+    testId: string,
+    questionId: string,
+    answer1: Answer,
+    answer2: Answer,
   ) {
-    super(firestore, collectionRef$);
-  }
-
-  override list(): Observable<Answer[]> {
-    return this.query(orderBy('position'));
-  }
-
-  swapPositions(answer1: Answer, answer2: Answer) {
-    return this.collectionRef$.pipe(
+    return this.getCollectionRef([testId, questionId]).pipe(
       take(1),
       map((collectionRef) => collectionRef.path),
       switchMap((collectionPath) =>
@@ -69,12 +84,12 @@ class AnswersCollectionController extends FirestoreCollectionController<
           this.transaction(async (transaction) => {
             const docRef1 = doc(
               this.firestore,
-              `${collectionPath}/${answer1.id}`
+              `${collectionPath}/${answer1.id}`,
             ) as DocumentReference<Answer>;
 
             const docRef2 = doc(
               this.firestore,
-              `${collectionPath}/${answer2.id}`
+              `${collectionPath}/${answer2.id}`,
             ) as DocumentReference<Answer>;
 
             const doc1 = await transaction.get(docRef1);
@@ -87,32 +102,9 @@ class AnswersCollectionController extends FirestoreCollectionController<
             transaction
               .update(docRef1, { position: doc2.data().position })
               .update(docRef2, { position: doc1.data().position });
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
-  }
-}
-
-@Injectable({
-  providedIn: 'root',
-})
-export class AnswersService {
-  private readonly auth = inject(AuthService);
-  private readonly firestore = inject(Firestore);
-
-  getController(
-    testId: string,
-    questionId: string
-  ): AnswersCollectionController {
-    const collectionRef$ = this.auth.uid$.pipe(
-      map((uid) =>
-        collection(
-          this.firestore,
-          `users/${uid}/tests/${testId}/questions/${questionId}/answers`
-        ).withConverter(new DataConverter())
-      )
-    );
-    return new AnswersCollectionController(this.firestore, collectionRef$);
   }
 }

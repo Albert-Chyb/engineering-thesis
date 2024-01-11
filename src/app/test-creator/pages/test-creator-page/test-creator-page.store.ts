@@ -69,18 +69,18 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   readonly test = this.selectSignal((state) => state.test);
   readonly questions = this.selectSignal((state) => state.questions);
   readonly questionsMetadata = this.selectSignal(
-    (state) => state.questionsMetadata
+    (state) => state.questionsMetadata,
   );
   readonly answers = this.selectSignal((state) => state.answers);
 
   readonly isLoading = this.selectSignal((state) =>
-    isLoading(state.loadingState)
+    isLoading(state.loadingState),
   );
   readonly isPending = this.selectSignal((state) =>
-    isPending(state.loadingState)
+    isPending(state.loadingState),
   );
   readonly tasksCount = this.selectSignal((state) =>
-    tasksCount(state.loadingState)
+    tasksCount(state.loadingState),
   );
   readonly pendingState$ = this.select({
     isPending: this.select((state) => isPending(state.loadingState)),
@@ -94,7 +94,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
       tap(() =>
         this.patchState((oldState) => ({
           loadingState: loadingStateAdapter.startLoading(oldState.loadingState),
-        }))
+        })),
       ),
       switchMap((id) => this.testsService.read(id)),
       switchMap((test) => {
@@ -103,21 +103,17 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
         }
 
         return this.questionsService
-          .getController(test.id)
-          .list()
+          .list([test.id])
           .pipe(map((questions) => ({ test, questions })));
       }),
       switchMap((data) =>
         forkJoin(
           data.questions.map((question) =>
-            this.answersService
-              .getController(data.test.id, question.id)
-              .list()
-              .pipe(
-                take(1),
-                map((answers) => [question.id, answers] as AnswerEntry)
-              )
-          )
+            this.answersService.list([data.test.id, question.id]).pipe(
+              take(1),
+              map((answers) => [question.id, answers] as AnswerEntry),
+            ),
+          ),
         ).pipe(
           defaultIfEmpty([] as any),
           map((answersForEachQuestion: AnswerEntry[]) => {
@@ -125,8 +121,8 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
               ...data,
               answers: new Map(answersForEachQuestion),
             };
-          })
-        )
+          }),
+        ),
       ),
       tapResponse(
         (data) => {
@@ -136,7 +132,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
             questions: data.questions,
             answers: data.answers,
             loadingState: loadingStateAdapter.finishLoading(
-              oldState.loadingState
+              oldState.loadingState,
             ),
           }));
         },
@@ -144,11 +140,11 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           this.patchState((oldState) => ({
             error,
             loadingState: loadingStateAdapter.finishLoading(
-              oldState.loadingState
+              oldState.loadingState,
             ),
-          }))
-      )
-    )
+          })),
+      ),
+    ),
   );
 
   /**
@@ -159,15 +155,15 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
       tap(() =>
         this.patchState(({ loadingState }) => ({
           loadingState: loadingStateAdapter.taskStarted(loadingState),
-        }))
+        })),
       ),
       concatMap((newTest) =>
         this.testsService.create(
           {
             name: newTest.name,
           },
-          newTest.id
-        )
+          newTest.id,
+        ),
       ),
       tapResponse(
         () => {
@@ -180,9 +176,9 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
             error,
             loadingState: loadingStateAdapter.taskFinished(loadingState),
           }));
-        }
-      )
-    )
+        },
+      ),
+    ),
   );
 
   /**
@@ -193,24 +189,25 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
       tap(() =>
         this.patchState(({ loadingState }) => ({
           loadingState: loadingStateAdapter.taskStarted(loadingState),
-        }))
+        })),
       ),
       concatMap((question) => {
         const testId = this.get((state) => state.test)?.id;
 
         if (!testId) {
           throw new Error(
-            'Tried to update a question without previously loading the test.'
+            'Tried to update a question without previously loading the test.',
           );
         }
 
-        return this.questionsService.getController(testId).create(
+        return this.questionsService.create(
           {
             content: question.content,
             type: question.type,
             position: question.position,
           },
-          question.id
+          question.id,
+          [testId],
         );
       }),
       tapResponse(
@@ -224,9 +221,9 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
             error,
             loadingState: loadingStateAdapter.taskFinished(loadingState),
           }));
-        }
-      )
-    )
+        },
+      ),
+    ),
   );
 
   readonly deleteQuestionFromDb = this.effect(
@@ -235,20 +232,18 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
         tap(() =>
           this.patchState(({ loadingState }) => ({
             loadingState: loadingStateAdapter.taskStarted(loadingState),
-          }))
+          })),
         ),
         concatMap((question) => {
           const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
-              'Tried to delete a question without previously loading the test.'
+              'Tried to delete a question without previously loading the test.',
             );
           }
 
-          return this.questionsService
-            .getController(testId)
-            .delete(question.id);
+          return this.questionsService.delete(question.id, [testId]);
         }),
         tapResponse(
           () => {
@@ -261,9 +256,9 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
               error,
               loadingState: loadingStateAdapter.taskFinished(loadingState),
             }));
-          }
-        )
-      )
+          },
+        ),
+      ),
   );
 
   readonly swapQuestionsOnDb = this.effect(
@@ -271,26 +266,30 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
       $: Observable<{
         from: Question;
         to: Question;
-      }>
+      }>,
     ) =>
       $.pipe(
         tap(() =>
           this.patchState(({ loadingState }) => ({
             loadingState: loadingStateAdapter.taskStarted(loadingState),
-          }))
+          })),
         ),
         concatMap(({ from: fromQuestion, to: toQuestion }) => {
           const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
-              'Tried to swap questions without previously loading the test.'
+              'Tried to swap questions without previously loading the test.',
             );
           }
 
-          const questionsService = this.questionsService.getController(testId);
+          const questionsService = this.questionsService;
 
-          return questionsService.swapPositions(fromQuestion, toQuestion);
+          return questionsService.swapPositions(
+            testId,
+            fromQuestion,
+            toQuestion,
+          );
         }),
         tapResponse(
           () => {
@@ -303,9 +302,9 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
               error,
               loadingState: loadingStateAdapter.taskFinished(loadingState),
             }));
-          }
-        )
-      )
+          },
+        ),
+      ),
   );
 
   readonly saveAnswerOnDb = this.effect(
@@ -314,28 +313,26 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
         tap(() =>
           this.patchState(({ loadingState }) => ({
             loadingState: loadingStateAdapter.taskStarted(loadingState),
-          }))
+          })),
         ),
         concatMap(({ questionId, answer }) => {
           const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
-              'Tried to save an answer without previously loading the test.'
+              'Tried to save an answer without previously loading the test.',
             );
           }
 
-          const answersService = this.answersService.getController(
-            testId,
-            questionId
-          );
+          const answersService = this.answersService;
 
           return answersService.create(
             {
               content: answer.content,
               position: answer.position,
             },
-            answer.id
+            answer.id,
+            [testId, questionId],
           );
         }),
         tapResponse(
@@ -349,9 +346,9 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
               error,
               loadingState: loadingStateAdapter.taskFinished(loadingState),
             }));
-          }
-        )
-      )
+          },
+        ),
+      ),
   );
 
   readonly deleteAnswerFromDb = this.effect(
@@ -360,26 +357,23 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
         tap(() =>
           this.patchState(({ loadingState }) => ({
             loadingState: loadingStateAdapter.taskStarted(loadingState),
-          }))
+          })),
         ),
         concatMap(({ questionId, answerId }) => {
           const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
-              'Tried to delete an answer without previously loading the test.'
+              'Tried to delete an answer without previously loading the test.',
             );
           }
 
-          const answersService = this.answersService.getController(
-            testId,
-            questionId
-          );
+          const answersService = this.answersService;
           const answer = this.answers()
             .get(questionId)
             ?.find((a) => a.id === answerId);
 
-          return answersService.delete(answerId);
+          return answersService.delete(answerId, [testId, questionId]);
         }),
         tapResponse(
           () => {
@@ -392,9 +386,9 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
               error,
               loadingState: loadingStateAdapter.taskFinished(loadingState),
             }));
-          }
-        )
-      )
+          },
+        ),
+      ),
   );
 
   readonly swapAnswersOnDb = this.effect(
@@ -403,29 +397,26 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
         questionId: string;
         from: Answer;
         to: Answer;
-      }>
+      }>,
     ) =>
       $.pipe(
         tap(() =>
           this.patchState(({ loadingState }) => ({
             loadingState: loadingStateAdapter.taskStarted(loadingState),
-          }))
+          })),
         ),
         concatMap(({ questionId, from, to }) => {
           const testId = this.get((state) => state.test)?.id;
 
           if (!testId) {
             throw new Error(
-              'Tried to swap answers without previously loading the test.'
+              'Tried to swap answers without previously loading the test.',
             );
           }
 
-          const answersService = this.answersService.getController(
-            testId,
-            questionId
-          );
+          const answersService = this.answersService;
 
-          return answersService.swapPositions(from, to);
+          return answersService.swapPositions(testId, questionId, from, to);
         }),
         tapResponse(
           () => {
@@ -438,9 +429,9 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
               error,
               loadingState: loadingStateAdapter.taskFinished(loadingState),
             }));
-          }
-        )
-      )
+          },
+        ),
+      ),
   );
 
   readonly updateAnswer = this.updater(
@@ -456,11 +447,11 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
         answers: new Map(state.answers).set(
           questionId,
           (state.answers.get(questionId) ?? []).map((a) =>
-            a.id === answer.id ? newAnswer : a
-          )
+            a.id === answer.id ? newAnswer : a,
+          ),
         ),
       };
-    }
+    },
   );
 
   readonly deleteAnswer = this.updater(
@@ -470,11 +461,11 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
         answers: new Map(state.answers).set(
           payload.questionId,
           (state.answers.get(payload.questionId) ?? []).filter(
-            (answer) => answer.id !== payload.answerId
-          )
+            (answer) => answer.id !== payload.answerId,
+          ),
         ),
       };
-    }
+    },
   );
 
   readonly addAnswer = this.updater(
@@ -492,7 +483,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           newAnswer,
         ]),
       };
-    }
+    },
   );
 
   readonly swapAnswers = this.updater(
@@ -506,7 +497,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
         questionId: string;
         from: Answer;
         to: Answer;
-      }
+      },
     ) => {
       return {
         ...state,
@@ -515,11 +506,11 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           this.swapPositionsById(
             [...(state.answers.get(questionId) ?? [])],
             [from.id, to.id],
-            (answer, newPosition) => ({ ...answer, position: newPosition })
-          )
+            (answer, newPosition) => ({ ...answer, position: newPosition }),
+          ),
         ),
       };
-    }
+    },
   );
 
   readonly swapQuestions = this.updater(
@@ -530,10 +521,10 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           [...state.questions],
           [from.id, to.id],
           (question, newPosition) =>
-            new Question({ ...question, position: newPosition })
+            new Question({ ...question, position: newPosition }),
         ),
       };
-    }
+    },
   );
 
   readonly deleteQuestion = this.updater((state, question: Question) => {
@@ -556,7 +547,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   readonly updateQuestion = this.updater((state, newQuestion: Question) => {
     const id = newQuestion.id;
     const questionIndex = state.questions.findIndex(
-      (question) => question.id === id
+      (question) => question.id === id,
     );
 
     if (questionIndex === -1) {
@@ -583,11 +574,11 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
   });
 
   private swapPositionsById<
-    T extends { id: string; position: number } & Record<string, any>
+    T extends { id: string; position: number } & Record<string, any>,
   >(
     array: T[],
     ids: [string, string],
-    constructor: (item: T, newPosition: number) => T
+    constructor: (item: T, newPosition: number) => T,
   ) {
     const copyArray = [...array];
     const [id1, id2] = ids;

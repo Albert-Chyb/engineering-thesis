@@ -69,8 +69,8 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
   readonly isLoading = this.store.isLoading;
   readonly isPending = toSignal(
     toObservable(this.store.isPending).pipe(
-      debounceTime(QUICK_ASYNC_TASKS_DEBOUNCE_TIME)
-    )
+      debounceTime(QUICK_ASYNC_TASKS_DEBOUNCE_TIME),
+    ),
   );
 
   constructor() {
@@ -79,7 +79,7 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
     });
 
     this.store.loadTestData(
-      this.route.params.pipe(map((params) => params['id']))
+      this.route.params.pipe(map((params) => params['id'])),
     );
   }
 
@@ -136,7 +136,7 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
 
   handleAnswersPositionsSwap(
     question: Question,
-    $event: CdkDragDrop<Answer[], Answer[], Answer>
+    $event: CdkDragDrop<Answer[], Answer[], Answer>,
   ) {
     const prevIndex = $event.previousIndex;
     const currentIndex = $event.currentIndex;
@@ -172,7 +172,7 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
   }
 
   handleQuestionsPositionsSwap(
-    $event: CdkDragDrop<Question[], Question[], Question>
+    $event: CdkDragDrop<Question[], Question[], Question>,
   ) {
     const prevIndex = $event.previousIndex;
     const currentIndex = $event.currentIndex;
