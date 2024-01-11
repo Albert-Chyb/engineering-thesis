@@ -36,6 +36,15 @@ export type SaveSolvedTestFnData = z.infer<typeof saveSolvedTestFnDataSchema>;
 export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
   { cors: true },
   (req) => {
+    const uid = req.auth?.uid;
+
+    if (!uid) {
+      throw new HttpsError(
+        'unauthenticated',
+        'User must be authenticated to save a solved test',
+      );
+    }
+
     const dataValidation = saveSolvedTestFnDataSchema.safeParse(req.data);
 
     if (!dataValidation.success) {
@@ -74,6 +83,7 @@ export const saveSolvedTest = onCall<SaveSolvedTestFnData, Promise<string>>(
         date: FieldValue.serverTimestamp(),
         sharedTestId: sharedTestRef.id,
         grade: null,
+        testTakerId: uid,
       });
       const solvedTestAnswersDocData = solvedTestAnswersSchema.parse(data);
 

@@ -59,6 +59,11 @@ service cloud.firestore {
     match /shared-tests/{sharedTestId}/solved-tests/{solvedTestId} {        
       allow update, create: if false;
 
+      // Allow the test taker to read his solved test
+      allow read: if 
+        isLoggedIn() &&
+        isUser(request.resource.data.testTakerId);
+
       allow read, delete: if
         isLoggedIn() &&
         isUser(
@@ -68,6 +73,13 @@ service cloud.firestore {
 
     match /shared-tests/{sharedTestId}/solved-tests-answers/{solvedTestId} {
       allow update, create: if false;
+
+      // Allow the test taker to read his solved test answers
+      allow read: if 
+        isLoggedIn() &&
+        isUser(
+          get(/databases/$(database)/documents/shared-tests/$(sharedTestId)/solved-tests/$(solvedTestId)).data.testTakerId
+        );
 
       allow read, delete: if
         isLoggedIn() &&
