@@ -88,6 +88,10 @@ export const routes: Routes = [
   {
     path: 'exam-session/:id',
     component: ExamSessionPageComponent,
+    canActivate: [AuthGuard],
+    data: {
+      authGuardPipe: redirectLoggedOutToLogin,
+    },
   },
   {
     path: 'shared-tests/:id/submitted-solutions',
