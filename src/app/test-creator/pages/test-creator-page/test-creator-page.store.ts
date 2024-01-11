@@ -129,7 +129,7 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
           this.setState((oldState) => ({
             ...oldState,
             test: data.test,
-            questions: data.questions,
+            questions: data.questions.map((question) => new Question(question)),
             answers: data.answers,
             loadingState: loadingStateAdapter.finishLoading(
               oldState.loadingState,

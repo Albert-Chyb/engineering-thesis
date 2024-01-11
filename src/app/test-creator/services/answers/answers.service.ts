@@ -1,19 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import {
-  DocumentData,
   DocumentReference,
   Firestore,
-  FirestoreDataConverter,
-  PartialWithFieldValue,
-  QueryDocumentSnapshot,
-  SetOptions,
-  SnapshotOptions,
-  WithFieldValue,
   doc,
   orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
+import { ZodFirestoreDataConverter } from '@common/classes/ZodFirestoreDataConverter';
 import {
   Answer,
   AnswerSchema,
@@ -21,27 +15,6 @@ import {
   RawAnswerSchema,
 } from '@test-creator/types/answer';
 import { Observable, from, map, switchMap, take } from 'rxjs';
-
-class DataConverter implements FirestoreDataConverter<Answer> {
-  toFirestore(modelObject: WithFieldValue<Answer>): DocumentData;
-  toFirestore(
-    modelObject: PartialWithFieldValue<Answer>,
-    options: SetOptions,
-  ): DocumentData;
-  toFirestore(modelObject: unknown, options?: unknown): DocumentData {
-    return RawAnswerSchema.parse(modelObject);
-  }
-
-  fromFirestore(
-    snapshot: QueryDocumentSnapshot<RawAnswer>,
-    options?: SnapshotOptions | undefined,
-  ): Answer {
-    return AnswerSchema.parse({
-      id: snapshot.id,
-      ...snapshot.data(options),
-    });
-  }
-}
 
 @Injectable({
   providedIn: 'root',
@@ -62,7 +35,7 @@ export class AnswersService extends FirestoreCollectionController<
             `users/${uid}/tests/{testId}/questions/{questionId}/answers/`,
         ),
       ),
-      new DataConverter(),
+      new ZodFirestoreDataConverter(RawAnswerSchema, AnswerSchema),
     );
   }
 

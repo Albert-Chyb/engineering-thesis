@@ -1,20 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import {
-  DocumentData,
   DocumentReference,
   Firestore,
-  FirestoreDataConverter,
-  PartialWithFieldValue,
-  QueryDocumentSnapshot,
-  SetOptions,
-  SnapshotOptions,
-  WithFieldValue,
   doc,
   orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
 import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
-import { Question } from '@test-creator/classes/question';
+import { ZodFirestoreDataConverter } from '@common/classes/ZodFirestoreDataConverter';
 import {
   QuestionDoc,
   QuestionSchema,
@@ -23,34 +16,11 @@ import {
 } from '@test-creator/types/question';
 import { Observable, from, map, switchMap, take } from 'rxjs';
 
-class Converter implements FirestoreDataConverter<Question> {
-  toFirestore(modelObject: WithFieldValue<Question>): DocumentData;
-  toFirestore(
-    modelObject: PartialWithFieldValue<Question>,
-    options: SetOptions,
-  ): DocumentData;
-  toFirestore(modelObject: unknown, options?: unknown): DocumentData {
-    return RawQuestionSchema.parse(modelObject);
-  }
-
-  fromFirestore(
-    snapshot: QueryDocumentSnapshot<RawQuestion>,
-    options?: SnapshotOptions | undefined,
-  ): Question {
-    const doc = QuestionSchema.parse({
-      ...snapshot.data(options),
-      id: snapshot.id,
-    });
-
-    return new Question(doc);
-  }
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class QuestionsService extends FirestoreCollectionController<
-  Question,
+  QuestionDoc,
   RawQuestion
 > {
   constructor() {
@@ -60,11 +30,11 @@ export class QuestionsService extends FirestoreCollectionController<
     super(
       firestore,
       auth.uid$.pipe(map((uid) => `users/${uid}/tests/{testId}/questions/`)),
-      new Converter(),
+      new ZodFirestoreDataConverter(RawQuestionSchema, QuestionSchema),
     );
   }
 
-  override list(params: string[]): Observable<Question[]> {
+  override list(params: string[]): Observable<QuestionDoc[]> {
     return this.query(params, orderBy('position'));
   }
 
