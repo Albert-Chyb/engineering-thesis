@@ -10,10 +10,11 @@ import {
   UpdateData,
   WithFieldValue,
   collection,
+  collectionData,
   deleteDoc,
   doc,
   docData,
-  getDoc,
+  docSnapshots,
   getDocs,
   query,
   runTransaction,
@@ -49,9 +50,7 @@ export class FirestoreCollectionController<
 
   read(id: string, params: string[] = []): Observable<TData | undefined> {
     return this.getDocRef(id, params).pipe(
-      switchMap((docRef) => from(getDoc(docRef))),
-      map((doc) => doc.data()),
-      take(1),
+      switchMap((docRef) => docData(docRef)),
     );
   }
 
@@ -60,17 +59,7 @@ export class FirestoreCollectionController<
     params: string[] = [],
   ): Observable<DocumentSnapshot<TData>> {
     return this.getDocRef(id, params).pipe(
-      switchMap((docRef) => from(getDoc(docRef))),
-      take(1),
-    );
-  }
-
-  readChanges(
-    id: string,
-    params: string[] = [],
-  ): Observable<TData | undefined> {
-    return this.getDocRef(id, params).pipe(
-      switchMap((docRef) => docData(docRef)),
+      switchMap((docRef) => docSnapshots(docRef)),
     );
   }
 
@@ -94,9 +83,7 @@ export class FirestoreCollectionController<
 
   list(params: string[] = []): Observable<TData[]> {
     return this.getCollectionRef(params).pipe(
-      switchMap((collectionRef) => getDocs(collectionRef)),
-      map((querySnapshot) => querySnapshot.docs.map((doc) => doc.data())),
-      take(1),
+      switchMap((collectionRef) => collectionData(collectionRef)),
     );
   }
 
