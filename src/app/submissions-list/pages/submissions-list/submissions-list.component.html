@@ -12,9 +12,9 @@
 </ng-template>
 
 <ng-template #dataTemplate>
-  <mat-nav-list>
+  <mat-list role="list">
     @for (submission of submissions(); track submission.id) {
-      <a mat-list-item [routerLink]="['submissions', submission.id]">
+      <mat-list-item role="listitem">
         <span matListItemTitle>{{ submission.sharedTestName }}</span>
         <span matListItemLine
           >Przesłano: {{ submission.date | date: "short" }}</span
@@ -25,9 +25,9 @@
         } @else {
           <span matListItemLine>Oczekuje na sprawdzenie</span>
         }
-      </a>
+      </mat-list-item>
     }
-  </mat-nav-list>
+  </mat-list>
 </ng-template>
 
 <mat-card>
