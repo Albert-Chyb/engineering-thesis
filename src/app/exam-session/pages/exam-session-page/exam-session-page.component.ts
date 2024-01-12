@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -9,6 +10,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '@authentication/services/auth.service';
 import { AnswersFormComponent } from '@exam-session/components/answers-form/answers-form.component';
 import { TestTakerNameComponent } from '@exam-session/components/test-taker-name/test-taker-name.component';
 import { SolvedTestFormValueSchema } from '@exam-session/types/solved-test-form-value';
@@ -47,11 +49,13 @@ export class ExamSessionPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly commonDialogs = inject(CommonDialogsService);
+  private readonly auth = inject(AuthService);
 
   readonly error = this.store.error;
   readonly metadata = this.store.metadata;
   readonly test = this.store.test;
   readonly isSaved = this.store.isSaved;
+  readonly user = toSignal(this.auth.user$);
 
   readonly form = new FormGroup({
     testTakerName: new FormControl('', Validators.required),
@@ -67,6 +71,13 @@ export class ExamSessionPageComponent {
       if (isSaved) {
         this.showSavedSuccessfullyDialog();
       }
+    });
+
+    effect(() => {
+      const user = this.user();
+      const testTakerName = user?.displayName ?? '';
+
+      this.form.patchValue({ testTakerName });
     });
 
     this.store.load(
