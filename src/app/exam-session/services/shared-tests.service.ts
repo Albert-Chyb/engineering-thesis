@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   CollectionReference,
   DocumentData,
+  Firestore,
   FirestoreDataConverter,
   PartialWithFieldValue,
   QueryDocumentSnapshot,
@@ -11,7 +12,6 @@ import {
   collection,
   doc,
   getDoc,
-  getFirestore,
 } from '@angular/fire/firestore';
 import {
   AssembledTest,
@@ -23,7 +23,7 @@ class DataConverter implements FirestoreDataConverter<AssembledTest> {
   toFirestore(modelObject: WithFieldValue<AssembledTest>): DocumentData;
   toFirestore(
     modelObject: PartialWithFieldValue<AssembledTest>,
-    options: SetOptions
+    options: SetOptions,
   ): DocumentData;
   toFirestore(modelObject: unknown, options?: unknown): DocumentData {
     throw new Error('Direct modification of shared tests is not allowed.');
@@ -31,7 +31,7 @@ class DataConverter implements FirestoreDataConverter<AssembledTest> {
 
   fromFirestore(
     snapshot: QueryDocumentSnapshot<DocumentData>,
-    options?: SnapshotOptions | undefined
+    options?: SnapshotOptions | undefined,
   ): AssembledTest {
     return AssembledTestSchema.parse({
       ...snapshot.data(options),
@@ -44,7 +44,7 @@ class DataConverter implements FirestoreDataConverter<AssembledTest> {
   providedIn: 'root',
 })
 export class SharedTestsService {
-  private readonly firestore = getFirestore();
+  private readonly firestore = inject(Firestore);
 
   getSharedTest(id: string): Observable<AssembledTest> {
     return from(getDoc(doc(this.getSharedTestCollectionRef(), id))).pipe(
@@ -56,13 +56,13 @@ export class SharedTestsService {
         }
 
         return testData;
-      })
+      }),
     );
   }
 
   private getSharedTestCollectionRef(): CollectionReference<AssembledTest> {
     return collection(this.firestore, 'shared-tests').withConverter(
-      new DataConverter()
+      new DataConverter(),
     );
   }
 }
