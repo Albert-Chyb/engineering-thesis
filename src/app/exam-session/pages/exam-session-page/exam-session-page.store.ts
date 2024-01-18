@@ -2,12 +2,12 @@ import { Injectable, inject, signal } from '@angular/core';
 import { SharedTestsService } from '@exam-session/services/shared-tests.service';
 import { SolvedTestsService } from '@exam-session/services/solved-tests.service';
 import { SolvedTestFormValue } from '@exam-session/types/solved-test-form-value';
-import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
-import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { AssembledTest } from '@test-creator/types/assembled-test';
 import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
 import { SharedTestMetadata } from '@tests-sharing/types/shared-test';
+import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
+import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import { Observable, combineLatest, exhaustMap, switchMap, tap } from 'rxjs';
 

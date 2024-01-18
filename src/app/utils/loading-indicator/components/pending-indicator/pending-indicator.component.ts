@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { PendingIndicator } from '@loading-indicator/services/pending-indicator.service';
+import { PendingIndicator } from '@utils/loading-indicator/services/pending-indicator.service';
 
 @Component({
   selector: 'app-pending-indicator',

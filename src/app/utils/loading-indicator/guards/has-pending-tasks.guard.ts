@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CanDeactivateFn } from '@angular/router';
-import { HasPendingTasksDialogComponent } from '@loading-indicator/components/has-pending-tasks-dialog/has-pending-tasks-dialog.component';
+import { HasPendingTasksDialogComponent } from '@utils/loading-indicator/components/has-pending-tasks-dialog/has-pending-tasks-dialog.component';
 import { map } from 'rxjs';
 
 export interface HasPendingTasks {
@@ -13,7 +13,7 @@ export const hasPendingTasksGuard: CanDeactivateFn<HasPendingTasks> = (
   component,
   currentRoute,
   currentState,
-  nextState
+  nextState,
 ) => {
   const isPending = component.hasPendingTasks();
   const dialog = inject(MatDialog);

@@ -23,9 +23,7 @@
     "paths": {
       "@authentication/*": ["src/app/authentication/*"],
       "@common/*": ["src/app/common/*"],
-      "@presenting-errors/*": ["src/app/presenting-errors/*"],
       "@test-creator/*": ["src/app/test-creator/*"],
-      "@loading-indicator/*": ["src/app/loading-indicator/*"],
       "@tests-sharing/*": ["src/app/tests-sharing/*"],
       "@exam-session/*": ["src/app/exam-session/*"],
       "@tests-grading/*": ["src/app/tests-grading/*"],

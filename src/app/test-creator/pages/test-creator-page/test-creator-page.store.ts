@@ -1,7 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import { QueuedComponentStore } from '@common/ngrx/queued-component-store';
-import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
-import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { tapResponse } from '@ngrx/component-store';
 import { Question } from '@test-creator/classes/question';
 import {
@@ -14,6 +12,8 @@ import { UserTestsService } from '@test-creator/services/user-tests/user-tests.s
 import { Answer } from '@test-creator/types/answer';
 import { QuestionsTypes } from '@test-creator/types/question';
 import { Test } from '@test-creator/types/test';
+import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
+import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import {
   Observable,
   concatMap,

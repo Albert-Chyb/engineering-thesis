@@ -10,7 +10,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
-import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
 import {
   TestGradingFormComponent,
   TestGradingFormData,
@@ -18,6 +17,7 @@ import {
 import { TestTakerInfoComponent } from '@tests-grading/components/test-taker-info/test-taker-info.component';
 import { SolvedTestAnswers } from '@tests-grading/types/solved-test-answers';
 import { SolvedTestAnswersEvaluationsSchema } from '@tests-grading/types/solved-test-answers-evaluations';
+import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { Observable, filter, map } from 'rxjs';

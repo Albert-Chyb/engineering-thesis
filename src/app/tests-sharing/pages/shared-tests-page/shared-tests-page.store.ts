@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
-import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
+import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
+import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
 import { SharedTestMetadata } from '@tests-sharing/types/shared-test';

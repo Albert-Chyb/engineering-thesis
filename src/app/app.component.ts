@@ -10,8 +10,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '@authentication/services/auth.service';
-import { PendingIndicatorComponent } from '@loading-indicator/components/pending-indicator/pending-indicator.component';
-import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
+import { PendingIndicatorComponent } from '@utils/loading-indicator/components/pending-indicator/pending-indicator.component';
+import { PendingIndicatorService } from '@utils/loading-indicator/services/pending-indicator.service';
 import { map } from 'rxjs';
 
 @Component({

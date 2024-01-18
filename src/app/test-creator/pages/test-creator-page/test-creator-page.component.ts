@@ -13,9 +13,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
-import { LoadingIndicatorComponent } from '@loading-indicator/components/loading-indicator/loading-indicator.component';
-import { HasPendingTasks } from '@loading-indicator/guards/has-pending-tasks.guard';
-import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
 import { Question } from '@test-creator/classes/question';
 import { AnswerWrapperComponent } from '@test-creator/components/answer-wrapper/answer-wrapper.component';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
@@ -24,6 +21,9 @@ import { UserTestsService } from '@test-creator/services/user-tests/user-tests.s
 import { Answer } from '@test-creator/types/answer';
 import { QuestionsTypes } from '@test-creator/types/question';
 import { Test } from '@test-creator/types/test';
+import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
+import { HasPendingTasks } from '@utils/loading-indicator/guards/has-pending-tasks.guard';
+import { PendingIndicatorService } from '@utils/loading-indicator/services/pending-indicator.service';
 import { debounceTime, map } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
 

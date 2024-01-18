@@ -1,5 +1,5 @@
 import { ErrorHandler, NgZone, inject } from '@angular/core';
-import { ErrorPresenterService } from '@presenting-errors/services/error-presenter/error-presenter.service';
+import { ErrorPresenterService } from '@utils/presenting-errors/services/error-presenter/error-presenter.service';
 
 export class AppErrorHandler implements ErrorHandler {
   private readonly zone = inject(NgZone);

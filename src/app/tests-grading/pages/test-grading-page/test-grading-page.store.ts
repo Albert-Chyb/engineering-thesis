@@ -1,14 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { SharedTestsService } from '@exam-session/services/shared-tests.service';
 import { SolvedTestsService } from '@exam-session/services/solved-tests.service';
-import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
-import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { AssembledTest } from '@test-creator/types/assembled-test';
 import { SolvedTestsAnswersService } from '@tests-grading/services/solved-tests-answers.service';
 import { SolvedTest } from '@tests-grading/types/solved-test';
 import { SolvedTestAnswers } from '@tests-grading/types/solved-test-answers';
 import { SolvedTestAnswersEvaluations } from '@tests-grading/types/solved-test-answers-evaluations';
+import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
+import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import { Observable, combineLatest, concatMap, switchMap, tap } from 'rxjs';
 

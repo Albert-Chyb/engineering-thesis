@@ -11,13 +11,13 @@ import { PasswordRecoveryComponent } from '@authentication/pages/password-recove
 import { SignupComponent } from '@authentication/pages/signup/signup.component';
 import { requireSilentNavigationGuard } from '@common/route-guards/require-silent-navigation/require-silent-navigation.guard';
 import { ExamSessionPageComponent } from '@exam-session/pages/exam-session-page/exam-session-page.component';
-import { hasPendingTasksGuard } from '@loading-indicator/guards/has-pending-tasks.guard';
-import { UnhandledErrorComponent } from '@presenting-errors/pages/unhandled-error/unhandled-error.component';
 import { SubmissionsListComponent } from '@submissions-list/pages/submissions-list/submissions-list.component';
 import { UserTestsComponent } from '@test-creator/pages/user-tests/user-tests.component';
 import { SubmittedSolutionsPageComponent } from '@tests-grading/pages/submitted-solutions-page/submitted-solutions-page.component';
 import { TestGradingPageComponent } from '@tests-grading/pages/test-grading-page/test-grading-page.component';
 import { SharedTestsPageComponent } from '@tests-sharing/pages/shared-tests-page/shared-tests-page.component';
+import { hasPendingTasksGuard } from '@utils/loading-indicator/guards/has-pending-tasks.guard';
+import { UnhandledErrorComponent } from '@utils/presenting-errors/pages/unhandled-error/unhandled-error.component';
 import { TestCreatorPageComponent } from './test-creator/pages/test-creator-page/test-creator-page.component';
 
 function redirectLoggedInToHome() {

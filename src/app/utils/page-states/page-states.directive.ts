@@ -10,7 +10,7 @@ import {
   inject,
 } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { PendingIndicatorService } from '@loading-indicator/services/pending-indicator.service';
+import { PendingIndicatorService } from '@utils/loading-indicator/services/pending-indicator.service';
 import { map } from 'rxjs';
 import { PAGE_STATE_INDICATORS } from './injection-tokens';
 

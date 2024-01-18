@@ -2,10 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { AnswersKeysService } from '@answers-keys/services/answers-keys.service';
 import { AnswersKeys } from '@answers-keys/types/answers-keys';
 import { SharedTestsService } from '@exam-session/services/shared-tests.service';
-import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
-import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { AssembledTest } from '@test-creator/types/assembled-test';
+import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
+import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import { Observable, combineLatest, concatMap, switchMap, tap } from 'rxjs';
 

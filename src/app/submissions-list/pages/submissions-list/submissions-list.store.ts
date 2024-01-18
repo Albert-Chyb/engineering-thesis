@@ -1,9 +1,9 @@
 import { Injectable, Signal, inject } from '@angular/core';
 import { SolvedTestsService } from '@exam-session/services/solved-tests.service';
-import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
-import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { SolvedTest } from '@tests-grading/types/solved-test';
+import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
+import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import { switchMap, tap } from 'rxjs';
 

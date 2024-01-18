@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { LoadingState } from '@loading-indicator/ngrx/LoadingState';
-import { LoadingStateAdapter } from '@loading-indicator/ngrx/LoadingStateAdapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { Test } from '@test-creator/types/test';
 import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
 import { ShareTestCloudFnPayload } from '@tests-sharing/types/share-test-cloud-fn';
+import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
+import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import { Observable, mergeMap, switchMap, tap } from 'rxjs';
 
