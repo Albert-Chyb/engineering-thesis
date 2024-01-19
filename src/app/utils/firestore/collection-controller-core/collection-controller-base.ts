@@ -17,7 +17,7 @@ export abstract class CollectionControllerBase<TData extends DocumentData> {
 
   constructor(
     private readonly collectionPathTemplate: Observable<string>,
-    private readonly converter: FirestoreDataConverter<TData>,
+    protected readonly converter: FirestoreDataConverter<TData>,
   ) {}
 
   generateId(): string {
