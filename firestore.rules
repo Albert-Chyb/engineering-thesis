@@ -37,7 +37,7 @@ service cloud.firestore {
     }
 
     match /shared-tests/{testId} {
-      allow read: if true;
+      allow read: if isLoggedIn();
 
       allow delete: if 
         isLoggedIn() &&
@@ -47,7 +47,7 @@ service cloud.firestore {
     }
 
     match /shared-tests-metadata/{metadataId} {
-      allow read: if true;
+      allow read: if isLoggedIn();
 
       allow delete: if 
         isLoggedIn() &&
