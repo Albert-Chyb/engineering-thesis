@@ -4,11 +4,14 @@ import { mixinCreate } from './create-mixin';
 import { mixinDelete } from './delete-mixin';
 import { mixinUpdate } from './update-mixin';
 
-export function mixinWrite<TData extends DocumentData>() {
+export function mixinWrite<
+  TData extends DocumentData,
+  TRawData extends DocumentData,
+>() {
   return function <TBase extends CollectionControllerMixinsBase<TData>>(
     Base: TBase,
   ) {
-    return mixinCreate<TData>()(
+    return mixinCreate<TData, TRawData>()(
       mixinUpdate<TData>()(mixinDelete<TData>()(Base)),
     );
   };

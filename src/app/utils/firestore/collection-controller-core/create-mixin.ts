@@ -8,9 +8,12 @@ import {
 import { Observable, from, map, switchMap, take } from 'rxjs';
 import { CollectionControllerMixinsBase } from './collection-controller-base';
 
-export type CreateMethod<TData extends DocumentData> = {
+export type CreateMethod<
+  TData extends DocumentData,
+  TCreatePayload extends DocumentData,
+> = {
   create(
-    data: WithFieldValue<TData>,
+    data: WithFieldValue<TCreatePayload>,
     id?: string,
     params?: string[],
   ): Observable<DocumentReference<TData>>;
@@ -18,13 +21,17 @@ export type CreateMethod<TData extends DocumentData> = {
 
 export function mixinCreate<
   TData extends DocumentData,
+  TCreatePayload extends DocumentData,
 >() {
   return function <TBase extends CollectionControllerMixinsBase<TData>>(
     Base: TBase,
   ) {
-    return class mixinCreate extends Base implements CreateMethod<TData> {
+    return class mixinCreate
+      extends Base
+      implements CreateMethod<TData, TCreatePayload>
+    {
       create(
-        data: WithFieldValue<TData>,
+        data: WithFieldValue<TCreatePayload>,
         id?: string,
         params: string[] = [],
       ): Observable<DocumentReference<TData>> {
@@ -32,7 +39,7 @@ export function mixinCreate<
           switchMap((collectionRef) => {
             const docRef = id ? doc(collectionRef, id) : doc(collectionRef);
 
-            return from(setDoc(docRef, data)).pipe(map(() => docRef));
+            return from(setDoc(docRef, data as any)).pipe(map(() => docRef));
           }),
           take(1),
         );
