@@ -2,10 +2,9 @@ import {
   DocumentData,
   QueryConstraint,
   collectionData,
-  getDocs,
   query,
 } from '@angular/fire/firestore';
-import { Observable, map, switchMap } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { CollectionControllerMixinsBase } from './collection-controller-base';
 
 export type ListMethod<TData extends DocumentData> = {
@@ -33,9 +32,8 @@ export function mixinList<TData extends DocumentData>() {
           switchMap((collectionRef) => {
             const q = query(collectionRef, ...filters);
 
-            return getDocs(q);
+            return collectionData(q);
           }),
-          map((querySnapshot) => querySnapshot.docs.map((doc) => doc.data())),
         );
       }
     };
