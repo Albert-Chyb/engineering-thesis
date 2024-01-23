@@ -1,10 +1,9 @@
-import { QuestionsAnswerSchema } from '@exam-session/types/user-answers';
-import { QuestionsTypesEnum } from '@test-creator/types/question';
 import { z } from 'zod';
+import { UserAnswersSchema } from './user-answers.model';
 
 export const SolvedTestAnswerRecordValueSchema = z.object({
   isCorrect: z.boolean().nullable(),
-  answer: QuestionsAnswerSchema.valueSchema,
+  answer: UserAnswersSchema.valueSchema,
 });
 
 export const SolvedTestAnswerSchema = SolvedTestAnswerRecordValueSchema.extend({

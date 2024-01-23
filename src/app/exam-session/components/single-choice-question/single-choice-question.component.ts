@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
-import { AssembledQuestion } from '@test-creator/types/assembled-test';
+import { SharedTestQuestion } from '@utils/firestore/models/shared-tests.model';
 
 @Component({
   selector: 'app-single-choice-question',
@@ -13,6 +13,6 @@ import { AssembledQuestion } from '@test-creator/types/assembled-test';
   styleUrl: './single-choice-question.component.scss',
 })
 export class SingleChoiceQuestionComponent {
-  @Input({ required: true }) question!: AssembledQuestion;
+  @Input({ required: true }) question!: SharedTestQuestion;
   @Input({ required: true }) form!: FormControl<string | null>;
 }

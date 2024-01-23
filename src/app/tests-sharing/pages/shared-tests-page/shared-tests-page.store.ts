@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
+import { ComponentStore, tapResponse } from '@ngrx/component-store';
+import { SharedTestsMetadataService } from '@utils/firestore/collections-controllers/shared-tests-metadata.service';
+import { SharedTestMetadata } from '@utils/firestore/models/shared-test-metadata.model';
 import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
-import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
-import { SharedTestMetadata } from '@tests-sharing/types/shared-test';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import { switchMap, tap } from 'rxjs';
 
@@ -53,7 +53,7 @@ export class SharedTestsPageStore
           loadingState: loadingStateAdapter.startLoading(state.loadingState),
         })),
       ),
-      switchMap(() => this.sharedTests.getSharedTestsMetadata()),
+      switchMap(() => this.sharedTests.list()),
       tapResponse(
         (tests) => {
           this.setTests(tests);

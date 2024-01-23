@@ -4,8 +4,8 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DocumentDirective } from '@common/directives/document.directive';
-import { Test } from '@test-creator/types/test';
 import { TestForm } from '@test-creator/types/test-creator-form';
+import { Test } from '@utils/firestore/models/tests.model';
 
 @Component({
   selector: 'app-test-creator-form',
@@ -27,7 +27,7 @@ export class TestCreatorFormComponent extends DocumentDirective<
     super(
       new FormGroup({
         name: new FormControl('', { nonNullable: true }),
-      })
+      }),
     );
   }
 

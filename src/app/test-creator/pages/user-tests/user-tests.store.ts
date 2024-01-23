@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
-import { Test } from '@test-creator/types/test';
-import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
 import { ShareTestCloudFnPayload } from '@tests-sharing/types/share-test-cloud-fn';
+import { SharedTestsMetadataService } from '@utils/firestore/collections-controllers/shared-tests-metadata.service';
+import { TestsService } from '@utils/firestore/collections-controllers/tests.service';
+import { Test } from '@utils/firestore/models/tests.model';
 import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
@@ -27,7 +27,7 @@ export class UserTestsStore
   extends ComponentStore<UserTestsState>
   implements PageStateIndicators
 {
-  private readonly userTests = inject(UserTestsService);
+  private readonly userTests = inject(TestsService);
   private readonly sharedTests = inject(SharedTestsMetadataService);
 
   readonly tests = this.selectSignal((state) => state.tests);

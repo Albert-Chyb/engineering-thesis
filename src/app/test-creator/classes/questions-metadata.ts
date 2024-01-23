@@ -1,4 +1,4 @@
-import { QuestionsTypes } from '@test-creator/types/question';
+import { QuestionsTypes } from '@utils/firestore/models/questions.model';
 
 export type QuestionMetadata<TQuestionType extends QuestionsTypes> = {
   type: TQuestionType;
@@ -36,7 +36,7 @@ class QuestionsMetadata {
   constructor(private readonly dictionary: QuestionsMetadataDictionary) {}
 
   getMetadata<TQuestionType extends QuestionsTypes>(
-    type: TQuestionType
+    type: TQuestionType,
   ): QuestionMetadata<TQuestionType> {
     return { ...this.dictionary[type] };
   }

@@ -3,7 +3,6 @@ import { Component, computed, inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
-import { AnswersKeysSchema } from '@answers-keys/types/answers-keys';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
 import { AnswersFormComponent } from '@exam-session/components/answers-form/answers-form.component';
 import { Question } from '@test-creator/classes/question';
@@ -12,6 +11,7 @@ import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { filter, map } from 'rxjs';
 import { AnswersKeysPageStore } from './answers-keys-page.store';
+import { UserAnswersSchema } from '@utils/firestore/models/user-answers.model';
 
 @Component({
   standalone: true,
@@ -59,7 +59,7 @@ export class AnswersKeysPageComponent {
   private buildAnswersKeysStream() {
     return this.answersKeysForm.valueChanges.pipe(
       filter(() => this.answersKeysForm.dirty && this.answersKeysForm.valid),
-      map((answersKeys) => AnswersKeysSchema.parse(answersKeys)),
+      map((answersKeys) => UserAnswersSchema.parse(answersKeys)),
     );
   }
 

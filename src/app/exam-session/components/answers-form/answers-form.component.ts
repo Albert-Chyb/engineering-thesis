@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { QuestionsAnswers } from '@exam-session/types/user-answers';
-import { AssembledQuestion } from '@test-creator/types/assembled-test';
-import { SolvedTestAnswerRecordValue } from '@tests-grading/types/solved-test-answers';
+import { SharedTestQuestion } from '@utils/firestore/models/shared-tests.model';
+import { SolvedTestAnswerRecordValue } from '@utils/firestore/models/solved-test-answers.model';
+import { UserAnswers } from '@utils/firestore/models/user-answers.model';
 import { MultiChoiceQuestionComponent } from '../multi-choice-question/multi-choice-question.component';
 import { SingleChoiceQuestionComponent } from '../single-choice-question/single-choice-question.component';
 import { TextAnswerQuestionComponent } from '../text-answer-question/text-answer-question.component';
@@ -21,11 +21,11 @@ import { TextAnswerQuestionComponent } from '../text-answer-question/text-answer
   styleUrl: './answers-form.component.scss',
 })
 export class AnswersFormComponent implements OnChanges {
-  @Input({ required: true }) questions: AssembledQuestion[] = [];
+  @Input({ required: true }) questions: SharedTestQuestion[] = [];
   @Input({ required: true }) formRef!: FormGroup<
     Record<string, FormControl<SolvedTestAnswerRecordValue | null>>
   >;
-  @Input() existingAnswers: QuestionsAnswers | null = {};
+  @Input() existingAnswers: UserAnswers | null = {};
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
@@ -47,7 +47,7 @@ export class AnswersFormComponent implements OnChanges {
     return control;
   }
 
-  private rebuildAnswersFormGroup(questions: AssembledQuestion[]) {
+  private rebuildAnswersFormGroup(questions: SharedTestQuestion[]) {
     const answersForm: FormGroup = this.formRef;
 
     for (const controlName in answersForm) {

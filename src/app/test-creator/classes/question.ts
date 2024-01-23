@@ -1,9 +1,9 @@
 import {
   ClosedQuestionsTypes,
   OpenQuestionsTypes,
-  QuestionDoc,
+  Question as QuestionDoc,
   QuestionsTypes,
-} from '@test-creator/types/question';
+} from '@utils/firestore/models/questions.model';
 
 import { questionsMetadata } from './questions-metadata';
 

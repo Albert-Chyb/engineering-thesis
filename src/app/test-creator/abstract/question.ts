@@ -13,7 +13,7 @@ export abstract class Question extends DocumentDirective<
     super(
       new FormGroup({
         content: new FormControl('' as string),
-      })
+      }),
     );
   }
 

@@ -17,10 +17,10 @@ import { Question } from '@test-creator/classes/question';
 import { AnswerWrapperComponent } from '@test-creator/components/answer-wrapper/answer-wrapper.component';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
 import { TestCreatorFormComponent } from '@test-creator/components/test-creator-form/test-creator-form.component';
-import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
-import { Answer } from '@test-creator/types/answer';
-import { QuestionsTypes } from '@test-creator/types/question';
-import { Test } from '@test-creator/types/test';
+import { TestsService } from '@utils/firestore/collections-controllers/tests.service';
+import { Answer } from '@utils/firestore/models/answers.model';
+import { QuestionsTypes } from '@utils/firestore/models/questions.model';
+import { Test } from '@utils/firestore/models/tests.model';
 import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
 import { HasPendingTasks } from '@utils/loading-indicator/guards/has-pending-tasks.guard';
 import { PendingIndicatorService } from '@utils/loading-indicator/services/pending-indicator.service';
@@ -57,7 +57,7 @@ const QUICK_ASYNC_TASKS_DEBOUNCE_TIME = 40 as const;
   providers: [TestCreatorPageStore],
 })
 export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
-  private readonly testsService = inject(UserTestsService);
+  private readonly testsService = inject(TestsService);
   private readonly store = inject(TestCreatorPageStore);
   private readonly route = inject(ActivatedRoute);
   private readonly pendingIndicatorService = inject(PendingIndicatorService);

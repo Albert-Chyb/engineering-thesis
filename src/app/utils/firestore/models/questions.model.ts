@@ -18,8 +18,10 @@ export const QuestionSchema = RawQuestionSchema.extend({
 
 export type RawQuestion = z.infer<typeof RawQuestionSchema>;
 
-export type QuestionDoc = z.infer<typeof QuestionSchema>;
+export type Question = z.infer<typeof QuestionSchema>;
 
 export type QuestionsTypes = z.infer<typeof QuestionsTypesEnum>;
+
 export type ClosedQuestionsTypes = Exclude<QuestionsTypes, 'text-answer'>;
+
 export type OpenQuestionsTypes = Exclude<QuestionsTypes, ClosedQuestionsTypes>;

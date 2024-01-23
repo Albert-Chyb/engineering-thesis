@@ -1,31 +1,30 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
-import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
 import { ZodFirestoreDataConverter } from '@common/classes/ZodFirestoreDataConverter';
+import { map } from 'rxjs';
+import { mixinAllOperations } from '../collection-controller-core/all-operations-mixin';
+import { CollectionControllerBase } from '../collection-controller-core/collection-controller-base';
 import {
   RawTest,
   RawTestSchema,
   Test,
   TestSchema,
-} from '@test-creator/types/test';
-import { map } from 'rxjs';
+} from '../models/tests.model';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class UserTestsService extends FirestoreCollectionController<
-  Test,
-  RawTest
-> {
+class TestsCollectionController extends CollectionControllerBase<Test> {
   constructor() {
-    const firestore = inject(Firestore);
     const auth = inject(AuthService);
 
     super(
-      firestore,
       auth.uid$.pipe(map((uid) => `users/${uid}/tests`)),
       new ZodFirestoreDataConverter(RawTestSchema, TestSchema),
     );
   }
 }
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TestsService extends mixinAllOperations<Test, RawTest>()(
+  TestsCollectionController,
+) {}

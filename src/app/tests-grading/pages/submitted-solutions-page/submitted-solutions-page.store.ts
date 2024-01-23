@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { SolvedTestsService } from '@exam-session/services/solved-tests.service';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { SolvedTest } from '@tests-grading/types/solved-test';
+import { SolvedTestsService } from '@utils/firestore/collections-controllers/solved-tests.service';
+import { SolvedTest } from '@utils/firestore/models/solved-tests.model';
 import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
@@ -62,7 +62,7 @@ export class SubmittedSolutionsPageStore
           loadingState: loadingStateAdapter.startLoading(state.loadingState),
         })),
       ),
-      switchMap((sharedTestId) => this.solvedTestsService.list(sharedTestId)),
+      switchMap((sharedTestId) => this.solvedTestsService.list([sharedTestId])),
       tapResponse(
         (solvedTests) =>
           this.patchState((state) => ({
@@ -100,7 +100,7 @@ export class SubmittedSolutionsPageStore
           this.removeSolvedTest(solvedTestId);
 
           return this.solvedTestsService
-            .delete(sharedTestId, solvedTestId)
+            .delete(solvedTestId, [sharedTestId])
             .pipe(
               catchError((error) => {
                 this.addSolvedTest(solvedTest);

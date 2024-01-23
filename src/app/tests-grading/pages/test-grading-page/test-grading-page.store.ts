@@ -1,12 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { SharedTestsService } from '@exam-session/services/shared-tests.service';
-import { SolvedTestsService } from '@exam-session/services/solved-tests.service';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { AssembledTest } from '@test-creator/types/assembled-test';
-import { SolvedTestsAnswersService } from '@tests-grading/services/solved-tests-answers.service';
-import { SolvedTest } from '@tests-grading/types/solved-test';
-import { SolvedTestAnswers } from '@tests-grading/types/solved-test-answers';
 import { SolvedTestAnswersEvaluations } from '@tests-grading/types/solved-test-answers-evaluations';
+import { SharedTestsService } from '@utils/firestore/collections-controllers/shared-tests.service';
+import { SolvedTestsAnswersService } from '@utils/firestore/collections-controllers/solved-tests-answers.service';
+import { SolvedTestsService } from '@utils/firestore/collections-controllers/solved-tests.service';
+import { SharedTest } from '@utils/firestore/models/shared-tests.model';
+import { SolvedTestAnswers } from '@utils/firestore/models/solved-test-answers.model';
+import { SolvedTest } from '@utils/firestore/models/solved-tests.model';
 import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
@@ -19,7 +19,7 @@ interface TestGradingPageState {
   error: unknown;
   solvedTest: SolvedTest | null;
   solvedTestAnswers: SolvedTestAnswers | null;
-  sharedTest: AssembledTest | null;
+  sharedTest: SharedTest | null;
 }
 
 const INITIAL_STATE: TestGradingPageState = {
@@ -69,12 +69,11 @@ export class TestGradingPageStore
         ),
         switchMap(({ sharedTestId, solvedTestId }) =>
           combineLatest({
-            solvedTest: this.solvedTests.get(sharedTestId, solvedTestId),
-            solvedTestAnswers: this.solvedTestsAnswers.get(
+            solvedTest: this.solvedTests.read(solvedTestId, [sharedTestId]),
+            solvedTestAnswers: this.solvedTestsAnswers.read(solvedTestId, [
               sharedTestId,
-              solvedTestId,
-            ),
-            sharedTest: this.sharedTests.getSharedTest(sharedTestId),
+            ]),
+            sharedTest: this.sharedTests.read(sharedTestId),
           }),
         ),
         tapResponse(

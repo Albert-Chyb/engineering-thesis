@@ -1,34 +1,22 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  DocumentReference,
-  Firestore,
-  doc,
-  orderBy,
-} from '@angular/fire/firestore';
+import { DocumentReference, doc, orderBy } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
-import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
 import { ZodFirestoreDataConverter } from '@common/classes/ZodFirestoreDataConverter';
+import { Observable, from, map, switchMap, take } from 'rxjs';
+import { mixinAllOperations } from '../collection-controller-core/all-operations-mixin';
+import { CollectionControllerBase } from '../collection-controller-core/collection-controller-base';
 import {
   Answer,
   AnswerSchema,
   RawAnswer,
   RawAnswerSchema,
-} from '@test-creator/types/answer';
-import { Observable, from, map, switchMap, take } from 'rxjs';
+} from '../models/answers.model';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AnswersService extends FirestoreCollectionController<
-  Answer,
-  RawAnswer
-> {
+class AnswersCollectionController extends CollectionControllerBase<Answer> {
   constructor() {
     const auth = inject(AuthService);
-    const firestore = inject(Firestore);
 
     super(
-      firestore,
       auth.uid$.pipe(
         map(
           (uid) =>
@@ -38,7 +26,14 @@ export class AnswersService extends FirestoreCollectionController<
       new ZodFirestoreDataConverter(RawAnswerSchema, AnswerSchema),
     );
   }
+}
 
+@Injectable({
+  providedIn: 'root',
+})
+export class AnswersService extends mixinAllOperations<Answer, RawAnswer>()(
+  AnswersCollectionController,
+) {
   override list(params: string[]): Observable<Answer[]> {
     return this.query(params, orderBy('position'));
   }

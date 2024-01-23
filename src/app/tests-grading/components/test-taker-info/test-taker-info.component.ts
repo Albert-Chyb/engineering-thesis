@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { SolvedTest } from '@tests-grading/types/solved-test';
+import { SolvedTest } from '@utils/firestore/models/solved-tests.model';
 
 @Component({
   selector: 'app-test-taker-info',

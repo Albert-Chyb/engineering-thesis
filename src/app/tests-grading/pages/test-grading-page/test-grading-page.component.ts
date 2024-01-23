@@ -15,8 +15,8 @@ import {
   TestGradingFormData,
 } from '@tests-grading/components/test-grading-form/test-grading-form.component';
 import { TestTakerInfoComponent } from '@tests-grading/components/test-taker-info/test-taker-info.component';
-import { SolvedTestAnswers } from '@tests-grading/types/solved-test-answers';
 import { SolvedTestAnswersEvaluationsSchema } from '@tests-grading/types/solved-test-answers-evaluations';
+import { SolvedTestAnswers } from '@utils/firestore/models/solved-test-answers.model';
 import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { PageStatesDirective } from '@utils/page-states/page-states.directive';

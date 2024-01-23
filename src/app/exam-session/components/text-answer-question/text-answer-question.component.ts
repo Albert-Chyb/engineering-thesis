@@ -4,7 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AssembledQuestion } from '@test-creator/types/assembled-test';
+import { SharedTestQuestion } from '@utils/firestore/models/shared-tests.model';
 
 @Component({
   selector: 'app-text-answer-question',
@@ -20,6 +20,6 @@ import { AssembledQuestion } from '@test-creator/types/assembled-test';
   styleUrl: './text-answer-question.component.scss',
 })
 export class TextAnswerQuestionComponent {
-  @Input({ required: true }) question!: AssembledQuestion;
+  @Input({ required: true }) question!: SharedTestQuestion;
   @Input({ required: true }) form!: FormControl<string | null>;
 }

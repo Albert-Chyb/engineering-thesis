@@ -6,8 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { DocumentDirective } from '@common/directives/document.directive';
-import { Answer } from '@test-creator/types/answer';
 import { AnswerFormGroup } from '@test-creator/types/test-creator-form';
+import { Answer } from '@utils/firestore/models/answers.model';
 
 @Component({
   selector: 'app-answer-wrapper',

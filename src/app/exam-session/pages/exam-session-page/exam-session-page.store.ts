@@ -1,11 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { SharedTestsService } from '@exam-session/services/shared-tests.service';
-import { SolvedTestsService } from '@exam-session/services/solved-tests.service';
 import { SolvedTestFormValue } from '@exam-session/types/solved-test-form-value';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { AssembledTest } from '@test-creator/types/assembled-test';
-import { SharedTestsMetadataService } from '@tests-sharing/services/shared-tests-metadata.service';
-import { SharedTestMetadata } from '@tests-sharing/types/shared-test';
+import { SharedTestsMetadataService } from '@utils/firestore/collections-controllers/shared-tests-metadata.service';
+import { SharedTestsService } from '@utils/firestore/collections-controllers/shared-tests.service';
+import { SolvedTestsService } from '@utils/firestore/collections-controllers/solved-tests.service';
+import { SharedTestMetadata } from '@utils/firestore/models/shared-test-metadata.model';
+import { SharedTest } from '@utils/firestore/models/shared-tests.model';
 import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
@@ -15,7 +15,7 @@ const loadingStateAdapter = new LoadingStateAdapter();
 
 interface ExamSessionPageState {
   metadata: SharedTestMetadata | null;
-  test: AssembledTest | null;
+  test: SharedTest | null;
   error: any;
   loadingState: LoadingState;
   isSaved: boolean;
@@ -66,8 +66,8 @@ export class ExamSessionPageStore
       ),
       switchMap((id) =>
         combineLatest({
-          metadata: this.sharedTestsMetadata.getSharedTestMetadata(id),
-          test: this.sharedTests.getSharedTest(id),
+          metadata: this.sharedTestsMetadata.read(id),
+          test: this.sharedTests.read(id),
         }),
       ),
       tapResponse(

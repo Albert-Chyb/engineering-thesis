@@ -1,48 +1,39 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  DocumentReference,
-  Firestore,
-  doc,
-  orderBy,
-} from '@angular/fire/firestore';
+import { DocumentReference, doc, orderBy } from '@angular/fire/firestore';
 import { AuthService } from '@authentication/services/auth.service';
-import { FirestoreCollectionController } from '@common/classes/FirestoreCollectionController';
 import { ZodFirestoreDataConverter } from '@common/classes/ZodFirestoreDataConverter';
+import { from, map, switchMap, take } from 'rxjs';
+import { mixinAllOperations } from '../collection-controller-core/all-operations-mixin';
+import { CollectionControllerBase } from '../collection-controller-core/collection-controller-base';
 import {
-  QuestionDoc,
+  Question,
   QuestionSchema,
   RawQuestion,
   RawQuestionSchema,
-} from '@test-creator/types/question';
-import { Observable, from, map, switchMap, take } from 'rxjs';
+} from '../models/questions.model';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class QuestionsService extends FirestoreCollectionController<
-  QuestionDoc,
-  RawQuestion
-> {
+class QuestionsCollectionController extends CollectionControllerBase<Question> {
   constructor() {
     const auth = inject(AuthService);
-    const firestore = inject(Firestore);
 
     super(
-      firestore,
       auth.uid$.pipe(map((uid) => `users/${uid}/tests/{testId}/questions/`)),
       new ZodFirestoreDataConverter(RawQuestionSchema, QuestionSchema),
     );
   }
+}
 
-  override list(params: string[]): Observable<QuestionDoc[]> {
+@Injectable({
+  providedIn: 'root',
+})
+export class QuestionsService extends mixinAllOperations<Question, RawQuestion>()(
+  QuestionsCollectionController,
+) {
+  override list(params: string[]) {
     return this.query(params, orderBy('position'));
   }
 
-  swapPositions(
-    testId: string,
-    question1: QuestionDoc,
-    question2: QuestionDoc,
-  ) {
+  swapPositions(testId: string, question1: Question, question2: Question) {
     return this.getCollectionRef([testId]).pipe(
       take(1),
       map((collectionRef) => collectionRef.path),

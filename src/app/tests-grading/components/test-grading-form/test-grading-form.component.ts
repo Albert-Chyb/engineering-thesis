@@ -11,11 +11,11 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MultiChoiceQuestionComponent } from '@exam-session/components/multi-choice-question/multi-choice-question.component';
 import { SingleChoiceQuestionComponent } from '@exam-session/components/single-choice-question/single-choice-question.component';
 import { TextAnswerQuestionComponent } from '@exam-session/components/text-answer-question/text-answer-question.component';
-import { AssembledQuestion } from '@test-creator/types/assembled-test';
-import { SolvedTestAnswer } from '@tests-grading/types/solved-test-answers';
+import { SharedTestQuestion } from '@utils/firestore/models/shared-tests.model';
+import { SolvedTestAnswer } from '@utils/firestore/models/solved-test-answers.model';
 
 export type TestGradingFormData = {
-  question: AssembledQuestion;
+  question: SharedTestQuestion;
   answer: SolvedTestAnswer;
 };
 

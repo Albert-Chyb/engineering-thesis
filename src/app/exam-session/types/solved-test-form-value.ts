@@ -1,10 +1,10 @@
-import { SolvedTestSchema } from '@tests-grading/types/solved-test';
+import { SolvedTestSchema } from '@utils/firestore/models/solved-tests.model';
+import { UserAnswersSchema } from '@utils/firestore/models/user-answers.model';
 import { z } from 'zod';
-import { QuestionsAnswerSchema } from './user-answers';
 
 export const SolvedTestFormValueSchema = z.object({
   testTakerName: SolvedTestSchema.shape.testTakerName,
-  answers: QuestionsAnswerSchema,
+  answers: UserAnswersSchema,
 });
 
 export type SolvedTestFormValue = z.infer<typeof SolvedTestFormValueSchema>;

@@ -6,12 +6,12 @@ import {
   QuestionMetadata,
   questionsMetadata,
 } from '@test-creator/classes/questions-metadata';
-import { AnswersService } from '@test-creator/services/answers/answers.service';
-import { QuestionsService } from '@test-creator/services/questions/questions.service';
-import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
-import { Answer } from '@test-creator/types/answer';
-import { QuestionsTypes } from '@test-creator/types/question';
-import { Test } from '@test-creator/types/test';
+import { AnswersService } from '@utils/firestore/collections-controllers/answers.service';
+import { QuestionsService } from '@utils/firestore/collections-controllers/questions.service';
+import { TestsService } from '@utils/firestore/collections-controllers/tests.service';
+import { Answer } from '@utils/firestore/models/answers.model';
+import { QuestionsTypes } from '@utils/firestore/models/questions.model';
+import { Test } from '@utils/firestore/models/tests.model';
 import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import {
@@ -58,7 +58,7 @@ const INITIAL_STATE: TestCreatorPageState = {
 
 @Injectable()
 export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageState> {
-  private readonly testsService = inject(UserTestsService);
+  private readonly testsService = inject(TestsService);
   private readonly questionsService = inject(QuestionsService);
   private readonly answersService = inject(AnswersService);
 

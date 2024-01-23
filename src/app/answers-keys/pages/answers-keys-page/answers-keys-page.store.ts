@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { AnswersKeysService } from '@answers-keys/services/answers-keys.service';
-import { AnswersKeys } from '@answers-keys/types/answers-keys';
-import { SharedTestsService } from '@exam-session/services/shared-tests.service';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { AssembledTest } from '@test-creator/types/assembled-test';
+import { AnswersKeysService } from '@utils/firestore/collections-controllers/answers-keys.service';
+import { SharedTestsService } from '@utils/firestore/collections-controllers/shared-tests.service';
+import { SharedTest } from '@utils/firestore/models/shared-tests.model';
+import { UserAnswers } from '@utils/firestore/models/user-answers.model';
 import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
 import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
@@ -13,8 +13,8 @@ const loadingAdapter = new LoadingStateAdapter();
 
 interface AnswersKeysPageState {
   loadingState: LoadingState;
-  sharedTest: AssembledTest | null;
-  answersKeys: AnswersKeys | null;
+  sharedTest: SharedTest | null;
+  answersKeys: UserAnswers | null;
   error: unknown;
 }
 
@@ -62,7 +62,7 @@ export class AnswersKeysPageStore
       ),
       switchMap((sharedTestId) =>
         combineLatest({
-          sharedTest: this.sharedTestsService.getSharedTest(sharedTestId),
+          sharedTest: this.sharedTestsService.read(sharedTestId),
           answersKeys: this.answersKeysService.read(sharedTestId),
         }),
       ),
@@ -83,7 +83,7 @@ export class AnswersKeysPageStore
   );
 
   readonly saveAnswersKeys = this.effect(
-    (answersKeys$: Observable<AnswersKeys>) =>
+    (answersKeys$: Observable<UserAnswers>) =>
       answersKeys$.pipe(
         tap(() =>
           this.patchState((state) => ({

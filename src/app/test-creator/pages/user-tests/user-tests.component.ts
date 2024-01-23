@@ -9,10 +9,10 @@ import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
-import { UserTestsService } from '@test-creator/services/user-tests/user-tests.service';
 import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-action';
 import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
 import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
+import { TestsService } from '@utils/firestore/collections-controllers/tests.service';
 import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { PageStatesDirective } from '@utils/page-states/page-states.directive';
@@ -54,7 +54,7 @@ import { UserTestsStore } from './user-tests.store';
 export class UserTestsComponent {
   private readonly store = inject(UserTestsStore);
   private readonly router = inject(Router);
-  private readonly userTests = inject(UserTestsService);
+  private readonly userTests = inject(TestsService);
   private readonly commonDialogs = inject(CommonDialogsService);
 
   readonly tests = this.store.tests;
