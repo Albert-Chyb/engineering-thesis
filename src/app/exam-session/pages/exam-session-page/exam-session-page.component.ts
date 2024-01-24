@@ -15,12 +15,12 @@ import { AnswersFormComponent } from '@exam-session/components/answers-form/answ
 import { TestTakerNameComponent } from '@exam-session/components/test-taker-name/test-taker-name.component';
 import { SolvedTestFormValueSchema } from '@exam-session/types/solved-test-form-value';
 import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
+import { SolvedTestAnswerRecordValue } from '@utils/firestore/models/solved-test-answers.model';
 import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { map, take } from 'rxjs';
 import { ExamSessionPageStore } from './exam-session-page.store';
-import { SolvedTestAnswerRecordValue } from '@utils/firestore/models/solved-test-answers.model';
 
 @Component({
   standalone: true,

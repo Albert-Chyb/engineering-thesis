@@ -1,24 +1,8 @@
 <div class="v-stack">
   @for (question of questions; track question.id) {
-    @switch (question.type) {
-      @case ("single-choice") {
-        <app-single-choice-question
-          [question]="question"
-          [form]="getAnswerControl(question.id)"
-        />
-      }
-      @case ("multi-choice") {
-        <app-multi-choice-question
-          [question]="question"
-          [form]="getAnswerControl(question.id)"
-        />
-      }
-      @case ("text-answer") {
-        <app-text-answer-question
-          [question]="question"
-          [form]="getAnswerControl(question.id)"
-        />
-      }
-    }
+    <app-answer-collector-outlet
+      [question]="question"
+      [formRef]="getAnswerControl(question.id)"
+    />
   }
 </div>

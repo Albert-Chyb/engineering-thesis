@@ -4,19 +4,12 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { SharedTestQuestion } from '@utils/firestore/models/shared-tests.model';
 import { SolvedTestAnswerRecordValue } from '@utils/firestore/models/solved-test-answers.model';
 import { UserAnswers } from '@utils/firestore/models/user-answers.model';
-import { MultiChoiceQuestionComponent } from '../multi-choice-question/multi-choice-question.component';
-import { SingleChoiceQuestionComponent } from '../single-choice-question/single-choice-question.component';
-import { TextAnswerQuestionComponent } from '../text-answer-question/text-answer-question.component';
+import { AnswerCollectorOutletComponent } from '../answer-collector-outlet/answer-collector-outlet.component';
 
 @Component({
   selector: 'app-answers-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    SingleChoiceQuestionComponent,
-    MultiChoiceQuestionComponent,
-    TextAnswerQuestionComponent,
-  ],
+  imports: [CommonModule, AnswerCollectorOutletComponent],
   templateUrl: './answers-form.component.html',
   styleUrl: './answers-form.component.scss',
 })

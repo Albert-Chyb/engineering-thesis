@@ -1,0 +1,7 @@
+<mat-selection-list [formControl]="formRef()">
+  @for (answer of question().answers; track answer.id) {
+    <mat-list-option [value]="answer.id" togglePosition="before">{{
+      answer.content
+    }}</mat-list-option>
+  }
+</mat-selection-list>

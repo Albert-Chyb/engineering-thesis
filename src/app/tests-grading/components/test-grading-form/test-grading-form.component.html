@@ -1,25 +1,9 @@
 <ng-container [formGroup]="answersEvaluationsForm">
   @for (item of data; track item.question.id; let isLast = $last) {
-    @switch (item.question.type) {
-      @case ("single-choice") {
-        <app-single-choice-question
-          [question]="item.question"
-          [form]="buildAnswerFormControl(item.answer)"
-        />
-      }
-      @case ("multi-choice") {
-        <app-multi-choice-question
-          [question]="item.question"
-          [form]="buildAnswerFormControl(item.answer)"
-        />
-      }
-      @case ("text-answer") {
-        <app-text-answer-question
-          [question]="item.question"
-          [form]="buildAnswerFormControl(item.answer)"
-        />
-      }
-    }
+    <app-answer-collector-outlet
+      [question]="item.question"
+      [formRef]="buildAnswerFormControl(item.answer)"
+    />
 
     <div class="answer-evaluation">
       <mat-radio-group

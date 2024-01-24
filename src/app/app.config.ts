@@ -29,6 +29,8 @@ import { CLOUD_FUNCTIONS_DEFINITIONS } from '@utils/cloud-functions/constants/fu
 import { provideCloudFunctionsDefinitions } from '@utils/cloud-functions/core/functions-definitions-di-token';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
+import { provideAnswersCollectors } from '@exam-session/constants/answers-collectors-DI';
+import { ANSWER_COLLECTORS_CONFIG } from '@exam-session/constants/answers-collectors.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -105,5 +107,6 @@ export const appConfig: ApplicationConfig = {
       useValue: 'pl-PL',
     },
     provideCloudFunctionsDefinitions(CLOUD_FUNCTIONS_DEFINITIONS),
+    provideAnswersCollectors(ANSWER_COLLECTORS_CONFIG)
   ],
 };

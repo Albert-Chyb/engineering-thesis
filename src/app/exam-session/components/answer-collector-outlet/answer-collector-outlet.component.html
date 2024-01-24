@@ -1,0 +1,14 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <h1 mat-card-title>{{ question().content }}</h1>
+
+    @if (!formRef().disabled) {
+      <p mat-card-subtitle>{{ collectorConfig().abstractInstruction }}</p>
+    }
+    
+  </mat-card-header>
+
+  <mat-card-content>
+    <ng-container [cdkPortalOutlet]="CollectorComponentPortal()" />
+  </mat-card-content>
+</mat-card>

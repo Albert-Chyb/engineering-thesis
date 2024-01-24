@@ -8,9 +8,7 @@ import {
 } from '@angular/forms';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
-import { MultiChoiceQuestionComponent } from '@exam-session/components/multi-choice-question/multi-choice-question.component';
-import { SingleChoiceQuestionComponent } from '@exam-session/components/single-choice-question/single-choice-question.component';
-import { TextAnswerQuestionComponent } from '@exam-session/components/text-answer-question/text-answer-question.component';
+import { AnswerCollectorOutletComponent } from '@exam-session/components/answer-collector-outlet/answer-collector-outlet.component';
 import { SharedTestQuestion } from '@utils/firestore/models/shared-tests.model';
 import { SolvedTestAnswer } from '@utils/firestore/models/solved-test-answers.model';
 
@@ -24,12 +22,11 @@ export type TestGradingFormData = {
   standalone: true,
   imports: [
     CommonModule,
-    SingleChoiceQuestionComponent,
-    MultiChoiceQuestionComponent,
-    TextAnswerQuestionComponent,
+
     MatDividerModule,
     MatRadioModule,
     ReactiveFormsModule,
+    AnswerCollectorOutletComponent,
   ],
   templateUrl: './test-grading-form.component.html',
   styleUrl: './test-grading-form.component.scss',
