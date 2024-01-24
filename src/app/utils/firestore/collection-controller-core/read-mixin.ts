@@ -3,7 +3,7 @@ import { Observable, switchMap } from 'rxjs';
 import { CollectionControllerMixinsBase } from './collection-controller-base';
 
 export type ReadMethod<TData extends DocumentData> = {
-  read(id: string, params: string[]): Observable<TData>;
+  read(id: string, params: string[]): Observable<TData | undefined>;
 };
 
 export function mixinRead<TData extends DocumentData>() {
