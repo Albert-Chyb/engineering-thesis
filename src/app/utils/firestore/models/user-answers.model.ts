@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-export const SingleChoiceAnswerSchema = z.string();
+export const SingleChoiceAnswerSchema = z.string().nullable();
 
-export const MultipleChoiceAnswerSchema = z.array(z.string());
+export const MultipleChoiceAnswerSchema = z.array(z.string()).nullable();
 
-export const TextAnswerAnswerSchema = z.string();
+export const TextAnswerAnswerSchema = z.string().nullable();
 
 export const UserAnswersSchema = z.record(
   z.union([
