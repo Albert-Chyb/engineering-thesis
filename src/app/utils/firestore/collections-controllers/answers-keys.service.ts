@@ -1,5 +1,4 @@
 import { Injectable, inject } from '@angular/core';
-import { Functions } from '@angular/fire/functions';
 import { ZodFirestoreDataConverter } from '@common/classes/ZodFirestoreDataConverter';
 import { CloudFunctionsService } from '@utils/cloud-functions/core/cloud-functions.service';
 import { of } from 'rxjs';
@@ -27,7 +26,6 @@ const MixedController = mixinReadOnly<UserAnswers>()(
 })
 export class AnswersKeysService extends MixedController {
   private readonly cloudFunctions = inject(CloudFunctionsService);
-  private readonly functions = inject(Functions);
 
   create(sharedTestId: string, answers: UserAnswers) {
     const data = {

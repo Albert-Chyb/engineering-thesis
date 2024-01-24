@@ -35,7 +35,6 @@ const MixedController = mixinReadOnly<SharedTestMetadata>()(
 export class SharedTestsMetadataService extends MixedController {
   private readonly document = inject(DOCUMENT);
   private readonly location = inject(Location);
-  private readonly functions = inject(Functions);
   private readonly cloudFunctions = inject(CloudFunctionsService);
   private readonly auth = inject(AuthService);
 
