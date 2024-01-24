@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { ShareTestCloudFnPayload } from '@tests-sharing/types/share-test-cloud-fn';
+import { ShareTestCloudFnData } from '@utils/cloud-functions/definitions/share-test';
 import { SharedTestsMetadataService } from '@utils/firestore/collections-controllers/shared-tests-metadata.service';
 import { TestsService } from '@utils/firestore/collections-controllers/tests.service';
 import { Test } from '@utils/firestore/models/tests.model';
@@ -73,7 +73,7 @@ export class UserTestsStore
   );
 
   readonly shareTest = this.effect(
-    (testId$: Observable<ShareTestCloudFnPayload>) =>
+    (testId$: Observable<ShareTestCloudFnData>) =>
       testId$.pipe(
         tap(() =>
           this.patchState((state) => loadingAdapter.taskStarted(state)),

@@ -6,15 +6,11 @@ import {
   query,
   where,
 } from '@angular/fire/firestore';
-import { Functions, httpsCallable } from '@angular/fire/functions';
 import { AuthService } from '@authentication/services/auth.service';
 import { ZodFirestoreDataConverter } from '@common/classes/ZodFirestoreDataConverter';
-import {
-  SaveSolvedTestCloudFnData,
-  saveSolvedTestCloudFnDataSchema,
-} from '@exam-session/types/save-solved-test-cloud-fn';
 import { SolvedTestFormValue } from '@exam-session/types/solved-test-form-value';
-import { Observable, from, map, of, switchMap } from 'rxjs';
+import { CloudFunctionsService } from '@utils/cloud-functions/core/cloud-functions.service';
+import { Observable, of, switchMap } from 'rxjs';
 import { z } from 'zod';
 import { CollectionControllerBase } from '../collection-controller-core/collection-controller-base';
 import { mixinDelete } from '../collection-controller-core/delete-mixin';
@@ -38,24 +34,19 @@ const MixedController = mixinReadOnly<SolvedTest>()(
   providedIn: 'root',
 })
 export class SolvedTestsService extends MixedController {
-  private readonly functions = inject(Functions);
   private readonly auth = inject(AuthService);
+  private readonly cloudFunctions = inject(CloudFunctionsService);
 
   saveSolvedTest(
     sharedTestId: string,
     solvedTest: SolvedTestFormValue,
   ): Observable<string> {
-    return from(
-      httpsCallable<SaveSolvedTestCloudFnData, string>(
-        this.functions,
-        'saveSolvedTest',
-      )(
-        saveSolvedTestCloudFnDataSchema.parse({
-          sharedTestId,
-          ...solvedTest,
-        }),
-      ),
-    ).pipe(map((result) => result.data));
+    const data = {
+      sharedTestId,
+      ...solvedTest,
+    };
+
+    return this.cloudFunctions.call('saveSolvedTest', data);
   }
 
   override list(params?: string[]) {

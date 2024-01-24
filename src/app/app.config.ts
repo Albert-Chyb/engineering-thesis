@@ -25,6 +25,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { AppErrorHandler } from '@common/classes/AppErrorHandler';
+import { CLOUD_FUNCTIONS_DEFINITIONS } from '@utils/cloud-functions/constants/functions-definitions';
+import { provideCloudFunctionsDefinitions } from '@utils/cloud-functions/core/functions-definitions-di-token';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 
@@ -102,5 +104,6 @@ export const appConfig: ApplicationConfig = {
       provide: LOCALE_ID,
       useValue: 'pl-PL',
     },
+    provideCloudFunctionsDefinitions(CLOUD_FUNCTIONS_DEFINITIONS),
   ],
 };

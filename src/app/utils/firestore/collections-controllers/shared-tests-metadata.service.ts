@@ -1,11 +1,12 @@
 import { DOCUMENT, Location } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { where } from '@angular/fire/firestore';
-import { Functions, httpsCallable } from '@angular/fire/functions';
+import { Functions } from '@angular/fire/functions';
 import { AuthService } from '@authentication/services/auth.service';
 import { ZodFirestoreDataConverter } from '@common/classes/ZodFirestoreDataConverter';
-import { ShareTestCloudFnPayload } from '@tests-sharing/types/share-test-cloud-fn';
-import { Observable, from, map, of, switchMap } from 'rxjs';
+import { CloudFunctionsService } from '@utils/cloud-functions/core/cloud-functions.service';
+import { ShareTestCloudFnData } from '@utils/cloud-functions/definitions/share-test';
+import { Observable, of, switchMap } from 'rxjs';
 import { z } from 'zod';
 import { CollectionControllerBase } from '../collection-controller-core/collection-controller-base';
 import { mixinDelete } from '../collection-controller-core/delete-mixin';
@@ -35,6 +36,7 @@ export class SharedTestsMetadataService extends MixedController {
   private readonly document = inject(DOCUMENT);
   private readonly location = inject(Location);
   private readonly functions = inject(Functions);
+  private readonly cloudFunctions = inject(CloudFunctionsService);
   private readonly auth = inject(AuthService);
 
   override list(params: string[] = []): Observable<SharedTestMetadata[]> {
@@ -43,13 +45,8 @@ export class SharedTestsMetadataService extends MixedController {
     );
   }
 
-  shareTest(data: ShareTestCloudFnPayload): Observable<string> {
-    return from(
-      httpsCallable<ShareTestCloudFnPayload, string>(
-        this.functions,
-        'shareTest',
-      )(data),
-    ).pipe(map((res) => res.data));
+  shareTest(data: ShareTestCloudFnData): Observable<string> {
+    return this.cloudFunctions.call('shareTest', data);
   }
 
   generateLink(id: string) {

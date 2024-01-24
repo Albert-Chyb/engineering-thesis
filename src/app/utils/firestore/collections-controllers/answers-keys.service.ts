@@ -1,11 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { Functions, httpsCallable } from '@angular/fire/functions';
-import {
-  SaveAnswersKeyCloudFnData,
-  SaveAnswersKeyCloudFnDataSchema,
-} from '@answers-keys/types/save-answers-key-cloud-fn-data';
+import { Functions } from '@angular/fire/functions';
 import { ZodFirestoreDataConverter } from '@common/classes/ZodFirestoreDataConverter';
-import { from, of } from 'rxjs';
+import { CloudFunctionsService } from '@utils/cloud-functions/core/cloud-functions.service';
+import { of } from 'rxjs';
 import { z } from 'zod';
 import { CollectionControllerBase } from '../collection-controller-core/collection-controller-base';
 import { mixinDelete } from '../collection-controller-core/delete-mixin';
@@ -29,19 +26,15 @@ const MixedController = mixinReadOnly<UserAnswers>()(
   providedIn: 'root',
 })
 export class AnswersKeysService extends MixedController {
+  private readonly cloudFunctions = inject(CloudFunctionsService);
   private readonly functions = inject(Functions);
 
   create(sharedTestId: string, answers: UserAnswers) {
-    const data = SaveAnswersKeyCloudFnDataSchema.parse({
+    const data = {
       sharedTestId,
       answersKeys: answers,
-    });
+    };
 
-    return from(
-      httpsCallable<SaveAnswersKeyCloudFnData, void>(
-        this.functions,
-        'saveAnswersKeys',
-      )(data),
-    );
+    return this.cloudFunctions.call('saveAnswersKeys', data);
   }
 }
