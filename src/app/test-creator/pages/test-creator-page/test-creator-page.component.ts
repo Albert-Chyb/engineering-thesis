@@ -117,7 +117,7 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
 
   handleAddAnswer(question: Question) {
     const answer: Answer = {
-      content: 'Nowa odpowiedź',
+      content: '',
       id: this.testsService.generateId(),
       position: this.getNewAnswerPosition(question),
     };
@@ -158,7 +158,7 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
     const newQuestion: Question = new Question({
       id: this.testsService.generateId(),
       type,
-      content: 'Nowe pytanie',
+      content: '',
       position,
     });
 
