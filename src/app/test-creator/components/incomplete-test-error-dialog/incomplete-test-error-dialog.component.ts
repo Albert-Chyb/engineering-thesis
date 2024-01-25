@@ -1,12 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
-
-export type IncompleteTestErrorDialogData = {
-  issues: string[];
-};
 
 @Component({
   selector: 'app-incomplete-test-error-dialog',
@@ -17,7 +13,10 @@ export type IncompleteTestErrorDialogData = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IncompleteTestErrorDialogComponent {
-  private readonly data: IncompleteTestErrorDialogData =
-    inject(MAT_DIALOG_DATA);
-  readonly issues = this.data.issues;
+  readonly possibleIssues = [
+    'Test nie zawiera żadnych pytań',
+    'Test zawiera pytania bez odpowiedzi',
+    'Test zawiera pytania bez treści',
+    'Test zawiera odpowiedzi bez treści',
+  ];
 }

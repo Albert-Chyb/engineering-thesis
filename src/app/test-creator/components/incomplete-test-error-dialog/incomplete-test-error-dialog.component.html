@@ -1,13 +1,13 @@
 <h1 mat-dialog-title>Niekompletny test</h1>
 
 <mat-dialog-content class="mat-typography">
-  <p>Nie można udostępnić testu w obecnym stanie.</p>
+  <p>Prawdopodobne przyczyny:</p>
 
-  <h2>Przyczyny:</h2>
-
-  <mat-list role="list">
-    @for (issue of issues; track $index) {
-    <mat-list-item role="listitem">{{ issue }}</mat-list-item>
+  <mat-list>
+    @for (issue of possibleIssues; track $index) {
+      <mat-list-item>
+        {{ issue }}
+      </mat-list-item>
     }
   </mat-list>
 </mat-dialog-content>
