@@ -2,12 +2,16 @@ import { z } from 'zod';
 import { isOpenQuestion } from '../helpers/is-open-question';
 import { testAnswerSchema, testQuestionSchema, testSchema } from './test';
 
-const sharedTestAnswer = testAnswerSchema.extend({ id: z.string() });
+const sharedTestAnswer = testAnswerSchema.extend({
+  id: z.string(),
+  content: testAnswerSchema.shape.content.min(1),
+});
 
 const sharedTestQuestion = testQuestionSchema
   .extend({
     id: z.string(),
     answers: z.array(sharedTestAnswer),
+    content: testQuestionSchema.shape.content.min(1),
   })
   .refine(
     (question) => {
@@ -36,6 +40,7 @@ const sharedTestQuestion = testQuestionSchema
 
 export const sharedTestSchema = testSchema.extend({
   questions: z.array(sharedTestQuestion).min(1),
+  name: testSchema.shape.name.min(1),
 });
 
 export type SharedTest = z.infer<typeof sharedTestSchema>;
