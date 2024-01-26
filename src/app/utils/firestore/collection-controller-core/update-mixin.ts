@@ -1,6 +1,9 @@
 import { DocumentData, UpdateData, updateDoc } from '@angular/fire/firestore';
 import { Observable, from, switchMap, take } from 'rxjs';
-import { CollectionControllerMixinsBase } from './collection-controller-base';
+import {
+  CollectionControllerMethod,
+  CollectionControllerMixinsBase,
+} from './collection-controller-base';
 
 export type UpdateMethod<TData extends DocumentData> = {
   update(
@@ -15,6 +18,12 @@ export function mixinUpdate<TData extends DocumentData>() {
     Base: TBase,
   ) {
     return class extends Base implements UpdateMethod<TData> {
+      constructor(...args: any[]) {
+        super(...args);
+
+        this.markAs(CollectionControllerMethod.Update);
+      }
+
       update(
         id: string,
         updatedData: UpdateData<TData>,

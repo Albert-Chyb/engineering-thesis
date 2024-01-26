@@ -6,7 +6,10 @@ import {
   setDoc,
 } from '@angular/fire/firestore';
 import { Observable, from, map, switchMap, take } from 'rxjs';
-import { CollectionControllerMixinsBase } from './collection-controller-base';
+import {
+  CollectionControllerMethod,
+  CollectionControllerMixinsBase,
+} from './collection-controller-base';
 
 export type CreateMethod<
   TData extends DocumentData,
@@ -30,6 +33,12 @@ export function mixinCreate<
       extends Base
       implements CreateMethod<TData, TCreatePayload>
     {
+      constructor(...args: any[]) {
+        super(...args);
+
+        this.markAs(CollectionControllerMethod.Delete);
+      }
+
       create(
         data: WithFieldValue<TCreatePayload>,
         id?: string,

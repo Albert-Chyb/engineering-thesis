@@ -5,7 +5,10 @@ import {
   query,
 } from '@angular/fire/firestore';
 import { Observable, switchMap } from 'rxjs';
-import { CollectionControllerMixinsBase } from './collection-controller-base';
+import {
+  CollectionControllerMethod,
+  CollectionControllerMixinsBase,
+} from './collection-controller-base';
 
 export type ListMethod<TData extends DocumentData> = {
   list(params: string[]): Observable<TData[]>;
@@ -18,6 +21,12 @@ export function mixinList<TData extends DocumentData>() {
     Base: TBase,
   ) {
     return class extends Base implements ListMethod<TData> {
+      constructor(...args: any[]) {
+        super(...args);
+
+        this.markAs(CollectionControllerMethod.List);
+      }
+
       list(params: string[] = []): Observable<TData[]> {
         return this.getCollectionRef(params).pipe(
           switchMap((collectionRef) => collectionData(collectionRef)),

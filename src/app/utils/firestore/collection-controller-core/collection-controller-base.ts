@@ -12,13 +12,31 @@ import {
 } from '@angular/fire/firestore';
 import { Observable, from, map, take } from 'rxjs';
 
+export enum CollectionControllerMethod {
+  Read = 'read',
+  Update = 'update',
+  Delete = 'delete',
+  Create = 'create',
+  List = 'list',
+}
+
 export abstract class CollectionControllerBase<TData extends DocumentData> {
   protected readonly firestore = inject(Firestore);
+
+  private readonly supportedMethods = new Set<CollectionControllerMethod>();
 
   constructor(
     private readonly collectionPathTemplate: Observable<string>,
     protected readonly converter: FirestoreDataConverter<TData>,
   ) {}
+
+  protected markAs(method: CollectionControllerMethod): void {
+    this.supportedMethods.add(method);
+  }
+
+  isSupported(method: CollectionControllerMethod): boolean {
+    return this.supportedMethods.has(method);
+  }
 
   generateId(): string {
     const fakeCollection = collection(this.firestore, 'fake');
