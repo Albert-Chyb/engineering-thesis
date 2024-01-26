@@ -1,45 +1,11 @@
-<ng-template #loadingTemplate>
-  <app-loading-indicator>Ładowanie ...</app-loading-indicator>
-</ng-template>
-
-<ng-template #noDataTemplate>
-  <app-no-data-info>
-    <img src="assets/icons/no-data.svg" no-data-info-icon />
-    <p no-data-info-message>Brak danych do wyświetlenia</p>
-  </app-no-data-info>
-</ng-template>
-
-<ng-template #dataTemplate>
-  @if (sharedTestQuestions().length > 0) {
-    <app-answers-form
-      [questions]="sharedTestQuestions()"
-      [existingAnswers]="answersKeys()"
-      [formRef]="answersKeysForm"
-    />
-  } @else {
-    <app-no-data-info>
-      <img src="assets/icons/no-data.svg" no-data-info-icon />
-      <p no-data-info-message>Test nie zawiera pytań zamkniętych</p>
-    </app-no-data-info>
-  }
-</ng-template>
-
-<mat-card class="with-spacing-fix">
-  <mat-card-header>
-    <h1 mat-card-title>Klucz odpowiedzi</h1>
-    <p mat-card-subtitle>
-      Ta strona pozwala na ustawienie klucza odpowiedzi dla testu. Klucz ten
-      zostanie zastosowany <strong>tylko</strong> do odpowiedzi przesłanych po
-      jego utworzeniu.
-    </p>
-  </mat-card-header>
-
-  <mat-card-content>
-    <ng-container
-      appPageStates
-      [loadingTemplate]="loadingTemplate"
-      [dataTemplate]="dataTemplate"
-      [emptyTemplate]="noDataTemplate"
-    />
-  </mat-card-content>
-</mat-card>
+<app-page
+  pageTitle="Klucz odpowiedzi"
+  subtitle="Ta strona pozwala na ustawienie klucza odpowiedzi dla testu. Klucz ten zostanie zastosowany tylko do odpowiedzi przesłanych po jego utworzeniu."
+  noDataAvailableMsg="Ten test nie posiada pytań zamkniętych."
+>
+  <app-answers-form
+    [questions]="sharedTestQuestions()"
+    [existingAnswers]="answersKeys()"
+    [formRef]="answersKeysForm"
+  />
+</app-page>

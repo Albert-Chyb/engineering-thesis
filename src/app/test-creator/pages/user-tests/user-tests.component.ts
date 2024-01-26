@@ -8,14 +8,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
+import { PageComponent } from '@common/components/page/page.component';
 import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-action';
 import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
 import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
 import { TestsService } from '@utils/firestore/collections-controllers/tests.service';
-import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
-import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { filter, map, take } from 'rxjs';
 import { UserTestsPageErrorHandler } from './user-tests-page.error-handler';
 import { UserTestsStore } from './user-tests.store';
@@ -31,10 +29,8 @@ import { UserTestsStore } from './user-tests.store';
     MatIconModule,
     MatDialogModule,
     MatTooltipModule,
-    NoDataInfoComponent,
     BottomSheetActionsTriggerDirective,
-    PageStatesDirective,
-    LoadingIndicatorComponent,
+    PageComponent,
   ],
   templateUrl: './user-tests.component.html',
   styleUrl: './user-tests.component.scss',

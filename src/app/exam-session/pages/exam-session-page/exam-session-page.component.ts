@@ -11,14 +11,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@authentication/services/auth.service';
+import { PageComponent } from '@common/components/page/page.component';
 import { AnswersFormComponent } from '@exam-session/components/answers-form/answers-form.component';
 import { TestTakerNameComponent } from '@exam-session/components/test-taker-name/test-taker-name.component';
 import { SolvedTestFormValueSchema } from '@exam-session/types/solved-test-form-value';
 import { CommonDialogsService } from '@utils/common-dialogs/common-dialogs.service';
 import { SolvedTestAnswerRecordValue } from '@utils/firestore/models/solved-test-answers.model';
-import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
-import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { map, take } from 'rxjs';
 import { ExamSessionPageStore } from './exam-session-page.store';
 
@@ -30,9 +29,8 @@ import { ExamSessionPageStore } from './exam-session-page.store';
     MatCardModule,
     ReactiveFormsModule,
     MatButtonModule,
-    PageStatesDirective,
-    LoadingIndicatorComponent,
     AnswersFormComponent,
+    PageComponent,
   ],
   templateUrl: './exam-session-page.component.html',
   styleUrl: './exam-session-page.component.scss',

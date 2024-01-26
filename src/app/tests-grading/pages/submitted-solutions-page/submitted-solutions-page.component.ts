@@ -5,29 +5,25 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
+import { PageComponent } from '@common/components/page/page.component';
 import { BottomSheetAction } from '@utils/bottom-sheet-actions/bottom-sheet-action';
 import { BottomSheetActionsTriggerDirective } from '@utils/bottom-sheet-actions/bottom-sheet-actions-trigger.directive';
-import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
+import { SolvedTest } from '@utils/firestore/models/solved-tests.model';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
-import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { map } from 'rxjs';
 import { SubmittedSolutionsPageStore } from './submitted-solutions-page.store';
-import { SolvedTest } from '@utils/firestore/models/solved-tests.model';
 
 @Component({
   selector: 'app-submitted-solutions-page',
   standalone: true,
   imports: [
     CommonModule,
-    LoadingIndicatorComponent,
     MatListModule,
     MatCardModule,
     MatBottomSheetModule,
     BottomSheetActionsTriggerDirective,
-    PageStatesDirective,
-    NoDataInfoComponent,
     MatIconModule,
+    PageComponent,
   ],
   templateUrl: './submitted-solutions-page.component.html',
   styleUrl: './submitted-solutions-page.component.scss',

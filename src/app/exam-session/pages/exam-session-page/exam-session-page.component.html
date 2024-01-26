@@ -1,49 +1,30 @@
-<ng-template #loadingTemplate>
-  <app-loading-indicator> Ładuję test ... </app-loading-indicator>
-</ng-template>
-
-<ng-template #noDataTemplate></ng-template>
-
-<ng-template #dataTemplate>
-  <mat-card class="with-spacing-fix">
-    <mat-card-header>
-      <h1 mat-card-title>Rozwiąż test</h1>
-      <p mat-card-subtitle>Nazwa testu: {{ metadata()?.name }}</p>
-    </mat-card-header>
-    <mat-card-content>
-      <form
-        class="v-stack"
-        id="solved-test-form"
-        [formGroup]="form"
-        (ngSubmit)="handleFormSubmit()"
-      >
-        <app-test-taker-name [form]="form.controls.testTakerName" />
-
-        <app-answers-form
-          [questions]="test()?.questions ?? []"
-          [formRef]="form.controls.answers"
-        />
-      </form>
-    </mat-card-content>
-
-    <mat-card-actions align="end">
-      <button
-        mat-button
-        color="accent"
-        type="submit"
-        form="solved-test-form"
-        [disabled]="form.invalid"
-      >
-        Prześlij rozwiązania
-      </button>
-    </mat-card-actions>
-  </mat-card>
-</ng-template>
-
-<ng-container
-  appPageStates
-  [loadingTemplate]="loadingTemplate"
-  [dataTemplate]="dataTemplate"
-  [emptyTemplate]="noDataTemplate"
+<app-page
+  [pageTitle]="metadata()?.name ?? ''"
+  subtitle="Ta strona zawiera formularz rozwiązywania testu."
 >
-</ng-container>
+  <form
+    class="v-stack"
+    id="solved-test-form"
+    [formGroup]="form"
+    (ngSubmit)="handleFormSubmit()"
+  >
+    <app-test-taker-name [form]="form.controls.testTakerName" />
+
+    <app-answers-form
+      [questions]="test()?.questions ?? []"
+      [formRef]="form.controls.answers"
+    />
+  </form>
+
+  <ng-template #pageActions>
+    <button
+      mat-button
+      color="accent"
+      type="submit"
+      form="solved-test-form"
+      [disabled]="form.invalid"
+    >
+      Prześlij rozwiązania
+    </button>
+  </ng-template>
+</app-page>

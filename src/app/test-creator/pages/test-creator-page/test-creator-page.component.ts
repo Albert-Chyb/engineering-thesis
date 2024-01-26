@@ -1,11 +1,10 @@
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -13,6 +12,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
+import { PageComponent } from '@common/components/page/page.component';
 import { Question } from '@test-creator/classes/question';
 import { AnswerWrapperComponent } from '@test-creator/components/answer-wrapper/answer-wrapper.component';
 import { QuestionWrapperComponent } from '@test-creator/components/question-wrapper/question-wrapper.component';
@@ -21,9 +21,8 @@ import { TestsService } from '@utils/firestore/collections-controllers/tests.ser
 import { Answer } from '@utils/firestore/models/answers.model';
 import { QuestionsTypes } from '@utils/firestore/models/questions.model';
 import { Test } from '@utils/firestore/models/tests.model';
-import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
 import { HasPendingTasks } from '@utils/loading-indicator/guards/has-pending-tasks.guard';
-import { PendingIndicatorService } from '@utils/loading-indicator/services/pending-indicator.service';
+import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
 import { debounceTime, map } from 'rxjs';
 import { TestCreatorPageStore } from './test-creator-page.store';
 
@@ -38,7 +37,6 @@ const QUICK_ASYNC_TASKS_DEBOUNCE_TIME = 40 as const;
     CommonModule,
     MatCardModule,
     MatButtonModule,
-    MatDividerModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -48,19 +46,24 @@ const QUICK_ASYNC_TASKS_DEBOUNCE_TIME = 40 as const;
     DragDropModule,
     AnswerWrapperComponent,
     TestCreatorFormComponent,
-    LoadingIndicatorComponent,
     MatProgressSpinnerModule,
     NoDataInfoComponent,
+    PageComponent,
   ],
   templateUrl: './test-creator-page.component.html',
   styleUrls: ['./test-creator-page.component.scss'],
-  providers: [TestCreatorPageStore],
+  providers: [
+    TestCreatorPageStore,
+    {
+      provide: PAGE_STATE_INDICATORS,
+      useExisting: TestCreatorPageStore,
+    },
+  ],
 })
-export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
+export class TestCreatorPageComponent implements HasPendingTasks {
   private readonly testsService = inject(TestsService);
   private readonly store = inject(TestCreatorPageStore);
   private readonly route = inject(ActivatedRoute);
-  private readonly pendingIndicatorService = inject(PendingIndicatorService);
 
   readonly test = this.store.test;
   readonly questions = this.store.questions;
@@ -74,17 +77,9 @@ export class TestCreatorPageComponent implements HasPendingTasks, OnDestroy {
   );
 
   constructor() {
-    this.pendingIndicatorService.connectStateChanges({
-      onPendingChange$: this.store.pendingState$,
-    });
-
     this.store.loadTestData(
       this.route.params.pipe(map((params) => params['id'])),
     );
-  }
-
-  ngOnDestroy(): void {
-    this.pendingIndicatorService.disconnectStateChanges();
   }
 
   hasPendingTasks() {

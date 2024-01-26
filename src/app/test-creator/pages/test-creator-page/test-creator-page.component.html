@@ -1,25 +1,18 @@
-@if (isLoading()) {
-<app-loading-indicator> Ładuję test... </app-loading-indicator>
-} @else {
-<mat-card>
-  <mat-card-header>
-    <h1 mat-card-title>Kreator testu</h1>
-  </mat-card-header>
-
-  <mat-divider></mat-divider>
-
-  <mat-card-content>
-    <app-test-creator-form
-      [document]="test()"
-      (onDocChange)="handleUpdateTest($event)"
+<app-page
+  pageTitle="Kreator testu"
+  subtitle="Ta strona pozwala na tworzenie testów."
+>
+  <app-test-creator-form
+    [document]="test()"
+    (onDocChange)="handleUpdateTest($event)"
+  >
+    <div
+      class="v-stack"
+      cdkDropList
+      [cdkDropListData]="questions()"
+      (cdkDropListDropped)="handleQuestionsPositionsSwap($event)"
     >
-      <div
-        class="v-stack"
-        cdkDropList
-        [cdkDropListData]="questions()"
-        (cdkDropListDropped)="handleQuestionsPositionsSwap($event)"
-      >
-        @for (question of questions(); track question.id; let i = $index) {
+      @for (question of questions(); track question.id; let i = $index) {
         <app-question-wrapper
           [document]="question"
           cdkDrag
@@ -41,53 +34,53 @@
 
           <ng-container question-answers>
             @if (question.isClosedQuestion()) {
-            <div
-              cdkDropList
-              [cdkDropListData]="getAnswers(question)"
-              (cdkDropListDropped)="
-                handleAnswersPositionsSwap(question, $event)
-              "
-            >
-              @for (answer of getAnswers(question); track answer.id) {
-              <app-answer-wrapper
-                (onDocDelete)="handleDeleteAnswer(question.id, answer.id)"
-                (onDocChange)="handleUpdateAnswer(question.id, $event)"
-                [document]="answer"
-                cdkDrag
-                [cdkDragData]="answer"
+              <div
+                cdkDropList
+                [cdkDropListData]="getAnswers(question)"
+                (cdkDropListDropped)="
+                  handleAnswersPositionsSwap(question, $event)
+                "
               >
-                <button mat-icon-button drag-handle cdkDragHandle>
-                  <mat-icon>drag_indicator</mat-icon>
-                </button>
-              </app-answer-wrapper>
-              } @empty {
-              <app-no-data-info>
-                <ng-container no-data-info-icon>
-                  <img src="assets/icons/insert.svg" alt="" />
-                </ng-container>
+                @for (answer of getAnswers(question); track answer.id) {
+                  <app-answer-wrapper
+                    (onDocDelete)="handleDeleteAnswer(question.id, answer.id)"
+                    (onDocChange)="handleUpdateAnswer(question.id, $event)"
+                    [document]="answer"
+                    cdkDrag
+                    [cdkDragData]="answer"
+                  >
+                    <button mat-icon-button drag-handle cdkDragHandle>
+                      <mat-icon>drag_indicator</mat-icon>
+                    </button>
+                  </app-answer-wrapper>
+                } @empty {
+                  <app-no-data-info>
+                    <ng-container no-data-info-icon>
+                      <img src="assets/icons/insert.svg" alt="" />
+                    </ng-container>
 
-                <ng-container no-data-info-message>
-                  <p>Dodaj odpowiedzi do pytania</p>
-                </ng-container>
-              </app-no-data-info>
-              }
-            </div>
+                    <ng-container no-data-info-message>
+                      <p>Dodaj odpowiedzi do pytania</p>
+                    </ng-container>
+                  </app-no-data-info>
+                }
+              </div>
             }
           </ng-container>
 
           <ng-container question-actions>
             @if (question.isClosedQuestion()) {
-            <button
-              mat-button
-              color="accent"
-              (click)="handleAddAnswer(question)"
-            >
-              <mat-icon>add</mat-icon> Dodaj odpowiedź
-            </button>
+              <button
+                mat-button
+                color="accent"
+                (click)="handleAddAnswer(question)"
+              >
+                <mat-icon>add</mat-icon> Dodaj odpowiedź
+              </button>
             }
           </ng-container>
         </app-question-wrapper>
-        } @empty {
+      } @empty {
         <app-no-data-info>
           <ng-container no-data-info-icon>
             <img src="assets/icons/questions.svg" alt="" />
@@ -97,14 +90,11 @@
             <p>Dodaj pytanie do testu</p>
           </ng-container>
         </app-no-data-info>
-        }
-      </div>
-    </app-test-creator-form>
-  </mat-card-content>
+      }
+    </div>
+  </app-test-creator-form>
 
-  <mat-divider></mat-divider>
-
-  <mat-card-actions align="end">
+  <ng-template #pageActions>
     <button
       mat-stroked-button
       [matMenuTriggerFor]="addQuestionMenu"
@@ -115,17 +105,19 @@
 
     <mat-menu #addQuestionMenu>
       @for (qMetadata of questionsMetadata(); track qMetadata.type) {
-      <button
-        mat-menu-item
-        (click)="
-          handleAddQuestion(qMetadata.type, getNewQuestionPosition(questions()))
-        "
-      >
-        <mat-icon>{{ qMetadata.icon }}</mat-icon>
-        {{ qMetadata.shortName }}
-      </button>
+        <button
+          mat-menu-item
+          (click)="
+            handleAddQuestion(
+              qMetadata.type,
+              getNewQuestionPosition(questions())
+            )
+          "
+        >
+          <mat-icon>{{ qMetadata.icon }}</mat-icon>
+          {{ qMetadata.shortName }}
+        </button>
       }
     </mat-menu>
-  </mat-card-actions>
-</mat-card>
-}
+  </ng-template>
+</app-page>

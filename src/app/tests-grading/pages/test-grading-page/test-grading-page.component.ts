@@ -9,7 +9,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
-import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
+import { PageComponent } from '@common/components/page/page.component';
 import {
   TestGradingFormComponent,
   TestGradingFormData,
@@ -17,9 +17,7 @@ import {
 import { TestTakerInfoComponent } from '@tests-grading/components/test-taker-info/test-taker-info.component';
 import { SolvedTestAnswersEvaluationsSchema } from '@tests-grading/types/solved-test-answers-evaluations';
 import { SolvedTestAnswers } from '@utils/firestore/models/solved-test-answers.model';
-import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
-import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { Observable, filter, map } from 'rxjs';
 import { TestGradingPageStore } from './test-grading-page.store';
 
@@ -27,14 +25,12 @@ import { TestGradingPageStore } from './test-grading-page.store';
   standalone: true,
   imports: [
     CommonModule,
-    PageStatesDirective,
-    NoDataInfoComponent,
-    LoadingIndicatorComponent,
     MatCardModule,
     TestTakerInfoComponent,
     TestGradingFormComponent,
     ReactiveFormsModule,
     MatButtonModule,
+    PageComponent,
   ],
   templateUrl: './test-grading-page.component.html',
   styleUrl: './test-grading-page.component.scss',

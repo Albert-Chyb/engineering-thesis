@@ -1,4 +1,20 @@
-<ng-template #hasDataTemplate>
+<app-page
+  pageTitle="Testy"
+  subtitle="Ta strona pozwala na przeglądanie wersji roboczych testów."
+>
+  <ng-container page-header-actions>
+    <button
+      type="button"
+      mat-icon-button
+      color="accent"
+      (click)="addNewTest()"
+      aria-label="Dodaj nowy test"
+      matTooltip="Dodaj nowy test"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </ng-container>
+
   <mat-action-list>
     @for (test of tests(); track test.id) {
       <button
@@ -11,51 +27,4 @@
       </button>
     }
   </mat-action-list>
-</ng-template>
-
-<ng-template #isLoadingTemplate>
-  <app-loading-indicator>Ładuję testy ...</app-loading-indicator>
-</ng-template>
-
-<ng-template #noDataTemplate>
-  <app-no-data-info>
-    <ng-container no-data-info-icon>
-      <img src="assets/icons/no-data.svg" alt="" />
-    </ng-container>
-
-    <ng-container no-data-info-message>
-      <p>Nie masz utworzonych testów</p>
-    </ng-container>
-  </app-no-data-info>
-</ng-template>
-
-<mat-card>
-  <mat-card-header>
-    <mat-card-title-group>
-      <h1 mat-card-title>Testy</h1>
-      <p mat-card-subtitle>
-        Ta strona pozwala na przeglądanie wersji roboczych testów.
-      </p>
-    </mat-card-title-group>
-
-    <button
-      type="button"
-      mat-icon-button
-      color="accent"
-      (click)="addNewTest()"
-      aria-label="Dodaj nowy test"
-      matTooltip="Dodaj nowy test"
-    >
-      <mat-icon>add</mat-icon>
-    </button>
-  </mat-card-header>
-
-  <mat-card-content>
-    <ng-container
-      appPageStates
-      [dataTemplate]="hasDataTemplate"
-      [emptyTemplate]="noDataTemplate"
-      [loadingTemplate]="isLoadingTemplate"
-    ></ng-container>
-  </mat-card-content>
-</mat-card>
+</app-page>

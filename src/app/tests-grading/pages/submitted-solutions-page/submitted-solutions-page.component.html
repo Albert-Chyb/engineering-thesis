@@ -1,4 +1,7 @@
-<ng-template #dataTemplate>
+<app-page
+  pageTitle="Przesłane rozwiązania"
+  subtitle="Ta strona pozwala na przeglądanie rozwiązań przesłanych przez użytkowników."
+>
   <mat-action-list>
     @for (solvedTest of solvedTests(); track solvedTest.id) {
       <button
@@ -26,35 +29,4 @@
       </button>
     }
   </mat-action-list>
-</ng-template>
-
-<ng-template #noDataTemplate>
-  <app-no-data-info>
-    <img src="assets/icons/no-data.svg" no-data-info-icon />
-
-    <p no-data-info-message>Nikt nie przesłał jeszcze rozwiązań</p>
-  </app-no-data-info>
-</ng-template>
-
-<ng-template #isLoadingTemplate>
-  <app-loading-indicator>Pobieranie rozwiązań</app-loading-indicator>
-</ng-template>
-
-<mat-card class="with-spacing-fix">
-  <mat-card-header>
-    <h1 mat-card-title>Przesłane rozwiązania</h1>
-    <p mat-card-subtitle>
-      Ta strona pozwala na przeglądanie rozwiązań przesłanych przez
-      użytkowników.
-    </p>
-  </mat-card-header>
-
-  <mat-card-content>
-    <ng-container
-      appPageStates
-      [dataTemplate]="dataTemplate"
-      [loadingTemplate]="isLoadingTemplate"
-      [emptyTemplate]="noDataTemplate"
-    />
-  </mat-card-content>
-</mat-card>
+</app-page>

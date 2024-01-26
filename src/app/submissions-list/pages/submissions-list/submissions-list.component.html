@@ -1,17 +1,7 @@
-<ng-template #loadingTemplate>
-  <app-loading-indicator>
-    Ładuję listę rozwiązanych testów...
-  </app-loading-indicator>
-</ng-template>
-
-<ng-template #noDataTemplate>
-  <app-no-data-info>
-    <p no-data-info-message>Nie rozwiązałeś jeszcze żadnego testu</p>
-    <img src="assets/icons/no-data.svg" no-data-info-icon />
-  </app-no-data-info>
-</ng-template>
-
-<ng-template #dataTemplate>
+<app-page
+  pageTitle="Rozwiązane testy"
+  subtitle="Ta strona zawiera listę rozwiązanych przez Ciebie testów."
+>
   <mat-list role="list">
     @for (submission of submissions(); track submission.id) {
       <mat-list-item role="listitem">
@@ -28,22 +18,4 @@
       </mat-list-item>
     }
   </mat-list>
-</ng-template>
-
-<mat-card>
-  <mat-card-header>
-    <h1 mat-card-title>Rozwiązane testy</h1>
-    <p mat-card-subtitle>
-      Ta strona zawiera listę rozwiązanych przez Ciebie testów.
-    </p>
-  </mat-card-header>
-
-  <mat-card-content>
-    <ng-container
-      appPageStates
-      [loadingTemplate]="loadingTemplate"
-      [emptyTemplate]="noDataTemplate"
-      [dataTemplate]="dataTemplate"
-    />
-  </mat-card-content>
-</mat-card>
+</app-page>

@@ -14,6 +14,7 @@ import { QuestionsTypes } from '@utils/firestore/models/questions.model';
 import { Test } from '@utils/firestore/models/tests.model';
 import { LoadingState } from '@utils/loading-indicator/ngrx/LoadingState';
 import { LoadingStateAdapter } from '@utils/loading-indicator/ngrx/LoadingStateAdapter';
+import { PageStateIndicators } from '@utils/page-states/page-states-indicators';
 import {
   Observable,
   concatMap,
@@ -57,7 +58,10 @@ const INITIAL_STATE: TestCreatorPageState = {
 };
 
 @Injectable()
-export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageState> {
+export class TestCreatorPageStore
+  extends QueuedComponentStore<TestCreatorPageState>
+  implements PageStateIndicators
+{
   private readonly testsService = inject(TestsService);
   private readonly questionsService = inject(QuestionsService);
   private readonly answersService = inject(AnswersService);
@@ -66,6 +70,8 @@ export class TestCreatorPageStore extends QueuedComponentStore<TestCreatorPageSt
     super(INITIAL_STATE);
   }
 
+  readonly isEmpty = this.selectSignal((state) => state.test === null);
+  readonly error = this.selectSignal((state) => state.error);
   readonly test = this.selectSignal((state) => state.test);
   readonly questions = this.selectSignal((state) => state.questions);
   readonly questionsMetadata = this.selectSignal(

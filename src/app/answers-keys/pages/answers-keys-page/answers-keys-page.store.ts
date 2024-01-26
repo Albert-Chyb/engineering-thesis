@@ -1,5 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
+import { Question } from '@test-creator/classes/question';
 import { AnswersKeysService } from '@utils/firestore/collections-controllers/answers-keys.service';
 import { SharedTestsService } from '@utils/firestore/collections-controllers/shared-tests.service';
 import { SharedTest } from '@utils/firestore/models/shared-tests.model';
@@ -45,13 +46,23 @@ export class AnswersKeysPageStore
     loadingAdapter.getSelectors().isPending(state.loadingState),
   );
 
-  readonly isEmpty = this.selectSignal((state) => !state.sharedTest);
+  readonly isEmpty = computed(() => this.questions().length === 0);
 
   readonly error = this.selectSignal((state) => state.error);
 
   readonly sharedTest = this.selectSignal((state) => state.sharedTest);
 
   readonly answersKeys = this.selectSignal((state) => state.answersKeys);
+
+  readonly questions = computed(() => {
+    const sharedTest = this.sharedTest();
+
+    return (
+      sharedTest?.questions.filter((question) =>
+        Question.getClosedQuestionsTypes().includes(question.type as any),
+      ) ?? []
+    );
+  });
 
   readonly load = this.effect((sharedTestId$: Observable<string>) =>
     sharedTestId$.pipe(

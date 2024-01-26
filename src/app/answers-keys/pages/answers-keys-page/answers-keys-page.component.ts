@@ -1,27 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
 import { NoDataInfoComponent } from '@common/components/no-data-info/no-data-info.component';
+import { PageComponent } from '@common/components/page/page.component';
 import { AnswersFormComponent } from '@exam-session/components/answers-form/answers-form.component';
-import { Question } from '@test-creator/classes/question';
-import { LoadingIndicatorComponent } from '@utils/loading-indicator/components/loading-indicator/loading-indicator.component';
+import { UserAnswersSchema } from '@utils/firestore/models/user-answers.model';
 import { PAGE_STATE_INDICATORS } from '@utils/page-states/injection-tokens';
-import { PageStatesDirective } from '@utils/page-states/page-states.directive';
 import { filter, map } from 'rxjs';
 import { AnswersKeysPageStore } from './answers-keys-page.store';
-import { UserAnswersSchema } from '@utils/firestore/models/user-answers.model';
 
 @Component({
   standalone: true,
   imports: [
     CommonModule,
     MatCardModule,
-    PageStatesDirective,
     NoDataInfoComponent,
-    LoadingIndicatorComponent,
     AnswersFormComponent,
+    PageComponent,
   ],
   templateUrl: './answers-keys-page.component.html',
   styleUrl: './answers-keys-page.component.scss',
@@ -41,15 +38,7 @@ export class AnswersKeysPageComponent {
 
   readonly answersKeys = this.store.answersKeys;
 
-  readonly sharedTestQuestions = computed(() => {
-    const sharedTest = this.store.sharedTest();
-
-    return (
-      sharedTest?.questions.filter((question) =>
-        Question.getClosedQuestionsTypes().includes(question.type as any),
-      ) ?? []
-    );
-  });
+  readonly sharedTestQuestions = this.store.questions;
 
   constructor() {
     this.store.saveAnswersKeys(this.buildAnswersKeysStream());

@@ -1,0 +1,35 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title-group>
+      <h1 mat-card-title>{{ pageTitle() }}</h1>
+      <p mat-card-subtitle>{{ subtitle() }}</p>
+    </mat-card-title-group>
+
+    <ng-content select="[page-header-actions]" />
+  </mat-card-header>
+
+  @if (isLoading()) {
+    <mat-card-content>
+      <app-loading-indicator>{{ loadingMsg() }}</app-loading-indicator>
+    </mat-card-content>
+  }
+  @if (isEmpty()) {
+    <mat-card-content>
+      <app-no-data-info>
+        <p no-data-info-message>{{ noDataAvailableMsg() }}</p>
+
+        <img no-data-info-icon [src]="noDataIconPath()" />
+      </app-no-data-info>
+    </mat-card-content>
+  } @else {
+    <mat-card-content>
+      <ng-content />
+    </mat-card-content>
+
+    @if (pageActionsTemplate) {
+      <mat-card-actions align="end">
+        <ng-container [ngTemplateOutlet]="pageActionsTemplate"></ng-container>
+      </mat-card-actions>
+    }
+  }
+</mat-card>
