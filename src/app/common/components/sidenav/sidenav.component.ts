@@ -1,8 +1,15 @@
-import { Component, ViewChild } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Component, ViewChild, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
+import {
+  MatDrawerMode,
+  MatSidenav,
+  MatSidenavModule,
+} from '@angular/material/sidenav';
 import { RouterModule } from '@angular/router';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-sidenav',
@@ -13,6 +20,8 @@ import { RouterModule } from '@angular/router';
   exportAs: 'sidenav',
 })
 export class SidenavComponent {
+  private readonly breakpointObserver = inject(BreakpointObserver);
+
   readonly mainNavRoutes = [
     {
       link: '/my-tests',
@@ -30,6 +39,17 @@ export class SidenavComponent {
       title: 'Moje wyniki',
     },
   ];
+
+  readonly sidenavWidth = 250;
+  readonly maxViewPortWidth = 1320;
+  readonly sidenavMode = toSignal<MatDrawerMode>(
+    this.breakpointObserver
+      .observe(`(min-width: ${this.maxViewPortWidth + this.sidenavWidth}px)`)
+      .pipe(
+        map((result) => result.matches),
+        map((isEnoughSpace) => (isEnoughSpace ? 'side' : 'over')),
+      ),
+  );
 
   @ViewChild(MatSidenav) sidenavRef: MatSidenav | null = null;
 

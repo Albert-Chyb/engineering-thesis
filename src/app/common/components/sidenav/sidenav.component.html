@@ -1,5 +1,9 @@
 <mat-sidenav-container>
-  <mat-sidenav mode="side" class="sidenav">
+  <mat-sidenav
+    [mode]="sidenavMode() ?? 'over'"
+    class="sidenav"
+    [style.--sidenav-width.px]="sidenavWidth"
+  >
     <mat-nav-list>
       @for (route of mainNavRoutes; track route.link) {
         <a
