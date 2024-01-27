@@ -1,5 +1,5 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, ViewChild, inject } from '@angular/core';
+import { Component, ViewChild, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -9,6 +9,7 @@ import {
   MatSidenavModule,
 } from '@angular/material/sidenav';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '@authentication/services/auth.service';
 import { map } from 'rxjs';
 
 @Component({
@@ -50,6 +51,20 @@ export class SidenavComponent {
         map((isEnoughSpace) => (isEnoughSpace ? 'side' : 'over')),
       ),
   );
+
+  constructor() {
+    effect(() => {
+      const mode = this.sidenavMode();
+
+      if (mode === 'over') {
+        // If there isn't enough space for sidenav, close it.
+        this.sidenavRef?.close();
+      } else {
+        // If there is enough space for sidenav, open it.
+        this.sidenavRef?.open();
+      }
+    });
+  }
 
   @ViewChild(MatSidenav) sidenavRef: MatSidenav | null = null;
 
