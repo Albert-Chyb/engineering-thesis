@@ -1,0 +1,24 @@
+<mat-sidenav-container>
+  <mat-sidenav mode="side" class="sidenav">
+    <mat-nav-list>
+      @for (route of mainNavRoutes; track route.link) {
+        <a
+          mat-list-item
+          [routerLink]="route.link"
+          routerLinkActive
+          #rla="routerLinkActive"
+          [activated]="rla.isActive"
+        >
+          <span matListItemIcon>
+            <mat-icon>{{ route.icon }}</mat-icon>
+          </span>
+          <span matListItemTitle>{{ route.title }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <ng-content />
+  </mat-sidenav-content>
+</mat-sidenav-container>

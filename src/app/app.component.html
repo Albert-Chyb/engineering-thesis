@@ -1,32 +1,10 @@
 <app-header (onHamburgerClick)="sidenav.toggle()" />
 
-<mat-sidenav-container>
-  <mat-sidenav #sidenav mode="over">
-    <mat-nav-list>
-      @for (route of mainNavRoutes; track route.link) {
-        <a
-          mat-list-item
-          [routerLink]="route.link"
-          routerLinkActive
-          #rla="routerLinkActive"
-          [activated]="rla.isActive"
-        >
-          <span matListItemIcon>
-            <mat-icon>{{ route.icon }}</mat-icon>
-          </span>
-          <span matListItemTitle>{{ route.title }}</span>
-          <span matListItemLine>{{ route.description }}</span>
-        </a>
-      }
-    </mat-nav-list>
-  </mat-sidenav>
-
-  <mat-sidenav-content>
-    <main
-      class="main-container"
-      [class.main-container--mobile-view]="isMobileView()"
-    >
-      <router-outlet></router-outlet>
-    </main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<app-sidenav #sidenav>
+  <main
+    class="main-container"
+    [class.main-container--mobile-view]="isMobileView()"
+  >
+    <router-outlet />
+  </main>
+</app-sidenav>

@@ -14,10 +14,6 @@
   min-height: calc(100vh - var(--main-toolbar-height));
 }
 
-mat-sidenav {
-  min-width: max(10vw, 300px);
-}
-
 @media (min-width: 576px) {
   .main-container {
     max-width: 540px;
