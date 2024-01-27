@@ -22,6 +22,7 @@ import { map } from 'rxjs';
 })
 export class SidenavComponent {
   private readonly breakpointObserver = inject(BreakpointObserver);
+  private readonly auth = inject(AuthService);
 
   readonly mainNavRoutes = [
     {
@@ -40,7 +41,7 @@ export class SidenavComponent {
       title: 'Moje wyniki',
     },
   ];
-
+  readonly isLoggedIn = toSignal(this.auth.isLoggedIn$);
   readonly sidenavWidth = 250;
   readonly maxViewPortWidth = 1320;
   readonly sidenavMode = toSignal<MatDrawerMode>(
@@ -64,11 +65,24 @@ export class SidenavComponent {
         this.sidenavRef?.open();
       }
     });
+
+    effect(() => {
+      const isLoggedIn = this.isLoggedIn();
+      const mode = this.sidenavMode();
+
+      if (!isLoggedIn) {
+        this.sidenavRef?.close();
+      } else if (mode === 'side') {
+        this.sidenavRef?.open();
+      }
+    });
   }
 
   @ViewChild(MatSidenav) sidenavRef: MatSidenav | null = null;
 
   toggle() {
-    this.sidenavRef?.toggle();
+    if (this.isLoggedIn()) {
+      this.sidenavRef?.toggle();
+    }
   }
 }
