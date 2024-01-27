@@ -1,10 +1,7 @@
 <app-header (onHamburgerClick)="sidenav.toggle()" />
 
 <app-sidenav #sidenav>
-  <main
-    class="main-container"
-    [class.main-container--mobile-view]="isMobileView()"
-  >
+  <app-main-view>
     <router-outlet />
-  </main>
+  </app-main-view>
 </app-sidenav>
