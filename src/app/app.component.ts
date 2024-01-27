@@ -1,17 +1,12 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ViewChild, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '@authentication/services/auth.service';
-import { PendingIndicatorComponent } from '@utils/loading-indicator/components/pending-indicator/pending-indicator.component';
-import { PendingIndicatorService } from '@utils/loading-indicator/services/pending-indicator.service';
+import { HeaderComponent } from '@common/components/header/header.component';
 import { map } from 'rxjs';
 
 @Component({
@@ -20,27 +15,18 @@ import { map } from 'rxjs';
   imports: [
     CommonModule,
     RouterModule,
-    PendingIndicatorComponent,
-    MatToolbarModule,
     MatIconModule,
-    MatButtonModule,
-    MatTooltipModule,
     MatSidenavModule,
     MatListModule,
+    HeaderComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements AfterViewInit {
-  private readonly pendingIndicator = inject(PendingIndicatorService);
+export class AppComponent {
   private readonly breakpointObserver = inject(BreakpointObserver);
 
-  @ViewChild(PendingIndicatorComponent)
-  pendingIndicatorComponent!: PendingIndicatorComponent;
-
-  auth = inject(AuthService);
-  isLoggedIn = toSignal(this.auth.isLoggedIn$);
-  isMobileView = toSignal(
+  readonly isMobileView = toSignal(
     this.breakpointObserver
       .observe(Breakpoints.XSmall)
       .pipe(map((result) => result.matches)),
@@ -66,8 +52,4 @@ export class AppComponent implements AfterViewInit {
       description: 'Przeglądaj wyniki rozwiązanych testów',
     },
   ];
-
-  ngAfterViewInit(): void {
-    this.pendingIndicator.connectIndicator(this.pendingIndicatorComponent);
-  }
 }

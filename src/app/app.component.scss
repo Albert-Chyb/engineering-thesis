@@ -4,14 +4,6 @@
   margin-right: auto;
 }
 
-.loading-indicator {
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 9999;
-}
-
 .main-container {
   --main-toolbar-height: var(--mat-toolbar-standard-height);
 

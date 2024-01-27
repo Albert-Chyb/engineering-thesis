@@ -1,0 +1,36 @@
+<app-pending-indicator class="loading-indicator">
+  <mat-toolbar color="primary">
+    <button
+      mat-icon-button
+      aria-label="Otwórz główną nawigacje strony"
+      (click)="onHamburgerClick.emit()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <a routerLink="/" mat-button>Testy online</a>
+
+    <span class="flex-spacer"></span>
+
+    @if (isLoggedIn()) {
+      <a
+        routerLink="/logout"
+        [skipLocationChange]="true"
+        mat-icon-button
+        matTooltip="Wyloguj się"
+        aria-label="Przejdź to strony umożliwiającej wylogowanie się"
+      >
+        <mat-icon>logout</mat-icon>
+      </a>
+    } @else {
+      <a
+        routerLink="/login"
+        mat-icon-button
+        matTooltip="Zaloguj się"
+        aria-label="Przejdź to strony umożliwiającej zalogowanie się"
+      >
+        <mat-icon>login</mat-icon>
+      </a>
+    }
+  </mat-toolbar>
+</app-pending-indicator>
