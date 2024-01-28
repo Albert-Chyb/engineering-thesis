@@ -1,7 +1,4 @@
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-main-view',
@@ -10,12 +7,4 @@ import { map } from 'rxjs';
   templateUrl: './main-view.component.html',
   styleUrl: './main-view.component.scss',
 })
-export class MainViewComponent {
-  private readonly breakpointObserver = inject(BreakpointObserver);
-
-  readonly isMobileView = toSignal(
-    this.breakpointObserver
-      .observe(Breakpoints.XSmall)
-      .pipe(map((result) => result.matches)),
-  );
-}
+export class MainViewComponent {}
