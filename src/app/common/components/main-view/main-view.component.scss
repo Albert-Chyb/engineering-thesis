@@ -2,9 +2,10 @@
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
-  
+
   // Fill the whole viewport height except the toolbar
   min-height: calc(100vh - var(--main-toolbar-height));
+  margin-top: var(--main-toolbar-height);
 }
 
 @media (min-width: 576px) {
