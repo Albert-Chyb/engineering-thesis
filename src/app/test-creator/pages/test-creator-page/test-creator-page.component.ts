@@ -115,6 +115,8 @@ export class TestCreatorPageComponent implements HasPendingTasks {
       content: '',
       id: this.testsService.generateId(),
       position: this.getNewAnswerPosition(question),
+      questionId: question.id,
+      testId: question.testId,
     };
     const payload = { questionId: question.id, answer };
 
@@ -155,6 +157,7 @@ export class TestCreatorPageComponent implements HasPendingTasks {
       type,
       content: '',
       position,
+      testId: this.test()?.id ?? '',
     });
 
     this.store.addQuestion(newQuestion);

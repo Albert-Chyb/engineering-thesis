@@ -14,12 +14,14 @@ export class Question {
   readonly type;
   readonly content: string;
   readonly position: number;
+  readonly testId: string;
 
   constructor(doc: QuestionDoc) {
     this.id = doc.id;
     this.type = doc.type;
     this.content = doc.content;
     this.position = doc.position;
+    this.testId = doc.testId;
 
     this.metadata = questionsMetadata.getMetadata(this.type);
   }
@@ -65,6 +67,7 @@ export class Question {
       type: this.type,
       content: this.content,
       position: this.position,
+      testId: this.testId,
     };
   }
 

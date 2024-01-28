@@ -46,6 +46,8 @@ export class AnswerWrapperComponent extends DocumentDirective<
       id: answer.id,
       content: value.content ?? '',
       position: answer.position,
+      questionId: answer.questionId,
+      testId: answer.testId,
     };
   }
 }

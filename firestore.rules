@@ -21,7 +21,8 @@ service cloud.firestore {
       allow create, update: if 
         isLoggedIn() &&
         isUser(userId) &&
-        schemaCreatorQuestion();
+        schemaCreatorQuestion() &&
+        request.resource.data.testId == testId;
     }
 
     match /users/{userId}/tests/{testId}/questions/{questionId}/answers/{answerId} {
@@ -33,7 +34,9 @@ service cloud.firestore {
         isLoggedIn() &&
         isUser(userId) && 
         get(/databases/$(database)/documents/users/$(userId)/tests/$(testId)/questions/$(questionId)).data.type in getClosedQuestionsTypes() &&
-        schemaCreatorAnswer();
+        schemaCreatorAnswer() &&
+        request.resource.data.testId == testId &&
+        request.resource.data.questionId == questionId;
     }
 
     match /shared-tests/{testId} {
@@ -133,22 +136,27 @@ function getClosedQuestionsTypes() {
 
 function schemaCreatorQuestion() {
   return 
-    request.resource.data.keys().hasOnly(['content', 'type', 'position']) &&
+    request.resource.data.keys().hasOnly(['content', 'type', 'position', 'testId']) &&
     request.resource.data.content is string &&
 
     request.resource.data.type is string &&
     request.resource.data.type in getQuestionsTypes() &&
 
     request.resource.data.position is int &&
-    request.resource.data.position > 0;
+    request.resource.data.position > 0 &&
+    
+    request.resource.data.testId is string;
 }
 
 function schemaCreatorAnswer() {
   return 
-    request.resource.data.keys().hasOnly(['content', 'position']) &&
+    request.resource.data.keys().hasOnly(['content', 'position', 'questionId', 'testId']) &&
     request.resource.data.content is string &&
 
     request.resource.data.position is int &&
-    request.resource.data.position > 0;
+    request.resource.data.position > 0 &&
+    
+    request.resource.data.testId is string &&
+    request.resource.data.questionId is string;
 }
 

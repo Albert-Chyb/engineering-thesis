@@ -29,6 +29,7 @@ export abstract class Question extends DocumentDirective<
       type: question.type,
       content: value.content ?? '',
       position: question.position,
+      testId: question.testId,
     });
   }
 }

@@ -10,6 +10,7 @@ export const RawQuestionSchema = z.object({
   content: z.string(),
   position: z.number().positive().int(),
   type: QuestionsTypesEnum,
+  testId: z.string(),
 });
 
 export const QuestionSchema = RawQuestionSchema.extend({

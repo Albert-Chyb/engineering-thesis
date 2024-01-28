@@ -211,6 +211,7 @@ export class TestCreatorPageStore
             content: question.content,
             type: question.type,
             position: question.position,
+            testId,
           },
           question.id,
           [testId],
@@ -336,6 +337,8 @@ export class TestCreatorPageStore
             {
               content: answer.content,
               position: answer.position,
+              testId,
+              questionId,
             },
             answer.id,
             [testId, questionId],
@@ -442,10 +445,20 @@ export class TestCreatorPageStore
 
   readonly updateAnswer = this.updater(
     (state, { questionId, answer }: { questionId: string; answer: Answer }) => {
+      const testId = this.get((state) => state.test)?.id;
+
+      if (!testId) {
+        throw new Error(
+          'Tried to update an answer without previously loading the test.',
+        );
+      }
+
       const newAnswer: Answer = {
         id: answer.id,
         content: answer.content,
         position: answer.position,
+        questionId,
+        testId,
       };
 
       return {
@@ -476,10 +489,20 @@ export class TestCreatorPageStore
 
   readonly addAnswer = this.updater(
     (state, { questionId, answer }: { questionId: string; answer: Answer }) => {
+      const testId = this.get((state) => state.test)?.id;
+
+      if (!testId) {
+        throw new Error(
+          'Tried to add an answer without previously loading the test.',
+        );
+      }
+
       const newAnswer: Answer = {
         id: answer.id,
         content: answer.content,
         position: answer.position,
+        questionId,
+        testId,
       };
 
       return {
