@@ -7,7 +7,13 @@ service cloud.firestore {
         isLoggedIn() && 
         isUser(userId);
 
-      allow create, update: if 
+      allow update: if 
+        isLoggedIn() &&
+        isUser(userId) && 
+        schemaCreatorTest() &&
+        updatableKeys(['name']);
+
+      allow create: if 
         isLoggedIn() &&
         isUser(userId) && 
         schemaCreatorTest();
@@ -18,11 +24,16 @@ service cloud.firestore {
         isLoggedIn() && 
         isUser(userId);
 
-      allow create, update: if 
+      allow update: if
         isLoggedIn() &&
         isUser(userId) &&
-        schemaCreatorQuestion() &&
-        request.resource.data.testId == testId;
+        schemaCreatorQuestion(testId) &&
+        updatableKeys(['content', 'position']);
+
+      allow create: if 
+        isLoggedIn() &&
+        isUser(userId) &&
+        schemaCreatorQuestion(testId);
     }
 
     match /users/{userId}/tests/{testId}/questions/{questionId}/answers/{answerId} {
@@ -30,13 +41,17 @@ service cloud.firestore {
         isLoggedIn() && 
         isUser(userId);
 
-      allow create, update: if 
+      allow update: if
+        isLoggedIn() &&
+        isUser(userId) &&
+        schemaCreatorAnswer(testId, questionId) &&
+        updatableKeys(['content', 'position']);
+
+      allow create: if 
         isLoggedIn() &&
         isUser(userId) && 
         get(/databases/$(database)/documents/users/$(userId)/tests/$(testId)/questions/$(questionId)).data.type in getClosedQuestionsTypes() &&
-        schemaCreatorAnswer() &&
-        request.resource.data.testId == testId &&
-        request.resource.data.questionId == questionId;
+        schemaCreatorAnswer(testId, questionId);
     }
 
     match /shared-tests/{testId} {
@@ -112,6 +127,10 @@ service cloud.firestore {
   }
 }
 
+function updatableKeys(keys) {
+  return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+}
+
 function isLoggedIn() {
   return request.auth != null;
 }
@@ -121,8 +140,10 @@ function isUser(userId) {
 }
 
 function schemaCreatorTest() {
+  let allowedFields = ['name'];
+
   return 
-    request.resource.data.keys().hasOnly(['name']) &&
+    request.resource.data.keys().hasOnly(allowedFields) &&
     request.resource.data.name is string;
 }
 
@@ -134,9 +155,12 @@ function getClosedQuestionsTypes() {
   return ['single-choice', 'multi-choice'];
 }
 
-function schemaCreatorQuestion() {
+function schemaCreatorQuestion(testId) {
+  let allowedFields = ['content', 'type', 'position', 'testId'];
+
   return 
-    request.resource.data.keys().hasOnly(['content', 'type', 'position', 'testId']) &&
+    request.resource.data.keys().hasOnly(allowedFields) &&
+
     request.resource.data.content is string &&
 
     request.resource.data.type is string &&
@@ -145,18 +169,25 @@ function schemaCreatorQuestion() {
     request.resource.data.position is int &&
     request.resource.data.position > 0 &&
     
-    request.resource.data.testId is string;
+    request.resource.data.testId is string &&
+    request.resource.data.testId == testId;
 }
 
-function schemaCreatorAnswer() {
+function schemaCreatorAnswer(testId, questionId) {
+  let allowedFields = ['content', 'position', 'questionId', 'testId'];
+
   return 
-    request.resource.data.keys().hasOnly(['content', 'position', 'questionId', 'testId']) &&
+    request.resource.data.keys().hasOnly(allowedFields) &&
+
     request.resource.data.content is string &&
 
     request.resource.data.position is int &&
     request.resource.data.position > 0 &&
     
     request.resource.data.testId is string &&
-    request.resource.data.questionId is string;
+    request.resource.data.testId == testId &&
+
+    request.resource.data.questionId is string &&
+    request.resource.data.questionId == questionId;
 }
 
