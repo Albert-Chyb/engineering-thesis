@@ -5,51 +5,51 @@ service cloud.firestore {
     match /users/{userId}/tests/{testId} {
       allow read, delete: if 
         isLoggedIn() && 
-        isUser(userId);
+        isAuthenticatedUser(userId);
 
       allow update: if 
         isLoggedIn() &&
-        isUser(userId) && 
+        isAuthenticatedUser(userId) && 
         schemaCreatorTest() &&
         updatableKeys(['name']);
 
       allow create: if 
         isLoggedIn() &&
-        isUser(userId) && 
+        isAuthenticatedUser(userId) && 
         schemaCreatorTest();
     }
 
     match /users/{userId}/tests/{testId}/questions/{questionId} {
       allow read, delete: if 
         isLoggedIn() && 
-        isUser(userId);
+        isAuthenticatedUser(userId);
 
       allow update: if
         isLoggedIn() &&
-        isUser(userId) &&
+        isAuthenticatedUser(userId) &&
         schemaCreatorQuestion(testId) &&
         updatableKeys(['content', 'position']);
 
       allow create: if 
         isLoggedIn() &&
-        isUser(userId) &&
+        isAuthenticatedUser(userId) &&
         schemaCreatorQuestion(testId);
     }
 
     match /users/{userId}/tests/{testId}/questions/{questionId}/answers/{answerId} {
       allow read, delete: if 
         isLoggedIn() && 
-        isUser(userId);
+        isAuthenticatedUser(userId);
 
       allow update: if
         isLoggedIn() &&
-        isUser(userId) &&
+        isAuthenticatedUser(userId) &&
         schemaCreatorAnswer(testId, questionId) &&
         updatableKeys(['content', 'position']);
 
       allow create: if 
         isLoggedIn() &&
-        isUser(userId) && 
+        isAuthenticatedUser(userId) && 
         get(/databases/$(database)/documents/users/$(userId)/tests/$(testId)/questions/$(questionId)).data.type in getClosedQuestionsTypes() &&
         schemaCreatorAnswer(testId, questionId);
     }
@@ -59,7 +59,7 @@ service cloud.firestore {
 
       allow delete: if 
         isLoggedIn() &&
-        isUser(resource.data.author);
+        isAuthenticatedUser(resource.data.author);
 
       allow create, update: if false;
     }
@@ -69,7 +69,7 @@ service cloud.firestore {
 
       allow delete: if 
         isLoggedIn() &&
-        isUser(resource.data.author);
+        isAuthenticatedUser(resource.data.author);
 
       allow create, update: if false;
     }
@@ -80,11 +80,11 @@ service cloud.firestore {
       // Allow the test taker to read his solved test
       allow read: if 
         isLoggedIn() &&
-        isUser(request.resource.data.testTakerId);
+        isAuthenticatedUser(request.resource.data.testTakerId);
 
       allow read, delete: if
         isLoggedIn() &&
-        isUser(
+        isAuthenticatedUser(
           get(/databases/$(database)/documents/shared-tests-metadata/$(sharedTestId)).data.author
         );
     }
@@ -95,13 +95,13 @@ service cloud.firestore {
       // Allow the test taker to read his solved test answers
       allow read: if 
         isLoggedIn() &&
-        isUser(
+        isAuthenticatedUser(
           get(/databases/$(database)/documents/shared-tests/$(sharedTestId)/solved-tests/$(solvedTestId)).data.testTakerId
         );
 
       allow read, delete: if
         isLoggedIn() &&
-        isUser(
+        isAuthenticatedUser(
           get(/databases/$(database)/documents/shared-tests-metadata/$(sharedTestId)).data.author
         );
     }
@@ -111,7 +111,7 @@ service cloud.firestore {
 
       allow read, delete: if
         isLoggedIn() &&
-        isUser(
+        isAuthenticatedUser(
           get(/databases/$(database)/documents/shared-tests-metadata/$(sharedTestId)).data.author
         );
     }
@@ -122,7 +122,7 @@ service cloud.firestore {
       // Allow the test taker to read tests solved by him in a group collection query
       allow read: if 
         isLoggedIn() &&
-        isUser(resource.data.testTakerId);
+        isAuthenticatedUser(resource.data.testTakerId);
     }
   }
 }
@@ -135,7 +135,7 @@ function isLoggedIn() {
   return request.auth != null;
 }
 
-function isUser(userId) {
+function isAuthenticatedUser(userId) {
   return request.auth.uid == userId;
 }
 
