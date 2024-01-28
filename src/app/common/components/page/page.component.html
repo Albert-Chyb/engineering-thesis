@@ -12,8 +12,7 @@
     <mat-card-content>
       <app-loading-indicator>{{ loadingMsg() }}</app-loading-indicator>
     </mat-card-content>
-  }
-  @if (isEmpty()) {
+  } @else if (isEmpty()) {
     <mat-card-content>
       <app-no-data-info>
         <p no-data-info-message>{{ noDataAvailableMsg() }}</p>
