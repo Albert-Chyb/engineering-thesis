@@ -1,5 +1,9 @@
 .sidenav {
   --sidenav-width: 250px;
+  --sidenav-height: 100%;
 
-  min-width: var(--sidenav-width);
+  position: fixed;
+  top: var(--main-toolbar-height);
+  min-width: var(--sidenav-width, 250px);
+  overflow-y: auto;
 }
