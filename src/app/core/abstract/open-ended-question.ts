@@ -1,11 +1,9 @@
-import {
-  AssociatedAnswer,
-  OpenEndedQuestionsTypes,
-} from '../types/editor-config';
+import { OpenQuestionsTypes } from '@utils/firestore/models/questions.model';
+import { AssociatedAnswer } from '../types/editor-config';
 import { Question } from './question';
 
 export abstract class OpenEndedQuestion<
-  TQuestionType extends OpenEndedQuestionsTypes,
+  TQuestionType extends OpenQuestionsTypes,
 > extends Question<TQuestionType> {
   private answer: AssociatedAnswer<TQuestionType> | null = null;
 

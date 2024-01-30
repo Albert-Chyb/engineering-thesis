@@ -1,4 +1,5 @@
-import { AssociatedAnswer, QuestionsTypes } from '../types/editor-config';
+import { QuestionsTypes } from '@utils/firestore/models/questions.model';
+import { AssociatedAnswer } from '../types/editor-config';
 
 export abstract class Answer<TQuestionType extends QuestionsTypes> {
   constructor(

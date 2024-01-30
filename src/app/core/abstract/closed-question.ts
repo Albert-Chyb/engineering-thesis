@@ -1,4 +1,5 @@
-import { AssociatedAnswer, ClosedQuestionsTypes } from '../types/editor-config';
+import { ClosedQuestionsTypes } from '@utils/firestore/models/questions.model';
+import { AssociatedAnswer } from '../types/editor-config';
 import { Question } from './question';
 
 export abstract class ClosedQuestion<

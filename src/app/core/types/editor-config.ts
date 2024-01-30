@@ -1,3 +1,4 @@
+import { QuestionsTypes } from '@utils/firestore/models/questions.model';
 import { CheckableAnswer } from '../answers/checkable';
 import { TextAnswer } from '../answers/text';
 import { MultiChoiceQuestion } from '../questions/multi-choice';
@@ -21,24 +22,6 @@ type QuestionsEditorsConfig = {
     answerValue: string;
   };
 };
-
-/**
- * All types of questions.
- */
-export type QuestionsTypes = keyof QuestionsEditorsConfig;
-
-/**
- * Types of open ended questions.
- */
-export type OpenEndedQuestionsTypes = 'text-answer';
-
-/**
- * Types of closed questions.
- */
-export type ClosedQuestionsTypes = Exclude<
-  QuestionsTypes,
-  OpenEndedQuestionsTypes
->;
 
 /**
  * Object of an answer associated with a question.
