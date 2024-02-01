@@ -155,6 +155,7 @@ function getClosedQuestionsTypes() {
   return ['single-choice', 'multi-choice'];
 }
 
+
 function schemaCreatorQuestion(testId) {
   let allowedFields = ['content', 'type', 'position', 'testId'];
 
@@ -174,7 +175,18 @@ function schemaCreatorQuestion(testId) {
 }
 
 function schemaCreatorAnswer(testId, questionId) {
-  let allowedFields = ['content', 'position', 'questionId', 'testId'];
+  return schemaCreateAnswerCheckable(testId, questionId);
+}
+
+function schemaCreateAnswerCheckable(testId, questionId) {
+  return 
+    schemaCreatorAnswerBase(testId, questionId, 'checkable', ['isChecked']) && 
+
+    request.resource.data.isChecked is bool;
+}
+
+function schemaCreatorAnswerBase(testId, questionId, type, additionalFields) {
+  let allowedFields = ['content', 'position', 'questionId', 'testId', 'type'].toSet().union(additionalFields.toSet());
 
   return 
     request.resource.data.keys().hasOnly(allowedFields) &&
@@ -188,6 +200,8 @@ function schemaCreatorAnswer(testId, questionId) {
     request.resource.data.testId == testId &&
 
     request.resource.data.questionId is string &&
-    request.resource.data.questionId == questionId;
+    request.resource.data.questionId == questionId &&
+    
+    request.resource.data.type is string &&
+    request.resource.data.type == type;
 }
-
