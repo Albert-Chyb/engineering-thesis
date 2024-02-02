@@ -14,3 +14,9 @@
     font: mat.get-theme-typography(theme.$app-theme, body-1);
   }
 }
+
+@media (max-width: 575.98px) {
+  .test-taker-info {
+    flex-wrap: wrap;
+  }
+}
